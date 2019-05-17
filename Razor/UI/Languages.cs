@@ -509,7 +509,7 @@ namespace Assistant
         ToggleWar,
         TogglePeace,
         GHealOrCureSelf,
-
+        SmartTarget,
         __End
     }
 

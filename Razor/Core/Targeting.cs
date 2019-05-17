@@ -34,7 +34,7 @@ namespace Assistant
         private static TargetInfo m_LastGroundTarg;
         private static TargetInfo m_LastBeneTarg;
         private static TargetInfo m_LastHarmTarg;
-
+        private static bool m_SmartTargetChanged;
         private static bool m_AllowGround;
         private static uint m_CurrentID;
         private static byte m_CurFlags;
@@ -186,6 +186,8 @@ namespace Assistant
                 new HotKeyCallback(PrevTargetInnocentHumanoid));
 
             HotKey.Add(HKCategory.Targets, LocString.TargClosest, new HotKeyCallback(TargetClosest));
+
+            HotKey.Add(HKCategory.Targets, LocString.SmartTarget, new HotKeyCallback(SmartTargeting));
 
             HotKey.Add(HKCategory.Targets, HKSubCat.SubTargetMurderer, LocString.TargCloseRed, new HotKeyCallback(TargetCloseRed));
             HotKey.Add(HKCategory.Targets, HKSubCat.SubTargetMurderer, LocString.TargCloseRedHumanoid, new HotKeyCallback(TargetCloseRedHumanoid));
@@ -785,6 +787,30 @@ namespace Assistant
             ClosestTarget();
         }
 
+        public static void SmartTargeting()
+        {
+            m_SmartTargetChanged = false;
+            TargetCloseEnemyHumanoid();
+            if (!m_SmartTargetChanged)
+            {
+                TargetCloseRedHumanoid();
+                if (!m_SmartTargetChanged)
+                {
+                    TargetCloseGreyHumanoid();
+                    if (!m_SmartTargetChanged)
+                    {
+                        if (World.Player.Notoriety == (int)TargetType.Murderer)
+                        {
+                            TargetCloseInnocentHumanoid();
+                            if (m_SmartTargetChanged)
+                                return;
+                        }
+                        ClosestMonsterTarget((int)TargetType.Attackable, (int)TargetType.Criminal, (int)TargetType.Murderer);
+                    }
+                }
+            }
+        }
+
         public static void SetClosestLastTarget(Mobile closest)
         {
             if (!Config.GetBool("CastOnClosest"))
@@ -815,6 +841,7 @@ namespace Assistant
             {
                 SetLastTargetTo(closest);
             }
+            m_SmartTargetChanged = true;
         }
 
         public static void ClosestTarget(params int[] noto)
@@ -859,8 +886,7 @@ namespace Assistant
 
             if (closest != null)
                 SetClosestLastTarget(closest);
-            else
-                World.Player.SendMessage(MsgLevel.Warning, LocString.TargNoOne);
+          
         }
 
         public static void ClosestHumanoidTarget(params int[] noto)
@@ -874,7 +900,7 @@ namespace Assistant
                 if (m.Body != 0x0190 && m.Body != 0x0191 && m.Body != 0x025D && m.Body != 0x025E)
                     continue;
 
-                if ((!FriendsAgent.IsFriend(m) || (noto.Length > 0 && noto[0] == 0)) &&
+                if (((!FriendsAgent.IsFriend(m) || m.Notoriety == (int)TargetType.Enemy)  || (noto.Length > 0 && noto[0] == 0)) &&
                     !m.Blessed && !m.IsGhost && m.Serial != World.Player.Serial &&
                     Utility.InRange(World.Player.Position, m.Position, Config.GetInt("LTRange")))
                 {
@@ -908,8 +934,7 @@ namespace Assistant
 
             if (closest != null)
                 SetClosestLastTarget(closest);
-            else
-                World.Player.SendMessage(MsgLevel.Warning, LocString.TargNoOne);
+          
         }
 
         public static void ClosestMonsterTarget(params int[] noto)
@@ -957,8 +982,7 @@ namespace Assistant
 
             if (closest != null)
                 SetClosestLastTarget(closest);
-            else
-                World.Player.SendMessage(MsgLevel.Warning, LocString.TargNoOne);
+           
         }
 
         public static void SetLastTargetTo(Mobile m)
