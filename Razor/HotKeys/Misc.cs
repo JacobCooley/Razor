@@ -1,6 +1,7 @@
 using System;
 using Assistant;
 using Assistant.Core;
+using Assistant.Macros;
 
 namespace Assistant.HotKeys
 {
@@ -380,7 +381,7 @@ namespace Assistant.HotKeys
         private static void GrabItem()
         {
             World.Player.SendMessage(MsgLevel.Force, LocString.GrabItemTarget);
-            Targeting.OneTimeTarget(OnGrabItem);
+            Targeting.OneTimeTarget(OnGrabItem, true);
         }
 
         private static void OnGrabItem(bool loc, Serial serial, Point3D pt, ushort itemId)
