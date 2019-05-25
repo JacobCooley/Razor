@@ -619,6 +619,7 @@ namespace Assistant
             this.delMacro = new System.Windows.Forms.Button();
             this.newMacro = new System.Windows.Forms.Button();
             this.subMacrosOptionsTab = new System.Windows.Forms.TabPage();
+            this.macroActionDelay = new System.Windows.Forms.CheckBox();
             this.rangeCheckDoubleClick = new System.Windows.Forms.CheckBox();
             this.rangeCheckTargetByType = new System.Windows.Forms.CheckBox();
             this.nextMacroAction = new System.Windows.Forms.Button();
@@ -669,7 +670,6 @@ namespace Assistant
             this.linkMain = new System.Windows.Forms.LinkLabel();
             this.label21 = new System.Windows.Forms.Label();
             this.aboutVer = new System.Windows.Forms.Label();
-            this.macroActionDelay = new System.Windows.Forms.CheckBox();
             this.tabs.SuspendLayout();
             this.generalTab.SuspendLayout();
             this.subGeneralTab.SuspendLayout();
@@ -711,15 +711,15 @@ namespace Assistant
             this.advancedTab.SuspendLayout();
             this.aboutTab.SuspendLayout();
             this.SuspendLayout();
-            //
+            // 
             // m_NotifyIcon
-            //
+            // 
             this.m_NotifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("m_NotifyIcon.Icon")));
             this.m_NotifyIcon.Text = "Razor";
             this.m_NotifyIcon.DoubleClick += new System.EventHandler(this.NotifyIcon_DoubleClick);
-            //
+            // 
             // tabs
-            //
+            // 
             this.tabs.Controls.Add(this.generalTab);
             this.tabs.Controls.Add(this.moreOptTab);
             this.tabs.Controls.Add(this.displayTab);
@@ -736,33 +736,33 @@ namespace Assistant
             this.tabs.Multiline = true;
             this.tabs.Name = "tabs";
             this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(527, 370);
+            this.tabs.Size = new System.Drawing.Size(615, 462);
             this.tabs.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabs.TabIndex = 0;
             this.tabs.SelectedIndexChanged += new System.EventHandler(this.tabs_IndexChanged);
             this.tabs.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabs_KeyDown);
-            //
+            // 
             // generalTab
-            //
+            // 
             this.generalTab.Controls.Add(this.subGeneralTab);
-            this.generalTab.Location = new System.Drawing.Point(4, 44);
+            this.generalTab.Location = new System.Drawing.Point(4, 54);
             this.generalTab.Name = "generalTab";
-            this.generalTab.Size = new System.Drawing.Size(519, 322);
+            this.generalTab.Size = new System.Drawing.Size(607, 404);
             this.generalTab.TabIndex = 0;
             this.generalTab.Text = "General";
-            //
+            // 
             // subGeneralTab
-            //
+            // 
             this.subGeneralTab.Controls.Add(this.tabPage1);
             this.subGeneralTab.Controls.Add(this.subFiltersTab);
-            this.subGeneralTab.Location = new System.Drawing.Point(6, 3);
+            this.subGeneralTab.Location = new System.Drawing.Point(7, 4);
             this.subGeneralTab.Name = "subGeneralTab";
             this.subGeneralTab.SelectedIndex = 0;
-            this.subGeneralTab.Size = new System.Drawing.Size(510, 314);
+            this.subGeneralTab.Size = new System.Drawing.Size(595, 392);
             this.subGeneralTab.TabIndex = 63;
-            //
+            // 
             // tabPage1
-            //
+            // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage1.Controls.Add(this.groupBox15);
             this.tabPage1.Controls.Add(this.groupBox16);
@@ -778,117 +778,117 @@ namespace Assistant
             this.tabPage1.Controls.Add(this.opacityLabel);
             this.tabPage1.Controls.Add(this.label9);
             this.tabPage1.Controls.Add(this.groupBox4);
-            this.tabPage1.Location = new System.Drawing.Point(4, 24);
+            this.tabPage1.Location = new System.Drawing.Point(4, 29);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(502, 286);
+            this.tabPage1.Size = new System.Drawing.Size(587, 359);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
-            //
+            // 
             // groupBox15
-            //
+            // 
             this.groupBox15.Controls.Add(this.boatControl);
             this.groupBox15.Controls.Add(this.openUOAM);
             this.groupBox15.Controls.Add(this.openUltimaMapper);
             this.groupBox15.Controls.Add(this.btnMap);
-            this.groupBox15.Location = new System.Drawing.Point(6, 232);
+            this.groupBox15.Location = new System.Drawing.Point(7, 290);
             this.groupBox15.Name = "groupBox15";
-            this.groupBox15.Size = new System.Drawing.Size(490, 48);
+            this.groupBox15.Size = new System.Drawing.Size(572, 60);
             this.groupBox15.TabIndex = 77;
             this.groupBox15.TabStop = false;
             this.groupBox15.Text = "Maps / Boat";
-            //
+            // 
             // boatControl
-            //
-            this.boatControl.Location = new System.Drawing.Point(388, 16);
+            // 
+            this.boatControl.Location = new System.Drawing.Point(453, 20);
             this.boatControl.Name = "boatControl";
-            this.boatControl.Size = new System.Drawing.Size(96, 26);
+            this.boatControl.Size = new System.Drawing.Size(112, 32);
             this.boatControl.TabIndex = 70;
             this.boatControl.Text = "Boat Control";
             this.boatControl.UseVisualStyleBackColor = true;
             this.boatControl.Click += new System.EventHandler(this.boatControl_Click);
-            //
+            // 
             // openUOAM
-            //
-            this.openUOAM.Location = new System.Drawing.Point(238, 16);
+            // 
+            this.openUOAM.Location = new System.Drawing.Point(278, 20);
             this.openUOAM.Name = "openUOAM";
-            this.openUOAM.Size = new System.Drawing.Size(107, 26);
+            this.openUOAM.Size = new System.Drawing.Size(124, 32);
             this.openUOAM.TabIndex = 69;
             this.openUOAM.Text = "UOAM";
             this.openUOAM.Click += new System.EventHandler(this.openUOAM_Click);
-            //
+            // 
             // openUltimaMapper
-            //
-            this.openUltimaMapper.Location = new System.Drawing.Point(122, 16);
+            // 
+            this.openUltimaMapper.Location = new System.Drawing.Point(142, 20);
             this.openUltimaMapper.Name = "openUltimaMapper";
-            this.openUltimaMapper.Size = new System.Drawing.Size(107, 26);
+            this.openUltimaMapper.Size = new System.Drawing.Size(125, 32);
             this.openUltimaMapper.TabIndex = 68;
             this.openUltimaMapper.Text = "Ultima Mapper";
             this.openUltimaMapper.Click += new System.EventHandler(this.openUltimaMapper_Click);
-            //
+            // 
             // btnMap
-            //
-            this.btnMap.Location = new System.Drawing.Point(6, 16);
+            // 
+            this.btnMap.Location = new System.Drawing.Point(7, 20);
             this.btnMap.Name = "btnMap";
-            this.btnMap.Size = new System.Drawing.Size(107, 26);
+            this.btnMap.Size = new System.Drawing.Size(125, 32);
             this.btnMap.TabIndex = 67;
             this.btnMap.Text = "UOPS";
             this.btnMap.Click += new System.EventHandler(this.btnMap_Click);
-            //
+            // 
             // groupBox16
-            //
+            // 
             this.groupBox16.Controls.Add(this.openBackupFolder);
             this.groupBox16.Controls.Add(this.setBackupFolder);
             this.groupBox16.Controls.Add(this.lastBackup);
             this.groupBox16.Controls.Add(this.createBackup);
-            this.groupBox16.Location = new System.Drawing.Point(6, 107);
+            this.groupBox16.Location = new System.Drawing.Point(7, 134);
             this.groupBox16.Name = "groupBox16";
-            this.groupBox16.Size = new System.Drawing.Size(229, 119);
+            this.groupBox16.Size = new System.Drawing.Size(267, 148);
             this.groupBox16.TabIndex = 74;
             this.groupBox16.TabStop = false;
             this.groupBox16.Text = "Backup Profiles && Macros";
-            //
+            // 
             // openBackupFolder
-            //
-            this.openBackupFolder.Location = new System.Drawing.Point(119, 81);
+            // 
+            this.openBackupFolder.Location = new System.Drawing.Point(139, 101);
             this.openBackupFolder.Name = "openBackupFolder";
-            this.openBackupFolder.Size = new System.Drawing.Size(104, 30);
+            this.openBackupFolder.Size = new System.Drawing.Size(121, 38);
             this.openBackupFolder.TabIndex = 75;
             this.openBackupFolder.Text = "Open Folder";
             this.openBackupFolder.UseVisualStyleBackColor = true;
             this.openBackupFolder.Click += new System.EventHandler(this.openBackupFolder_Click);
-            //
+            // 
             // setBackupFolder
-            //
-            this.setBackupFolder.Location = new System.Drawing.Point(6, 81);
+            // 
+            this.setBackupFolder.Location = new System.Drawing.Point(7, 101);
             this.setBackupFolder.Name = "setBackupFolder";
-            this.setBackupFolder.Size = new System.Drawing.Size(107, 30);
+            this.setBackupFolder.Size = new System.Drawing.Size(125, 38);
             this.setBackupFolder.TabIndex = 74;
             this.setBackupFolder.Text = "Set Folder";
             this.setBackupFolder.UseVisualStyleBackColor = true;
             this.setBackupFolder.Click += new System.EventHandler(this.setBackupFolder_Click);
-            //
+            // 
             // lastBackup
-            //
-            this.lastBackup.Location = new System.Drawing.Point(6, 55);
+            // 
+            this.lastBackup.Location = new System.Drawing.Point(7, 69);
             this.lastBackup.Name = "lastBackup";
-            this.lastBackup.Size = new System.Drawing.Size(217, 23);
+            this.lastBackup.Size = new System.Drawing.Size(253, 29);
             this.lastBackup.TabIndex = 73;
             this.lastBackup.Text = "Last Backup: 01/01/2019 5:54PM";
             this.lastBackup.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // createBackup
-            //
-            this.createBackup.Location = new System.Drawing.Point(61, 22);
+            // 
+            this.createBackup.Location = new System.Drawing.Point(71, 28);
             this.createBackup.Name = "createBackup";
-            this.createBackup.Size = new System.Drawing.Size(107, 30);
+            this.createBackup.Size = new System.Drawing.Size(125, 37);
             this.createBackup.TabIndex = 72;
             this.createBackup.Text = "Create Backup";
             this.createBackup.UseVisualStyleBackColor = true;
             this.createBackup.Click += new System.EventHandler(this.createBackup_Click);
-            //
+            // 
             // clientPrio
-            //
+            // 
             this.clientPrio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.clientPrio.Items.AddRange(new object[] {
             "Idle",
@@ -897,257 +897,257 @@ namespace Assistant
             "AboveNormal",
             "High",
             "Realtime"});
-            this.clientPrio.Location = new System.Drawing.Point(371, 127);
+            this.clientPrio.Location = new System.Drawing.Point(433, 159);
             this.clientPrio.Name = "clientPrio";
-            this.clientPrio.Size = new System.Drawing.Size(125, 23);
+            this.clientPrio.Size = new System.Drawing.Size(146, 28);
             this.clientPrio.TabIndex = 73;
             this.clientPrio.SelectedIndexChanged += new System.EventHandler(this.clientPrio_SelectedIndexChanged);
-            //
+            // 
             // systray
-            //
-            this.systray.Location = new System.Drawing.Point(371, 89);
+            // 
+            this.systray.Location = new System.Drawing.Point(433, 111);
             this.systray.Name = "systray";
-            this.systray.Size = new System.Drawing.Size(88, 23);
+            this.systray.Size = new System.Drawing.Size(102, 29);
             this.systray.TabIndex = 69;
             this.systray.Text = "System Tray";
             this.systray.CheckedChanged += new System.EventHandler(this.systray_CheckedChanged);
-            //
+            // 
             // taskbar
-            //
-            this.taskbar.Location = new System.Drawing.Point(301, 89);
+            // 
+            this.taskbar.Location = new System.Drawing.Point(351, 111);
             this.taskbar.Name = "taskbar";
-            this.taskbar.Size = new System.Drawing.Size(79, 23);
+            this.taskbar.Size = new System.Drawing.Size(92, 29);
             this.taskbar.TabIndex = 68;
             this.taskbar.Text = "Taskbar";
             this.taskbar.CheckedChanged += new System.EventHandler(this.taskbar_CheckedChanged);
-            //
+            // 
             // langSel
-            //
+            // 
             this.langSel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.langSel.Location = new System.Drawing.Point(371, 156);
+            this.langSel.Location = new System.Drawing.Point(433, 195);
             this.langSel.Name = "langSel";
-            this.langSel.Size = new System.Drawing.Size(125, 23);
+            this.langSel.Size = new System.Drawing.Size(146, 28);
             this.langSel.TabIndex = 71;
             this.langSel.SelectedIndexChanged += new System.EventHandler(this.langSel_SelectedIndexChanged);
-            //
+            // 
             // label7
-            //
-            this.label7.Location = new System.Drawing.Point(241, 159);
+            // 
+            this.label7.Location = new System.Drawing.Point(281, 199);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(68, 18);
+            this.label7.Size = new System.Drawing.Size(79, 22);
             this.label7.TabIndex = 70;
             this.label7.Text = "Language:";
-            //
+            // 
             // label11
-            //
-            this.label11.Location = new System.Drawing.Point(241, 93);
+            // 
+            this.label11.Location = new System.Drawing.Point(281, 116);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(54, 16);
+            this.label11.Size = new System.Drawing.Size(63, 20);
             this.label11.TabIndex = 67;
             this.label11.Text = "Show in:";
-            //
+            // 
             // showWelcome
-            //
-            this.showWelcome.Location = new System.Drawing.Point(244, 28);
+            // 
+            this.showWelcome.Location = new System.Drawing.Point(285, 35);
             this.showWelcome.Name = "showWelcome";
-            this.showWelcome.Size = new System.Drawing.Size(152, 23);
+            this.showWelcome.Size = new System.Drawing.Size(177, 29);
             this.showWelcome.TabIndex = 66;
             this.showWelcome.Text = "Show Welcome Screen";
             this.showWelcome.CheckedChanged += new System.EventHandler(this.showWelcome_CheckedChanged);
-            //
+            // 
             // opacity
-            //
+            // 
             this.opacity.AutoSize = false;
             this.opacity.Cursor = System.Windows.Forms.Cursors.SizeWE;
-            this.opacity.Location = new System.Drawing.Point(327, 194);
+            this.opacity.Location = new System.Drawing.Point(381, 242);
             this.opacity.Maximum = 100;
             this.opacity.Minimum = 10;
             this.opacity.Name = "opacity";
-            this.opacity.Size = new System.Drawing.Size(169, 21);
+            this.opacity.Size = new System.Drawing.Size(198, 27);
             this.opacity.TabIndex = 64;
             this.opacity.TickFrequency = 0;
             this.opacity.TickStyle = System.Windows.Forms.TickStyle.None;
             this.opacity.Value = 100;
             this.opacity.Scroll += new System.EventHandler(this.opacity_Scroll);
-            //
+            // 
             // alwaysTop
-            //
-            this.alwaysTop.Location = new System.Drawing.Point(244, 57);
+            // 
+            this.alwaysTop.Location = new System.Drawing.Point(285, 71);
             this.alwaysTop.Name = "alwaysTop";
-            this.alwaysTop.Size = new System.Drawing.Size(162, 23);
+            this.alwaysTop.Size = new System.Drawing.Size(189, 29);
             this.alwaysTop.TabIndex = 63;
             this.alwaysTop.Text = "Use Smart Always on Top";
             this.alwaysTop.CheckedChanged += new System.EventHandler(this.alwaysTop_CheckedChanged);
-            //
+            // 
             // opacityLabel
-            //
-            this.opacityLabel.Location = new System.Drawing.Point(241, 196);
+            // 
+            this.opacityLabel.Location = new System.Drawing.Point(281, 245);
             this.opacityLabel.Name = "opacityLabel";
-            this.opacityLabel.Size = new System.Drawing.Size(89, 19);
+            this.opacityLabel.Size = new System.Drawing.Size(104, 24);
             this.opacityLabel.TabIndex = 65;
             this.opacityLabel.Text = "Opacity: 100%";
-            //
+            // 
             // label9
-            //
-            this.label9.Location = new System.Drawing.Point(241, 130);
+            // 
+            this.label9.Location = new System.Drawing.Point(281, 162);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(129, 18);
+            this.label9.Size = new System.Drawing.Size(151, 23);
             this.label9.TabIndex = 72;
             this.label9.Text = "Default Client Priority:";
-            //
+            // 
             // groupBox4
-            //
+            // 
             this.groupBox4.Controls.Add(this.saveProfile);
             this.groupBox4.Controls.Add(this.cloneProfile);
             this.groupBox4.Controls.Add(this.delProfile);
             this.groupBox4.Controls.Add(this.newProfile);
             this.groupBox4.Controls.Add(this.profiles);
-            this.groupBox4.Location = new System.Drawing.Point(6, 6);
+            this.groupBox4.Location = new System.Drawing.Point(7, 8);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(229, 95);
+            this.groupBox4.Size = new System.Drawing.Size(267, 118);
             this.groupBox4.TabIndex = 5;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Profiles";
-            //
+            // 
             // saveProfile
-            //
-            this.saveProfile.Location = new System.Drawing.Point(63, 56);
+            // 
+            this.saveProfile.Location = new System.Drawing.Point(73, 70);
             this.saveProfile.Name = "saveProfile";
-            this.saveProfile.Size = new System.Drawing.Size(50, 30);
+            this.saveProfile.Size = new System.Drawing.Size(59, 38);
             this.saveProfile.TabIndex = 4;
             this.saveProfile.Text = "Save";
             this.saveProfile.Click += new System.EventHandler(this.saveProfile_Click);
-            //
+            // 
             // cloneProfile
-            //
-            this.cloneProfile.Location = new System.Drawing.Point(119, 56);
+            // 
+            this.cloneProfile.Location = new System.Drawing.Point(139, 70);
             this.cloneProfile.Name = "cloneProfile";
-            this.cloneProfile.Size = new System.Drawing.Size(50, 30);
+            this.cloneProfile.Size = new System.Drawing.Size(58, 38);
             this.cloneProfile.TabIndex = 3;
             this.cloneProfile.Text = "Clone";
             this.cloneProfile.Click += new System.EventHandler(this.cloneProfile_Click);
-            //
+            // 
             // delProfile
-            //
-            this.delProfile.Location = new System.Drawing.Point(175, 56);
+            // 
+            this.delProfile.Location = new System.Drawing.Point(204, 70);
             this.delProfile.Name = "delProfile";
-            this.delProfile.Size = new System.Drawing.Size(50, 30);
+            this.delProfile.Size = new System.Drawing.Size(58, 38);
             this.delProfile.TabIndex = 2;
             this.delProfile.Text = "Delete";
             this.delProfile.Click += new System.EventHandler(this.delProfile_Click);
-            //
+            // 
             // newProfile
-            //
-            this.newProfile.Location = new System.Drawing.Point(7, 56);
+            // 
+            this.newProfile.Location = new System.Drawing.Point(8, 70);
             this.newProfile.Name = "newProfile";
-            this.newProfile.Size = new System.Drawing.Size(50, 30);
+            this.newProfile.Size = new System.Drawing.Size(58, 38);
             this.newProfile.TabIndex = 1;
             this.newProfile.Text = "New";
             this.newProfile.Click += new System.EventHandler(this.newProfile_Click);
-            //
+            // 
             // profiles
-            //
+            // 
             this.profiles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.profiles.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.profiles.ItemHeight = 20;
-            this.profiles.Location = new System.Drawing.Point(6, 22);
+            this.profiles.ItemHeight = 25;
+            this.profiles.Location = new System.Drawing.Point(7, 28);
             this.profiles.MaxDropDownItems = 5;
             this.profiles.Name = "profiles";
-            this.profiles.Size = new System.Drawing.Size(217, 28);
+            this.profiles.Size = new System.Drawing.Size(253, 33);
             this.profiles.TabIndex = 0;
             this.profiles.SelectedIndexChanged += new System.EventHandler(this.profiles_SelectedIndexChanged);
-            //
+            // 
             // subFiltersTab
-            //
+            // 
             this.subFiltersTab.BackColor = System.Drawing.SystemColors.Control;
             this.subFiltersTab.Controls.Add(this.drakeAnimationList);
             this.subFiltersTab.Controls.Add(this.filterDrakeGraphics);
             this.subFiltersTab.Controls.Add(this.dragonAnimationList);
             this.subFiltersTab.Controls.Add(this.filterDragonGraphics);
             this.subFiltersTab.Controls.Add(this.filters);
-            this.subFiltersTab.Location = new System.Drawing.Point(4, 22);
+            this.subFiltersTab.Location = new System.Drawing.Point(4, 29);
             this.subFiltersTab.Name = "subFiltersTab";
             this.subFiltersTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subFiltersTab.Size = new System.Drawing.Size(502, 288);
+            this.subFiltersTab.Size = new System.Drawing.Size(587, 359);
             this.subFiltersTab.TabIndex = 1;
             this.subFiltersTab.Text = "Filters";
-            //
+            // 
             // drakeAnimationList
-            //
+            // 
             this.drakeAnimationList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.drakeAnimationList.DropDownWidth = 250;
             this.drakeAnimationList.FormattingEnabled = true;
-            this.drakeAnimationList.Location = new System.Drawing.Point(209, 85);
+            this.drakeAnimationList.Location = new System.Drawing.Point(244, 106);
             this.drakeAnimationList.Name = "drakeAnimationList";
-            this.drakeAnimationList.Size = new System.Drawing.Size(202, 23);
+            this.drakeAnimationList.Size = new System.Drawing.Size(235, 28);
             this.drakeAnimationList.TabIndex = 104;
             this.drakeAnimationList.SelectedIndexChanged += new System.EventHandler(this.drakeAnimationList_SelectedIndexChanged);
-            //
+            // 
             // filterDrakeGraphics
-            //
+            // 
             this.filterDrakeGraphics.AutoSize = true;
-            this.filterDrakeGraphics.Location = new System.Drawing.Point(209, 60);
+            this.filterDrakeGraphics.Location = new System.Drawing.Point(244, 75);
             this.filterDrakeGraphics.Name = "filterDrakeGraphics";
-            this.filterDrakeGraphics.Size = new System.Drawing.Size(89, 19);
+            this.filterDrakeGraphics.Size = new System.Drawing.Size(111, 24);
             this.filterDrakeGraphics.TabIndex = 103;
             this.filterDrakeGraphics.Text = "Filter drakes";
             this.filterDrakeGraphics.UseVisualStyleBackColor = true;
             this.filterDrakeGraphics.CheckedChanged += new System.EventHandler(this.filterDrakeGraphics_CheckedChanged);
-            //
+            // 
             // dragonAnimationList
-            //
+            // 
             this.dragonAnimationList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.dragonAnimationList.DropDownWidth = 250;
             this.dragonAnimationList.FormattingEnabled = true;
-            this.dragonAnimationList.Location = new System.Drawing.Point(209, 31);
+            this.dragonAnimationList.Location = new System.Drawing.Point(244, 39);
             this.dragonAnimationList.Name = "dragonAnimationList";
-            this.dragonAnimationList.Size = new System.Drawing.Size(202, 23);
+            this.dragonAnimationList.Size = new System.Drawing.Size(235, 28);
             this.dragonAnimationList.TabIndex = 102;
             this.dragonAnimationList.SelectedIndexChanged += new System.EventHandler(this.dragonAnimationList_SelectedIndexChanged);
-            //
+            // 
             // filterDragonGraphics
-            //
+            // 
             this.filterDragonGraphics.AutoSize = true;
-            this.filterDragonGraphics.Location = new System.Drawing.Point(209, 6);
+            this.filterDragonGraphics.Location = new System.Drawing.Point(244, 8);
             this.filterDragonGraphics.Name = "filterDragonGraphics";
-            this.filterDragonGraphics.Size = new System.Drawing.Size(98, 19);
+            this.filterDragonGraphics.Size = new System.Drawing.Size(122, 24);
             this.filterDragonGraphics.TabIndex = 101;
             this.filterDragonGraphics.Text = "Filter dragons";
             this.filterDragonGraphics.UseVisualStyleBackColor = true;
             this.filterDragonGraphics.CheckedChanged += new System.EventHandler(this.filterDragonGraphics_CheckedChanged);
-            //
+            // 
             // filters
-            //
+            // 
             this.filters.CheckOnClick = true;
             this.filters.IntegralHeight = false;
-            this.filters.Location = new System.Drawing.Point(6, 6);
+            this.filters.Location = new System.Drawing.Point(7, 8);
             this.filters.Name = "filters";
-            this.filters.Size = new System.Drawing.Size(197, 274);
+            this.filters.Size = new System.Drawing.Size(230, 342);
             this.filters.TabIndex = 3;
             this.filters.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.OnFilterCheck);
-            //
+            // 
             // moreOptTab
-            //
+            // 
             this.moreOptTab.Controls.Add(this.optionsTabCtrl);
-            this.moreOptTab.Location = new System.Drawing.Point(4, 44);
+            this.moreOptTab.Location = new System.Drawing.Point(4, 54);
             this.moreOptTab.Name = "moreOptTab";
-            this.moreOptTab.Size = new System.Drawing.Size(519, 322);
+            this.moreOptTab.Size = new System.Drawing.Size(607, 404);
             this.moreOptTab.TabIndex = 5;
             this.moreOptTab.Text = "Options";
-            //
+            // 
             // optionsTabCtrl
-            //
+            // 
             this.optionsTabCtrl.Controls.Add(this.subOptionsSpeechTab);
             this.optionsTabCtrl.Controls.Add(this.subOptionsTargetTab);
             this.optionsTabCtrl.Controls.Add(this.subOptionsMiscTab);
-            this.optionsTabCtrl.Location = new System.Drawing.Point(6, 3);
+            this.optionsTabCtrl.Location = new System.Drawing.Point(7, 4);
             this.optionsTabCtrl.Name = "optionsTabCtrl";
             this.optionsTabCtrl.SelectedIndex = 0;
-            this.optionsTabCtrl.Size = new System.Drawing.Size(510, 314);
+            this.optionsTabCtrl.Size = new System.Drawing.Size(595, 392);
             this.optionsTabCtrl.TabIndex = 93;
-            //
+            // 
             // subOptionsSpeechTab
-            //
+            // 
             this.subOptionsSpeechTab.BackColor = System.Drawing.SystemColors.Control;
             this.subOptionsSpeechTab.Controls.Add(this.showFriendOverhead);
             this.subOptionsSpeechTab.Controls.Add(this.damageTakenOverhead);
@@ -1187,377 +1187,377 @@ namespace Assistant
             this.subOptionsSpeechTab.Controls.Add(this.chkForceSpellHue);
             this.subOptionsSpeechTab.Controls.Add(this.chkForceSpeechHue);
             this.subOptionsSpeechTab.Controls.Add(this.label3);
-            this.subOptionsSpeechTab.Location = new System.Drawing.Point(4, 24);
+            this.subOptionsSpeechTab.Location = new System.Drawing.Point(4, 29);
             this.subOptionsSpeechTab.Name = "subOptionsSpeechTab";
             this.subOptionsSpeechTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subOptionsSpeechTab.Size = new System.Drawing.Size(502, 286);
+            this.subOptionsSpeechTab.Size = new System.Drawing.Size(587, 359);
             this.subOptionsSpeechTab.TabIndex = 0;
             this.subOptionsSpeechTab.Text = "Speech & Messages  ";
-            //
+            // 
             // showFriendOverhead
-            //
-            this.showFriendOverhead.Location = new System.Drawing.Point(260, 260);
+            // 
+            this.showFriendOverhead.Location = new System.Drawing.Point(303, 325);
             this.showFriendOverhead.Name = "showFriendOverhead";
-            this.showFriendOverhead.Size = new System.Drawing.Size(184, 23);
+            this.showFriendOverhead.Size = new System.Drawing.Size(215, 29);
             this.showFriendOverhead.TabIndex = 129;
             this.showFriendOverhead.Text = "Show [Friend] overhead";
             this.showFriendOverhead.UseVisualStyleBackColor = true;
             this.showFriendOverhead.CheckedChanged += new System.EventHandler(this.showFriendOverhead_CheckedChanged);
-            //
+            // 
             // damageTakenOverhead
-            //
+            // 
             this.damageTakenOverhead.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.damageTakenOverhead.Location = new System.Drawing.Point(394, 237);
+            this.damageTakenOverhead.Location = new System.Drawing.Point(460, 296);
             this.damageTakenOverhead.Name = "damageTakenOverhead";
-            this.damageTakenOverhead.Size = new System.Drawing.Size(77, 19);
+            this.damageTakenOverhead.Size = new System.Drawing.Size(89, 24);
             this.damageTakenOverhead.TabIndex = 128;
             this.damageTakenOverhead.Text = "Overhead";
             this.damageTakenOverhead.UseVisualStyleBackColor = true;
             this.damageTakenOverhead.CheckedChanged += new System.EventHandler(this.damageTakenOverhead_CheckedChanged);
-            //
+            // 
             // showDamageTaken
-            //
+            // 
             this.showDamageTaken.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.showDamageTaken.Location = new System.Drawing.Point(260, 237);
+            this.showDamageTaken.Location = new System.Drawing.Point(303, 296);
             this.showDamageTaken.Name = "showDamageTaken";
-            this.showDamageTaken.Size = new System.Drawing.Size(139, 19);
+            this.showDamageTaken.Size = new System.Drawing.Size(162, 24);
             this.showDamageTaken.TabIndex = 127;
             this.showDamageTaken.Text = "Show damage taken";
             this.showDamageTaken.UseVisualStyleBackColor = true;
             this.showDamageTaken.CheckedChanged += new System.EventHandler(this.showDamageTaken_CheckedChanged);
-            //
+            // 
             // damageDealtOverhead
-            //
+            // 
             this.damageDealtOverhead.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.damageDealtOverhead.Location = new System.Drawing.Point(394, 212);
+            this.damageDealtOverhead.Location = new System.Drawing.Point(460, 265);
             this.damageDealtOverhead.Name = "damageDealtOverhead";
-            this.damageDealtOverhead.Size = new System.Drawing.Size(77, 19);
+            this.damageDealtOverhead.Size = new System.Drawing.Size(89, 24);
             this.damageDealtOverhead.TabIndex = 126;
             this.damageDealtOverhead.Text = "Overhead";
             this.damageDealtOverhead.UseVisualStyleBackColor = true;
             this.damageDealtOverhead.CheckedChanged += new System.EventHandler(this.damageDealtOverhead_CheckedChanged);
-            //
+            // 
             // showDamageDealt
-            //
+            // 
             this.showDamageDealt.AutoSize = true;
-            this.showDamageDealt.Location = new System.Drawing.Point(260, 212);
+            this.showDamageDealt.Location = new System.Drawing.Point(303, 265);
             this.showDamageDealt.Name = "showDamageDealt";
-            this.showDamageDealt.Size = new System.Drawing.Size(130, 19);
+            this.showDamageDealt.Size = new System.Drawing.Size(164, 24);
             this.showDamageDealt.TabIndex = 125;
             this.showDamageDealt.Text = "Show damage dealt";
             this.showDamageDealt.UseVisualStyleBackColor = true;
             this.showDamageDealt.CheckedChanged += new System.EventHandler(this.showDamageDealt_CheckedChanged);
-            //
+            // 
             // lblBuffDebuff
-            //
-            this.lblBuffDebuff.Location = new System.Drawing.Point(9, 258);
+            // 
+            this.lblBuffDebuff.Location = new System.Drawing.Point(10, 322);
             this.lblBuffDebuff.Name = "lblBuffDebuff";
-            this.lblBuffDebuff.Size = new System.Drawing.Size(115, 18);
+            this.lblBuffDebuff.Size = new System.Drawing.Size(135, 23);
             this.lblBuffDebuff.TabIndex = 93;
             this.lblBuffDebuff.Text = "Buff/Debuff Format:";
             this.lblBuffDebuff.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // buffDebuffFormat
-            //
-            this.buffDebuffFormat.Location = new System.Drawing.Point(130, 257);
+            // 
+            this.buffDebuffFormat.Location = new System.Drawing.Point(152, 321);
             this.buffDebuffFormat.Name = "buffDebuffFormat";
-            this.buffDebuffFormat.Size = new System.Drawing.Size(111, 23);
+            this.buffDebuffFormat.Size = new System.Drawing.Size(129, 27);
             this.buffDebuffFormat.TabIndex = 92;
             this.buffDebuffFormat.Text = "[{action}{name}]";
             this.buffDebuffFormat.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.buffDebuffFormat.TextChanged += new System.EventHandler(this.buffDebuffFormat_TextChanged);
-            //
+            // 
             // showBuffDebuffOverhead
-            //
+            // 
             this.showBuffDebuffOverhead.AutoSize = true;
-            this.showBuffDebuffOverhead.Location = new System.Drawing.Point(9, 237);
+            this.showBuffDebuffOverhead.Location = new System.Drawing.Point(10, 296);
             this.showBuffDebuffOverhead.Name = "showBuffDebuffOverhead";
-            this.showBuffDebuffOverhead.Size = new System.Drawing.Size(172, 19);
+            this.showBuffDebuffOverhead.Size = new System.Drawing.Size(214, 24);
             this.showBuffDebuffOverhead.TabIndex = 91;
             this.showBuffDebuffOverhead.Text = "Show buff/debuff overhead";
             this.showBuffDebuffOverhead.UseVisualStyleBackColor = true;
             this.showBuffDebuffOverhead.CheckedChanged += new System.EventHandler(this.showBuffDebuffOverhead_CheckedChanged);
-            //
+            // 
             // healthFmt
-            //
-            this.healthFmt.Location = new System.Drawing.Point(377, 162);
+            // 
+            this.healthFmt.Location = new System.Drawing.Point(440, 202);
             this.healthFmt.Name = "healthFmt";
-            this.healthFmt.Size = new System.Drawing.Size(53, 23);
+            this.healthFmt.Size = new System.Drawing.Size(62, 27);
             this.healthFmt.TabIndex = 89;
             this.healthFmt.Text = "[{0}%]";
             this.healthFmt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.healthFmt.TextChanged += new System.EventHandler(this.healthFmt_TextChanged);
-            //
+            // 
             // label10
-            //
-            this.label10.Location = new System.Drawing.Point(283, 163);
+            // 
+            this.label10.Location = new System.Drawing.Point(330, 204);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(115, 18);
+            this.label10.Size = new System.Drawing.Size(134, 22);
             this.label10.TabIndex = 88;
             this.label10.Text = "Health Format:";
             this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // showHealthOH
-            //
-            this.showHealthOH.Location = new System.Drawing.Point(260, 140);
+            // 
+            this.showHealthOH.Location = new System.Drawing.Point(303, 175);
             this.showHealthOH.Name = "showHealthOH";
-            this.showHealthOH.Size = new System.Drawing.Size(231, 20);
+            this.showHealthOH.Size = new System.Drawing.Size(270, 25);
             this.showHealthOH.TabIndex = 87;
             this.showHealthOH.Text = "Show health above people/creatures";
             this.showHealthOH.CheckedChanged += new System.EventHandler(this.showHealthOH_CheckedChanged);
-            //
+            // 
             // chkPartyOverhead
-            //
-            this.chkPartyOverhead.Location = new System.Drawing.Point(260, 186);
+            // 
+            this.chkPartyOverhead.Location = new System.Drawing.Point(303, 232);
             this.chkPartyOverhead.Name = "chkPartyOverhead";
-            this.chkPartyOverhead.Size = new System.Drawing.Size(238, 20);
+            this.chkPartyOverhead.Size = new System.Drawing.Size(278, 26);
             this.chkPartyOverhead.TabIndex = 90;
             this.chkPartyOverhead.Text = "Show mana/stam above party members";
             this.chkPartyOverhead.CheckedChanged += new System.EventHandler(this.chkPartyOverhead_CheckedChanged);
-            //
+            // 
             // containerLabels
-            //
+            // 
             this.containerLabels.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.containerLabels.Location = new System.Drawing.Point(438, 115);
+            this.containerLabels.Location = new System.Drawing.Point(511, 144);
             this.containerLabels.Name = "containerLabels";
-            this.containerLabels.Size = new System.Drawing.Size(33, 19);
+            this.containerLabels.Size = new System.Drawing.Size(38, 24);
             this.containerLabels.TabIndex = 86;
             this.containerLabels.Text = "...";
             this.containerLabels.UseVisualStyleBackColor = true;
             this.containerLabels.Click += new System.EventHandler(this.containerLabels_Click);
-            //
+            // 
             // showContainerLabels
-            //
+            // 
             this.showContainerLabels.AutoSize = true;
-            this.showContainerLabels.Location = new System.Drawing.Point(260, 115);
+            this.showContainerLabels.Location = new System.Drawing.Point(303, 144);
             this.showContainerLabels.Name = "showContainerLabels";
-            this.showContainerLabels.Size = new System.Drawing.Size(141, 19);
+            this.showContainerLabels.Size = new System.Drawing.Size(176, 24);
             this.showContainerLabels.TabIndex = 85;
             this.showContainerLabels.Text = "Show container labels";
             this.showContainerLabels.UseVisualStyleBackColor = true;
             this.showContainerLabels.CheckedChanged += new System.EventHandler(this.showContainerLabels_CheckedChanged);
-            //
+            // 
             // overHeadMessages
-            //
+            // 
             this.overHeadMessages.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.overHeadMessages.Location = new System.Drawing.Point(438, 90);
+            this.overHeadMessages.Location = new System.Drawing.Point(511, 112);
             this.overHeadMessages.Name = "overHeadMessages";
-            this.overHeadMessages.Size = new System.Drawing.Size(33, 19);
+            this.overHeadMessages.Size = new System.Drawing.Size(38, 24);
             this.overHeadMessages.TabIndex = 84;
             this.overHeadMessages.Text = "...";
             this.overHeadMessages.UseVisualStyleBackColor = true;
             this.overHeadMessages.Click += new System.EventHandler(this.overHeadMessages_Click);
-            //
+            // 
             // showOverheadMessages
-            //
+            // 
             this.showOverheadMessages.AutoSize = true;
-            this.showOverheadMessages.Location = new System.Drawing.Point(260, 90);
+            this.showOverheadMessages.Location = new System.Drawing.Point(303, 112);
             this.showOverheadMessages.Name = "showOverheadMessages";
-            this.showOverheadMessages.Size = new System.Drawing.Size(161, 19);
+            this.showOverheadMessages.Size = new System.Drawing.Size(201, 24);
             this.showOverheadMessages.TabIndex = 83;
             this.showOverheadMessages.Text = "Show overhead messages";
             this.showOverheadMessages.UseVisualStyleBackColor = true;
             this.showOverheadMessages.CheckedChanged += new System.EventHandler(this.showMessagesOverhead_CheckedChanged);
-            //
+            // 
             // filterSnoop
-            //
-            this.filterSnoop.Location = new System.Drawing.Point(260, 12);
+            // 
+            this.filterSnoop.Location = new System.Drawing.Point(303, 15);
             this.filterSnoop.Name = "filterSnoop";
-            this.filterSnoop.Size = new System.Drawing.Size(220, 20);
+            this.filterSnoop.Size = new System.Drawing.Size(257, 25);
             this.filterSnoop.TabIndex = 73;
             this.filterSnoop.Text = "Filter Snooping Messages";
             this.filterSnoop.CheckedChanged += new System.EventHandler(this.filterSnoop_CheckedChanged);
-            //
+            // 
             // incomingMob
-            //
-            this.incomingMob.Location = new System.Drawing.Point(260, 38);
+            // 
+            this.incomingMob.Location = new System.Drawing.Point(303, 48);
             this.incomingMob.Name = "incomingMob";
-            this.incomingMob.Size = new System.Drawing.Size(211, 20);
+            this.incomingMob.Size = new System.Drawing.Size(246, 24);
             this.incomingMob.TabIndex = 71;
             this.incomingMob.Text = "Show Names of Incoming People/Creatures";
             this.incomingMob.CheckedChanged += new System.EventHandler(this.incomingMob_CheckedChanged);
-            //
+            // 
             // incomingCorpse
-            //
-            this.incomingCorpse.Location = new System.Drawing.Point(260, 64);
+            // 
+            this.incomingCorpse.Location = new System.Drawing.Point(303, 80);
             this.incomingCorpse.Name = "incomingCorpse";
-            this.incomingCorpse.Size = new System.Drawing.Size(238, 20);
+            this.incomingCorpse.Size = new System.Drawing.Size(278, 25);
             this.incomingCorpse.TabIndex = 72;
             this.incomingCorpse.Text = "Show Names of New/Incoming Corpses";
             this.incomingCorpse.CheckedChanged += new System.EventHandler(this.incomingCorpse_CheckedChanged);
-            //
+            // 
             // setLTHilight
-            //
-            this.setLTHilight.Location = new System.Drawing.Point(168, 116);
+            // 
+            this.setLTHilight.Location = new System.Drawing.Point(196, 145);
             this.setLTHilight.Name = "setLTHilight";
-            this.setLTHilight.Size = new System.Drawing.Size(47, 20);
+            this.setLTHilight.Size = new System.Drawing.Size(55, 25);
             this.setLTHilight.TabIndex = 70;
             this.setLTHilight.Text = "Set";
             this.setLTHilight.Click += new System.EventHandler(this.setLTHilight_Click);
-            //
+            // 
             // lthilight
-            //
-            this.lthilight.Location = new System.Drawing.Point(9, 116);
+            // 
+            this.lthilight.Location = new System.Drawing.Point(10, 145);
             this.lthilight.Name = "lthilight";
-            this.lthilight.Size = new System.Drawing.Size(206, 19);
+            this.lthilight.Size = new System.Drawing.Size(241, 24);
             this.lthilight.TabIndex = 69;
             this.lthilight.Text = "Last Target Highlight:";
             this.lthilight.CheckedChanged += new System.EventHandler(this.lthilight_CheckedChanged);
-            //
+            // 
             // setHarmHue
-            //
+            // 
             this.setHarmHue.Enabled = false;
-            this.setHarmHue.Location = new System.Drawing.Point(99, 179);
+            this.setHarmHue.Location = new System.Drawing.Point(115, 224);
             this.setHarmHue.Name = "setHarmHue";
-            this.setHarmHue.Size = new System.Drawing.Size(32, 20);
+            this.setHarmHue.Size = new System.Drawing.Size(38, 25);
             this.setHarmHue.TabIndex = 64;
             this.setHarmHue.Text = "Set";
             this.setHarmHue.Click += new System.EventHandler(this.setHarmHue_Click);
-            //
+            // 
             // setNeuHue
-            //
+            // 
             this.setNeuHue.Enabled = false;
-            this.setNeuHue.Location = new System.Drawing.Point(172, 179);
+            this.setNeuHue.Location = new System.Drawing.Point(201, 224);
             this.setNeuHue.Name = "setNeuHue";
-            this.setNeuHue.Size = new System.Drawing.Size(32, 20);
+            this.setNeuHue.Size = new System.Drawing.Size(37, 25);
             this.setNeuHue.TabIndex = 65;
             this.setNeuHue.Text = "Set";
             this.setNeuHue.Click += new System.EventHandler(this.setNeuHue_Click);
-            //
+            // 
             // lblHarmHue
-            //
-            this.lblHarmHue.Location = new System.Drawing.Point(86, 165);
+            // 
+            this.lblHarmHue.Location = new System.Drawing.Point(100, 206);
             this.lblHarmHue.Name = "lblHarmHue";
-            this.lblHarmHue.Size = new System.Drawing.Size(59, 14);
+            this.lblHarmHue.Size = new System.Drawing.Size(69, 18);
             this.lblHarmHue.TabIndex = 68;
             this.lblHarmHue.Text = "Harmful";
             this.lblHarmHue.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // lblNeuHue
-            //
-            this.lblNeuHue.Location = new System.Drawing.Point(163, 165);
+            // 
+            this.lblNeuHue.Location = new System.Drawing.Point(190, 206);
             this.lblNeuHue.Name = "lblNeuHue";
-            this.lblNeuHue.Size = new System.Drawing.Size(52, 14);
+            this.lblNeuHue.Size = new System.Drawing.Size(61, 18);
             this.lblNeuHue.TabIndex = 67;
             this.lblNeuHue.Text = "Neutral";
             this.lblNeuHue.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // lblBeneHue
-            //
-            this.lblBeneHue.Location = new System.Drawing.Point(9, 165);
+            // 
+            this.lblBeneHue.Location = new System.Drawing.Point(10, 206);
             this.lblBeneHue.Name = "lblBeneHue";
-            this.lblBeneHue.Size = new System.Drawing.Size(66, 14);
+            this.lblBeneHue.Size = new System.Drawing.Size(77, 18);
             this.lblBeneHue.TabIndex = 66;
             this.lblBeneHue.Text = "Beneficial";
             this.lblBeneHue.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // setBeneHue
-            //
+            // 
             this.setBeneHue.Enabled = false;
-            this.setBeneHue.Location = new System.Drawing.Point(27, 179);
+            this.setBeneHue.Location = new System.Drawing.Point(31, 224);
             this.setBeneHue.Name = "setBeneHue";
-            this.setBeneHue.Size = new System.Drawing.Size(32, 20);
+            this.setBeneHue.Size = new System.Drawing.Size(38, 25);
             this.setBeneHue.TabIndex = 63;
             this.setBeneHue.Text = "Set";
             this.setBeneHue.Click += new System.EventHandler(this.setBeneHue_Click);
-            //
+            // 
             // setSpeechHue
-            //
-            this.setSpeechHue.Location = new System.Drawing.Point(168, 90);
+            // 
+            this.setSpeechHue.Location = new System.Drawing.Point(196, 112);
             this.setSpeechHue.Name = "setSpeechHue";
-            this.setSpeechHue.Size = new System.Drawing.Size(47, 20);
+            this.setSpeechHue.Size = new System.Drawing.Size(55, 26);
             this.setSpeechHue.TabIndex = 62;
             this.setSpeechHue.Text = "Set";
             this.setSpeechHue.Click += new System.EventHandler(this.setSpeechHue_Click);
-            //
+            // 
             // setWarnHue
-            //
-            this.setWarnHue.Location = new System.Drawing.Point(168, 64);
+            // 
+            this.setWarnHue.Location = new System.Drawing.Point(196, 80);
             this.setWarnHue.Name = "setWarnHue";
-            this.setWarnHue.Size = new System.Drawing.Size(47, 20);
+            this.setWarnHue.Size = new System.Drawing.Size(55, 25);
             this.setWarnHue.TabIndex = 61;
             this.setWarnHue.Text = "Set";
             this.setWarnHue.Click += new System.EventHandler(this.setWarnHue_Click);
-            //
+            // 
             // setMsgHue
-            //
-            this.setMsgHue.Location = new System.Drawing.Point(168, 38);
+            // 
+            this.setMsgHue.Location = new System.Drawing.Point(196, 48);
             this.setMsgHue.Name = "setMsgHue";
-            this.setMsgHue.Size = new System.Drawing.Size(47, 20);
+            this.setMsgHue.Size = new System.Drawing.Size(55, 24);
             this.setMsgHue.TabIndex = 60;
             this.setMsgHue.Text = "Set";
             this.setMsgHue.Click += new System.EventHandler(this.setMsgHue_Click);
-            //
+            // 
             // setExHue
-            //
-            this.setExHue.Location = new System.Drawing.Point(168, 12);
+            // 
+            this.setExHue.Location = new System.Drawing.Point(196, 15);
             this.setExHue.Name = "setExHue";
-            this.setExHue.Size = new System.Drawing.Size(47, 20);
+            this.setExHue.Size = new System.Drawing.Size(55, 25);
             this.setExHue.TabIndex = 59;
             this.setExHue.Text = "Set";
             this.setExHue.Click += new System.EventHandler(this.setExHue_Click);
-            //
+            // 
             // lblWarnHue
-            //
-            this.lblWarnHue.Location = new System.Drawing.Point(9, 64);
+            // 
+            this.lblWarnHue.Location = new System.Drawing.Point(10, 80);
             this.lblWarnHue.Name = "lblWarnHue";
-            this.lblWarnHue.Size = new System.Drawing.Size(206, 18);
+            this.lblWarnHue.Size = new System.Drawing.Size(241, 22);
             this.lblWarnHue.TabIndex = 58;
             this.lblWarnHue.Text = "Warning Message Hue:";
-            //
+            // 
             // lblMsgHue
-            //
-            this.lblMsgHue.Location = new System.Drawing.Point(9, 38);
+            // 
+            this.lblMsgHue.Location = new System.Drawing.Point(10, 48);
             this.lblMsgHue.Name = "lblMsgHue";
-            this.lblMsgHue.Size = new System.Drawing.Size(206, 18);
+            this.lblMsgHue.Size = new System.Drawing.Size(241, 22);
             this.lblMsgHue.TabIndex = 57;
             this.lblMsgHue.Text = "Razor Message Hue:";
-            //
+            // 
             // lblExHue
-            //
-            this.lblExHue.Location = new System.Drawing.Point(9, 12);
+            // 
+            this.lblExHue.Location = new System.Drawing.Point(10, 15);
             this.lblExHue.Name = "lblExHue";
-            this.lblExHue.Size = new System.Drawing.Size(206, 18);
+            this.lblExHue.Size = new System.Drawing.Size(241, 23);
             this.lblExHue.TabIndex = 56;
             this.lblExHue.Text = "Search Exemption Hue:";
-            //
+            // 
             // txtSpellFormat
-            //
-            this.txtSpellFormat.Location = new System.Drawing.Point(89, 208);
+            // 
+            this.txtSpellFormat.Location = new System.Drawing.Point(104, 260);
             this.txtSpellFormat.Name = "txtSpellFormat";
-            this.txtSpellFormat.Size = new System.Drawing.Size(152, 23);
+            this.txtSpellFormat.Size = new System.Drawing.Size(177, 27);
             this.txtSpellFormat.TabIndex = 55;
             this.txtSpellFormat.TextChanged += new System.EventHandler(this.txtSpellFormat_TextChanged);
-            //
+            // 
             // chkForceSpellHue
-            //
-            this.chkForceSpellHue.Location = new System.Drawing.Point(9, 142);
+            // 
+            this.chkForceSpellHue.Location = new System.Drawing.Point(10, 178);
             this.chkForceSpellHue.Name = "chkForceSpellHue";
-            this.chkForceSpellHue.Size = new System.Drawing.Size(152, 20);
+            this.chkForceSpellHue.Size = new System.Drawing.Size(178, 24);
             this.chkForceSpellHue.TabIndex = 53;
             this.chkForceSpellHue.Text = "Override Spell Hues:";
             this.chkForceSpellHue.CheckedChanged += new System.EventHandler(this.chkForceSpellHue_CheckedChanged);
-            //
+            // 
             // chkForceSpeechHue
-            //
-            this.chkForceSpeechHue.Location = new System.Drawing.Point(9, 90);
+            // 
+            this.chkForceSpeechHue.Location = new System.Drawing.Point(10, 112);
             this.chkForceSpeechHue.Name = "chkForceSpeechHue";
-            this.chkForceSpeechHue.Size = new System.Drawing.Size(206, 19);
+            this.chkForceSpeechHue.Size = new System.Drawing.Size(241, 24);
             this.chkForceSpeechHue.TabIndex = 52;
             this.chkForceSpeechHue.Text = "Override Speech Hue:";
             this.chkForceSpeechHue.CheckedChanged += new System.EventHandler(this.chkForceSpeechHue_CheckedChanged);
-            //
+            // 
             // label3
-            //
-            this.label3.Location = new System.Drawing.Point(9, 208);
+            // 
+            this.label3.Location = new System.Drawing.Point(10, 260);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(102, 20);
+            this.label3.Size = new System.Drawing.Size(119, 25);
             this.label3.TabIndex = 54;
             this.label3.Text = "Spell Format:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // subOptionsTargetTab
-            //
+            // 
             this.subOptionsTargetTab.BackColor = System.Drawing.SystemColors.Control;
             this.subOptionsTargetTab.Controls.Add(this.nextPrevIgnoresFriends);
             this.subOptionsTargetTab.Controls.Add(this.castOnClosest);
@@ -1579,206 +1579,202 @@ namespace Assistant
             this.subOptionsTargetTab.Controls.Add(this.label6);
             this.subOptionsTargetTab.Controls.Add(this.smartLT);
             this.subOptionsTargetTab.Controls.Add(this.queueTargets);
-            this.subOptionsTargetTab.Location = new System.Drawing.Point(4, 22);
+            this.subOptionsTargetTab.Location = new System.Drawing.Point(4, 29);
             this.subOptionsTargetTab.Name = "subOptionsTargetTab";
             this.subOptionsTargetTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subOptionsTargetTab.Size = new System.Drawing.Size(502, 288);
+            this.subOptionsTargetTab.Size = new System.Drawing.Size(587, 359);
             this.subOptionsTargetTab.TabIndex = 1;
             this.subOptionsTargetTab.Text = "Targeting & Queues  ";
-            //
+            // 
             // nextPrevIgnoresFriends
-            //
+            // 
             this.nextPrevIgnoresFriends.AutoSize = true;
-            this.nextPrevIgnoresFriends.Location = new System.Drawing.Point(260, 63);
+            this.nextPrevIgnoresFriends.Location = new System.Drawing.Point(303, 79);
             this.nextPrevIgnoresFriends.Name = "nextPrevIgnoresFriends";
-            this.nextPrevIgnoresFriends.Size = new System.Drawing.Size(203, 19);
+            this.nextPrevIgnoresFriends.Size = new System.Drawing.Size(251, 24);
             this.nextPrevIgnoresFriends.TabIndex = 95;
             this.nextPrevIgnoresFriends.Text = "Next/Prev Target ignores \'Friends\'";
             this.nextPrevIgnoresFriends.UseVisualStyleBackColor = true;
             this.nextPrevIgnoresFriends.CheckedChanged += new System.EventHandler(this.nextPrevIgnoresFriends_CheckedChanged);
-<<<<<<< HEAD
             // 
             // castOnClosest
             // 
             this.castOnClosest.AutoSize = true;
-            this.castOnClosest.Location = new System.Drawing.Point(260, 88);
-            this.castOnClosest.Name = "closestNoCast";
-            this.castOnClosest.Size = new System.Drawing.Size(203, 19);
+            this.castOnClosest.Location = new System.Drawing.Point(303, 110);
+            this.castOnClosest.Name = "castOnClosest";
+            this.castOnClosest.Size = new System.Drawing.Size(213, 24);
             this.castOnClosest.TabIndex = 95;
             this.castOnClosest.Text = "Cast Spell on Target Closest";
             this.castOnClosest.UseVisualStyleBackColor = true;
             this.castOnClosest.CheckedChanged += new System.EventHandler(this.castOnClosest_CheckedChanged);
             // 
-=======
-            //
->>>>>>> upstream/master
             // lblTargetFormat
-            //
+            // 
             this.lblTargetFormat.AutoSize = true;
-            this.lblTargetFormat.Location = new System.Drawing.Point(34, 249);
+            this.lblTargetFormat.Location = new System.Drawing.Point(40, 311);
             this.lblTargetFormat.Name = "lblTargetFormat";
-            this.lblTargetFormat.Size = new System.Drawing.Size(48, 15);
+            this.lblTargetFormat.Size = new System.Drawing.Size(59, 20);
             this.lblTargetFormat.TabIndex = 94;
             this.lblTargetFormat.Text = "Format:";
-            //
+            // 
             // targetIndictorFormat
-            //
-            this.targetIndictorFormat.Location = new System.Drawing.Point(88, 246);
+            // 
+            this.targetIndictorFormat.Location = new System.Drawing.Point(103, 308);
             this.targetIndictorFormat.Name = "targetIndictorFormat";
-            this.targetIndictorFormat.Size = new System.Drawing.Size(107, 23);
+            this.targetIndictorFormat.Size = new System.Drawing.Size(124, 27);
             this.targetIndictorFormat.TabIndex = 93;
             this.targetIndictorFormat.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.targetIndictorFormat.TextChanged += new System.EventHandler(this.targetIndictorFormat_TextChanged);
-            //
+            // 
             // autoFriend
-            //
-            this.autoFriend.Location = new System.Drawing.Point(260, 12);
+            // 
+            this.autoFriend.Location = new System.Drawing.Point(303, 15);
             this.autoFriend.Name = "autoFriend";
-            this.autoFriend.Size = new System.Drawing.Size(217, 20);
+            this.autoFriend.Size = new System.Drawing.Size(253, 25);
             this.autoFriend.TabIndex = 92;
             this.autoFriend.Text = "Treat party members as \'Friends\'";
             this.autoFriend.CheckedChanged += new System.EventHandler(this.autoFriend_CheckedChanged);
-            //
+            // 
             // showtargtext
-            //
-            this.showtargtext.Location = new System.Drawing.Point(9, 170);
+            // 
+            this.showtargtext.Location = new System.Drawing.Point(10, 212);
             this.showtargtext.Name = "showtargtext";
-            this.showtargtext.Size = new System.Drawing.Size(212, 20);
+            this.showtargtext.Size = new System.Drawing.Size(248, 26);
             this.showtargtext.TabIndex = 91;
             this.showtargtext.Text = "Show target flag on single click";
             this.showtargtext.CheckedChanged += new System.EventHandler(this.showtargtext_CheckedChanged);
-            //
+            // 
             // showAttackTargetNewOnly
-            //
+            // 
             this.showAttackTargetNewOnly.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.showAttackTargetNewOnly.Location = new System.Drawing.Point(195, 196);
+            this.showAttackTargetNewOnly.Location = new System.Drawing.Point(227, 245);
             this.showAttackTargetNewOnly.Name = "showAttackTargetNewOnly";
-            this.showAttackTargetNewOnly.Size = new System.Drawing.Size(121, 44);
+            this.showAttackTargetNewOnly.Size = new System.Drawing.Size(142, 55);
             this.showAttackTargetNewOnly.TabIndex = 90;
             this.showAttackTargetNewOnly.Text = "New targets only";
             this.showAttackTargetNewOnly.UseVisualStyleBackColor = true;
             this.showAttackTargetNewOnly.CheckedChanged += new System.EventHandler(this.showAttackTargetNewOnly_CheckedChanged);
-            //
+            // 
             // showTextTargetIndicator
-            //
-            this.showTextTargetIndicator.Location = new System.Drawing.Point(9, 221);
+            // 
+            this.showTextTargetIndicator.Location = new System.Drawing.Point(10, 276);
             this.showTextTargetIndicator.Name = "showTextTargetIndicator";
-            this.showTextTargetIndicator.Size = new System.Drawing.Size(232, 19);
+            this.showTextTargetIndicator.Size = new System.Drawing.Size(271, 24);
             this.showTextTargetIndicator.TabIndex = 89;
             this.showTextTargetIndicator.Text = "Show text target indicator";
             this.showTextTargetIndicator.UseVisualStyleBackColor = true;
             this.showTextTargetIndicator.CheckedChanged += new System.EventHandler(this.showTextTargetIndicator_CheckedChanged);
-            //
+            // 
             // showAttackTarget
-            //
-            this.showAttackTarget.Location = new System.Drawing.Point(9, 196);
+            // 
+            this.showAttackTarget.Location = new System.Drawing.Point(10, 245);
             this.showAttackTarget.Name = "showAttackTarget";
-            this.showAttackTarget.Size = new System.Drawing.Size(232, 19);
+            this.showAttackTarget.Size = new System.Drawing.Size(271, 24);
             this.showAttackTarget.TabIndex = 88;
             this.showAttackTarget.Text = "Attack/target name overhead";
             this.showAttackTarget.UseVisualStyleBackColor = true;
             this.showAttackTarget.CheckedChanged += new System.EventHandler(this.showAttackTarget_CheckedChanged);
-            //
+            // 
             // showTargetMessagesOverChar
-            //
+            // 
             this.showTargetMessagesOverChar.AutoSize = true;
-            this.showTargetMessagesOverChar.Location = new System.Drawing.Point(260, 38);
+            this.showTargetMessagesOverChar.Location = new System.Drawing.Point(303, 48);
             this.showTargetMessagesOverChar.Name = "showTargetMessagesOverChar";
-            this.showTargetMessagesOverChar.Size = new System.Drawing.Size(225, 19);
+            this.showTargetMessagesOverChar.Size = new System.Drawing.Size(281, 24);
             this.showTargetMessagesOverChar.TabIndex = 74;
             this.showTargetMessagesOverChar.Text = "Show Target Self/Last/Clear Overhead";
             this.showTargetMessagesOverChar.UseVisualStyleBackColor = true;
             this.showTargetMessagesOverChar.CheckedChanged += new System.EventHandler(this.showTargetMessagesOverChar_CheckedChanged);
-            //
+            // 
             // txtObjDelay
-            //
-            this.txtObjDelay.Location = new System.Drawing.Point(109, 89);
+            // 
+            this.txtObjDelay.Location = new System.Drawing.Point(127, 111);
             this.txtObjDelay.Name = "txtObjDelay";
-            this.txtObjDelay.Size = new System.Drawing.Size(32, 23);
+            this.txtObjDelay.Size = new System.Drawing.Size(37, 27);
             this.txtObjDelay.TabIndex = 56;
             this.txtObjDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.txtObjDelay.TextChanged += new System.EventHandler(this.txtObjDelay_TextChanged);
-            //
+            // 
             // objectDelay
-            //
-            this.objectDelay.Location = new System.Drawing.Point(9, 88);
+            // 
+            this.objectDelay.Location = new System.Drawing.Point(10, 110);
             this.objectDelay.Name = "objectDelay";
-            this.objectDelay.Size = new System.Drawing.Size(104, 24);
+            this.objectDelay.Size = new System.Drawing.Size(122, 30);
             this.objectDelay.TabIndex = 53;
             this.objectDelay.Text = "Object Delay:";
             this.objectDelay.CheckedChanged += new System.EventHandler(this.objectDelay_CheckedChanged);
-            //
+            // 
             // ltRange
-            //
-            this.ltRange.Location = new System.Drawing.Point(165, 141);
+            // 
+            this.ltRange.Location = new System.Drawing.Point(192, 176);
             this.ltRange.Name = "ltRange";
-            this.ltRange.Size = new System.Drawing.Size(30, 23);
+            this.ltRange.Size = new System.Drawing.Size(35, 27);
             this.ltRange.TabIndex = 59;
             this.ltRange.TextChanged += new System.EventHandler(this.ltRange_TextChanged);
-            //
+            // 
             // QueueActions
-            //
-            this.QueueActions.Location = new System.Drawing.Point(9, 64);
+            // 
+            this.QueueActions.Location = new System.Drawing.Point(10, 80);
             this.QueueActions.Name = "QueueActions";
-            this.QueueActions.Size = new System.Drawing.Size(202, 20);
+            this.QueueActions.Size = new System.Drawing.Size(236, 25);
             this.QueueActions.TabIndex = 54;
             this.QueueActions.Text = "Auto-Queue Object Delay actions ";
             this.QueueActions.CheckedChanged += new System.EventHandler(this.QueueActions_CheckedChanged);
-            //
+            // 
             // rangeCheckLT
-            //
-            this.rangeCheckLT.Location = new System.Drawing.Point(9, 142);
+            // 
+            this.rangeCheckLT.Location = new System.Drawing.Point(10, 178);
             this.rangeCheckLT.Name = "rangeCheckLT";
-            this.rangeCheckLT.Size = new System.Drawing.Size(162, 20);
+            this.rangeCheckLT.Size = new System.Drawing.Size(189, 24);
             this.rangeCheckLT.TabIndex = 58;
             this.rangeCheckLT.Text = "Range check Last Target:";
             this.rangeCheckLT.CheckedChanged += new System.EventHandler(this.rangeCheckLT_CheckedChanged);
-            //
+            // 
             // actionStatusMsg
-            //
-            this.actionStatusMsg.Location = new System.Drawing.Point(9, 38);
+            // 
+            this.actionStatusMsg.Location = new System.Drawing.Point(10, 48);
             this.actionStatusMsg.Name = "actionStatusMsg";
-            this.actionStatusMsg.Size = new System.Drawing.Size(212, 20);
+            this.actionStatusMsg.Size = new System.Drawing.Size(248, 24);
             this.actionStatusMsg.TabIndex = 57;
             this.actionStatusMsg.Text = "Show Action-Queue status messages";
             this.actionStatusMsg.CheckedChanged += new System.EventHandler(this.actionStatusMsg_CheckedChanged);
-            //
+            // 
             // label8
-            //
-            this.label8.Location = new System.Drawing.Point(201, 144);
+            // 
+            this.label8.Location = new System.Drawing.Point(234, 180);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(30, 18);
+            this.label8.Size = new System.Drawing.Size(35, 22);
             this.label8.TabIndex = 60;
             this.label8.Text = "tiles";
-            //
+            // 
             // label6
-            //
-            this.label6.Location = new System.Drawing.Point(147, 93);
+            // 
+            this.label6.Location = new System.Drawing.Point(171, 116);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(32, 18);
+            this.label6.Size = new System.Drawing.Size(38, 23);
             this.label6.TabIndex = 55;
             this.label6.Text = "ms";
-            //
+            // 
             // smartLT
-            //
-            this.smartLT.Location = new System.Drawing.Point(9, 116);
+            // 
+            this.smartLT.Location = new System.Drawing.Point(10, 145);
             this.smartLT.Name = "smartLT";
-            this.smartLT.Size = new System.Drawing.Size(212, 20);
+            this.smartLT.Size = new System.Drawing.Size(248, 25);
             this.smartLT.TabIndex = 61;
             this.smartLT.Text = "Use smart last target";
             this.smartLT.CheckedChanged += new System.EventHandler(this.smartLT_CheckedChanged);
-            //
+            // 
             // queueTargets
-            //
-            this.queueTargets.Location = new System.Drawing.Point(9, 12);
+            // 
+            this.queueTargets.Location = new System.Drawing.Point(10, 15);
             this.queueTargets.Name = "queueTargets";
-            this.queueTargets.Size = new System.Drawing.Size(228, 20);
+            this.queueTargets.Size = new System.Drawing.Size(266, 25);
             this.queueTargets.TabIndex = 35;
             this.queueTargets.Text = "Queue LastTarget and TargetSelf";
             this.queueTargets.CheckedChanged += new System.EventHandler(this.queueTargets_CheckedChanged);
-            //
+            // 
             // subOptionsMiscTab
-            //
+            // 
             this.subOptionsMiscTab.BackColor = System.Drawing.SystemColors.Control;
             this.subOptionsMiscTab.Controls.Add(this.lblStealthFormat);
             this.subOptionsMiscTab.Controls.Add(this.stealthStepsFormat);
@@ -1813,192 +1809,192 @@ namespace Assistant
             this.subOptionsMiscTab.Controls.Add(this.label4);
             this.subOptionsMiscTab.Controls.Add(this.openCorpses);
             this.subOptionsMiscTab.Controls.Add(this.blockDis);
-            this.subOptionsMiscTab.Location = new System.Drawing.Point(4, 22);
+            this.subOptionsMiscTab.Location = new System.Drawing.Point(4, 29);
             this.subOptionsMiscTab.Name = "subOptionsMiscTab";
-            this.subOptionsMiscTab.Size = new System.Drawing.Size(502, 288);
+            this.subOptionsMiscTab.Size = new System.Drawing.Size(587, 359);
             this.subOptionsMiscTab.TabIndex = 2;
             this.subOptionsMiscTab.Text = "Additional Options  ";
-            //
+            // 
             // lblStealthFormat
-            //
+            // 
             this.lblStealthFormat.AutoSize = true;
-            this.lblStealthFormat.Location = new System.Drawing.Point(280, 89);
+            this.lblStealthFormat.Location = new System.Drawing.Point(327, 111);
             this.lblStealthFormat.Name = "lblStealthFormat";
-            this.lblStealthFormat.Size = new System.Drawing.Size(48, 15);
+            this.lblStealthFormat.Size = new System.Drawing.Size(59, 20);
             this.lblStealthFormat.TabIndex = 123;
             this.lblStealthFormat.Text = "Format:";
-            //
+            // 
             // stealthStepsFormat
-            //
-            this.stealthStepsFormat.Location = new System.Drawing.Point(334, 86);
+            // 
+            this.stealthStepsFormat.Location = new System.Drawing.Point(390, 108);
             this.stealthStepsFormat.Name = "stealthStepsFormat";
-            this.stealthStepsFormat.Size = new System.Drawing.Size(114, 23);
+            this.stealthStepsFormat.Size = new System.Drawing.Size(133, 27);
             this.stealthStepsFormat.TabIndex = 122;
             this.stealthStepsFormat.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.stealthStepsFormat.TextChanged += new System.EventHandler(this.stealthStepsFormat_TextChanged);
-            //
+            // 
             // rememberPwds
-            //
-            this.rememberPwds.Location = new System.Drawing.Point(260, 12);
+            // 
+            this.rememberPwds.Location = new System.Drawing.Point(303, 15);
             this.rememberPwds.Name = "rememberPwds";
-            this.rememberPwds.Size = new System.Drawing.Size(148, 20);
+            this.rememberPwds.Size = new System.Drawing.Size(173, 25);
             this.rememberPwds.TabIndex = 121;
             this.rememberPwds.Text = "Remember passwords ";
             this.rememberPwds.CheckedChanged += new System.EventHandler(this.rememberPwds_CheckedChanged);
-            //
+            // 
             // showStaticWalls
-            //
+            // 
             this.showStaticWalls.AutoSize = true;
-            this.showStaticWalls.Location = new System.Drawing.Point(260, 246);
+            this.showStaticWalls.Location = new System.Drawing.Point(303, 308);
             this.showStaticWalls.Name = "showStaticWalls";
-            this.showStaticWalls.Size = new System.Drawing.Size(153, 19);
+            this.showStaticWalls.Size = new System.Drawing.Size(192, 24);
             this.showStaticWalls.TabIndex = 119;
             this.showStaticWalls.Text = "Static magic fields/walls";
             this.showStaticWalls.UseVisualStyleBackColor = true;
             this.showStaticWalls.CheckedChanged += new System.EventHandler(this.showStaticWalls_CheckedChanged);
-            //
+            // 
             // showStaticWallLabels
-            //
+            // 
             this.showStaticWallLabels.AutoSize = true;
             this.showStaticWallLabels.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.showStaticWallLabels.Location = new System.Drawing.Point(421, 247);
+            this.showStaticWallLabels.Location = new System.Drawing.Point(491, 309);
             this.showStaticWallLabels.Name = "showStaticWallLabels";
-            this.showStaticWallLabels.Size = new System.Drawing.Size(55, 17);
+            this.showStaticWallLabels.Size = new System.Drawing.Size(70, 23);
             this.showStaticWallLabels.TabIndex = 120;
             this.showStaticWallLabels.Text = "Labels";
             this.showStaticWallLabels.UseVisualStyleBackColor = true;
             this.showStaticWallLabels.CheckedChanged += new System.EventHandler(this.showStaticWallLabels_CheckedChanged);
-            //
+            // 
             // autoAcceptParty
-            //
-            this.autoAcceptParty.Location = new System.Drawing.Point(260, 38);
+            // 
+            this.autoAcceptParty.Location = new System.Drawing.Point(303, 48);
             this.autoAcceptParty.Name = "autoAcceptParty";
-            this.autoAcceptParty.Size = new System.Drawing.Size(232, 20);
+            this.autoAcceptParty.Size = new System.Drawing.Size(271, 24);
             this.autoAcceptParty.TabIndex = 118;
             this.autoAcceptParty.Text = "Auto-accept party invites from friends";
             this.autoAcceptParty.CheckedChanged += new System.EventHandler(this.autoAcceptParty_CheckedChanged);
-            //
+            // 
             // stealthOverhead
-            //
+            // 
             this.stealthOverhead.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.stealthOverhead.Location = new System.Drawing.Point(393, 64);
+            this.stealthOverhead.Location = new System.Drawing.Point(458, 80);
             this.stealthOverhead.Name = "stealthOverhead";
-            this.stealthOverhead.Size = new System.Drawing.Size(99, 20);
+            this.stealthOverhead.Size = new System.Drawing.Size(116, 25);
             this.stealthOverhead.TabIndex = 117;
             this.stealthOverhead.Text = "Overhead";
             this.stealthOverhead.UseVisualStyleBackColor = true;
             this.stealthOverhead.CheckedChanged += new System.EventHandler(this.stealthOverhead_CheckedChanged);
-            //
+            // 
             // forceSizeX
-            //
-            this.forceSizeX.Location = new System.Drawing.Point(387, 217);
+            // 
+            this.forceSizeX.Location = new System.Drawing.Point(451, 271);
             this.forceSizeX.Name = "forceSizeX";
-            this.forceSizeX.Size = new System.Drawing.Size(34, 23);
+            this.forceSizeX.Size = new System.Drawing.Size(40, 27);
             this.forceSizeX.TabIndex = 111;
             this.forceSizeX.TextChanged += new System.EventHandler(this.forceSizeX_TextChanged);
-            //
+            // 
             // forceSizeY
-            //
-            this.forceSizeY.Location = new System.Drawing.Point(443, 218);
+            // 
+            this.forceSizeY.Location = new System.Drawing.Point(517, 272);
             this.forceSizeY.Name = "forceSizeY";
-            this.forceSizeY.Size = new System.Drawing.Size(33, 23);
+            this.forceSizeY.Size = new System.Drawing.Size(38, 27);
             this.forceSizeY.TabIndex = 112;
             this.forceSizeY.TextChanged += new System.EventHandler(this.forceSizeY_TextChanged);
-            //
+            // 
             // blockHealPoison
-            //
-            this.blockHealPoison.Location = new System.Drawing.Point(260, 193);
+            // 
+            this.blockHealPoison.Location = new System.Drawing.Point(303, 241);
             this.blockHealPoison.Name = "blockHealPoison";
-            this.blockHealPoison.Size = new System.Drawing.Size(201, 20);
+            this.blockHealPoison.Size = new System.Drawing.Size(235, 25);
             this.blockHealPoison.TabIndex = 116;
             this.blockHealPoison.Text = "Block heal if target is poisoned";
             this.blockHealPoison.CheckedChanged += new System.EventHandler(this.blockHealPoison_CheckedChanged);
-            //
+            // 
             // potionEquip
-            //
-            this.potionEquip.Location = new System.Drawing.Point(260, 169);
+            // 
+            this.potionEquip.Location = new System.Drawing.Point(303, 211);
             this.potionEquip.Name = "potionEquip";
-            this.potionEquip.Size = new System.Drawing.Size(232, 20);
+            this.potionEquip.Size = new System.Drawing.Size(271, 25);
             this.potionEquip.TabIndex = 115;
             this.potionEquip.Text = "Auto Un/Re-equip hands for potions";
             this.potionEquip.CheckedChanged += new System.EventHandler(this.potionEquip_CheckedChanged);
-            //
+            // 
             // spellUnequip
-            //
-            this.spellUnequip.Location = new System.Drawing.Point(260, 141);
+            // 
+            this.spellUnequip.Location = new System.Drawing.Point(303, 176);
             this.spellUnequip.Name = "spellUnequip";
-            this.spellUnequip.Size = new System.Drawing.Size(213, 20);
+            this.spellUnequip.Size = new System.Drawing.Size(249, 25);
             this.spellUnequip.TabIndex = 108;
             this.spellUnequip.Text = "Auto Unequip hands before casting";
             this.spellUnequip.CheckedChanged += new System.EventHandler(this.spellUnequip_CheckedChanged);
-            //
+            // 
             // autoOpenDoors
-            //
-            this.autoOpenDoors.Location = new System.Drawing.Point(260, 115);
+            // 
+            this.autoOpenDoors.Location = new System.Drawing.Point(303, 144);
             this.autoOpenDoors.Name = "autoOpenDoors";
-            this.autoOpenDoors.Size = new System.Drawing.Size(190, 20);
+            this.autoOpenDoors.Size = new System.Drawing.Size(222, 25);
             this.autoOpenDoors.TabIndex = 110;
             this.autoOpenDoors.Text = "Automatically open doors";
             this.autoOpenDoors.CheckedChanged += new System.EventHandler(this.autoOpenDoors_CheckedChanged);
-            //
+            // 
             // chkStealth
-            //
-            this.chkStealth.Location = new System.Drawing.Point(260, 64);
+            // 
+            this.chkStealth.Location = new System.Drawing.Point(303, 80);
             this.chkStealth.Name = "chkStealth";
-            this.chkStealth.Size = new System.Drawing.Size(190, 20);
+            this.chkStealth.Size = new System.Drawing.Size(222, 25);
             this.chkStealth.TabIndex = 107;
             this.chkStealth.Text = "Count stealth steps";
             this.chkStealth.CheckedChanged += new System.EventHandler(this.chkStealth_CheckedChanged);
-            //
+            // 
             // label18
-            //
+            // 
             this.label18.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(427, 220);
+            this.label18.Location = new System.Drawing.Point(498, 275);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(10, 18);
+            this.label18.Size = new System.Drawing.Size(12, 23);
             this.label18.TabIndex = 114;
             this.label18.Text = "x";
             this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // gameSize
-            //
-            this.gameSize.Location = new System.Drawing.Point(260, 219);
+            // 
+            this.gameSize.Location = new System.Drawing.Point(303, 274);
             this.gameSize.Name = "gameSize";
-            this.gameSize.Size = new System.Drawing.Size(118, 18);
+            this.gameSize.Size = new System.Drawing.Size(138, 22);
             this.gameSize.TabIndex = 113;
             this.gameSize.Text = "Force Game Size:";
             this.gameSize.CheckedChanged += new System.EventHandler(this.gameSize_CheckedChanged);
-            //
+            // 
             // setMinLightLevel
-            //
-            this.setMinLightLevel.Location = new System.Drawing.Point(117, 247);
+            // 
+            this.setMinLightLevel.Location = new System.Drawing.Point(136, 309);
             this.setMinLightLevel.Name = "setMinLightLevel";
-            this.setMinLightLevel.Size = new System.Drawing.Size(58, 25);
+            this.setMinLightLevel.Size = new System.Drawing.Size(68, 31);
             this.setMinLightLevel.TabIndex = 105;
             this.setMinLightLevel.Text = "Set Min";
             this.setMinLightLevel.Click += new System.EventHandler(this.setMinLightLevel_Click);
-            //
+            // 
             // setMaxLightLevel
-            //
-            this.setMaxLightLevel.Location = new System.Drawing.Point(181, 247);
+            // 
+            this.setMaxLightLevel.Location = new System.Drawing.Point(211, 309);
             this.setMaxLightLevel.Name = "setMaxLightLevel";
-            this.setMaxLightLevel.Size = new System.Drawing.Size(58, 25);
+            this.setMaxLightLevel.Size = new System.Drawing.Size(68, 31);
             this.setMaxLightLevel.TabIndex = 104;
             this.setMaxLightLevel.Text = "Set Max";
             this.setMaxLightLevel.Click += new System.EventHandler(this.setMaxLightLevel_Click);
-            //
+            // 
             // realSeason
-            //
+            // 
             this.realSeason.Font = new System.Drawing.Font("Segoe UI Semilight", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.realSeason.Location = new System.Drawing.Point(181, 197);
+            this.realSeason.Location = new System.Drawing.Point(211, 246);
             this.realSeason.Name = "realSeason";
-            this.realSeason.Size = new System.Drawing.Size(49, 20);
+            this.realSeason.Size = new System.Drawing.Size(57, 25);
             this.realSeason.TabIndex = 103;
             this.realSeason.Text = "Real";
             this.realSeason.CheckedChanged += new System.EventHandler(this.realSeason_CheckedChanged);
-            //
+            // 
             // seasonList
-            //
+            // 
             this.seasonList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.seasonList.FormattingEnabled = true;
             this.seasonList.Items.AddRange(new object[] {
@@ -2008,153 +2004,153 @@ namespace Assistant
             "Winter",
             "Desolation",
             "(Server Default)"});
-            this.seasonList.Location = new System.Drawing.Point(59, 195);
+            this.seasonList.Location = new System.Drawing.Point(69, 244);
             this.seasonList.Name = "seasonList";
-            this.seasonList.Size = new System.Drawing.Size(111, 23);
+            this.seasonList.Size = new System.Drawing.Size(129, 28);
             this.seasonList.TabIndex = 102;
             this.seasonList.SelectedIndexChanged += new System.EventHandler(this.seasonList_SelectedIndexChanged);
-            //
+            // 
             // lblSeason
-            //
+            // 
             this.lblSeason.AutoSize = true;
-            this.lblSeason.Location = new System.Drawing.Point(6, 198);
+            this.lblSeason.Location = new System.Drawing.Point(7, 248);
             this.lblSeason.Name = "lblSeason";
-            this.lblSeason.Size = new System.Drawing.Size(47, 15);
+            this.lblSeason.Size = new System.Drawing.Size(59, 20);
             this.lblSeason.TabIndex = 101;
             this.lblSeason.Text = "Season:";
-            //
+            // 
             // lightLevel
-            //
+            // 
             this.lightLevel.AutoSize = true;
-            this.lightLevel.Location = new System.Drawing.Point(6, 223);
+            this.lightLevel.Location = new System.Drawing.Point(7, 279);
             this.lightLevel.Name = "lightLevel";
-            this.lightLevel.Size = new System.Drawing.Size(67, 15);
+            this.lightLevel.Size = new System.Drawing.Size(83, 20);
             this.lightLevel.TabIndex = 100;
             this.lightLevel.Text = "Light Level:";
-            //
+            // 
             // lightLevelBar
-            //
+            // 
             this.lightLevelBar.AutoSize = false;
-            this.lightLevelBar.Location = new System.Drawing.Point(79, 223);
+            this.lightLevelBar.Location = new System.Drawing.Point(92, 279);
             this.lightLevelBar.Maximum = 31;
             this.lightLevelBar.Name = "lightLevelBar";
-            this.lightLevelBar.Size = new System.Drawing.Size(161, 21);
+            this.lightLevelBar.Size = new System.Drawing.Size(188, 26);
             this.lightLevelBar.TabIndex = 99;
             this.lightLevelBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.lightLevelBar.Value = 15;
             this.lightLevelBar.Scroll += new System.EventHandler(this.lightLevelBar_Scroll);
-            //
+            // 
             // minMaxLightLevel
-            //
-            this.minMaxLightLevel.Location = new System.Drawing.Point(9, 250);
+            // 
+            this.minMaxLightLevel.Location = new System.Drawing.Point(10, 312);
             this.minMaxLightLevel.Name = "minMaxLightLevel";
-            this.minMaxLightLevel.Size = new System.Drawing.Size(114, 20);
+            this.minMaxLightLevel.Size = new System.Drawing.Size(133, 26);
             this.minMaxLightLevel.TabIndex = 106;
             this.minMaxLightLevel.Text = "Enable Min/Max";
             this.minMaxLightLevel.CheckedChanged += new System.EventHandler(this.minMaxLightLevel_CheckedChanged);
-            //
+            // 
             // blockPartyInvites
-            //
-            this.blockPartyInvites.Location = new System.Drawing.Point(9, 169);
+            // 
+            this.blockPartyInvites.Location = new System.Drawing.Point(10, 211);
             this.blockPartyInvites.Name = "blockPartyInvites";
-            this.blockPartyInvites.Size = new System.Drawing.Size(184, 20);
+            this.blockPartyInvites.Size = new System.Drawing.Size(215, 25);
             this.blockPartyInvites.TabIndex = 98;
             this.blockPartyInvites.Text = "Block party invites";
             this.blockPartyInvites.CheckedChanged += new System.EventHandler(this.blockPartyInvites_CheckedChanged);
-            //
+            // 
             // blockTradeRequests
-            //
-            this.blockTradeRequests.Location = new System.Drawing.Point(9, 143);
+            // 
+            this.blockTradeRequests.Location = new System.Drawing.Point(10, 179);
             this.blockTradeRequests.Name = "blockTradeRequests";
-            this.blockTradeRequests.Size = new System.Drawing.Size(184, 20);
+            this.blockTradeRequests.Size = new System.Drawing.Size(215, 25);
             this.blockTradeRequests.TabIndex = 97;
             this.blockTradeRequests.Text = "Block trade requests";
             this.blockTradeRequests.CheckedChanged += new System.EventHandler(this.blockTradeRequests_CheckedChanged);
-            //
+            // 
             // blockOpenCorpsesTwice
-            //
+            // 
             this.blockOpenCorpsesTwice.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blockOpenCorpsesTwice.Location = new System.Drawing.Point(9, 91);
+            this.blockOpenCorpsesTwice.Location = new System.Drawing.Point(10, 114);
             this.blockOpenCorpsesTwice.Name = "blockOpenCorpsesTwice";
-            this.blockOpenCorpsesTwice.Size = new System.Drawing.Size(209, 20);
+            this.blockOpenCorpsesTwice.Size = new System.Drawing.Size(244, 25);
             this.blockOpenCorpsesTwice.TabIndex = 96;
             this.blockOpenCorpsesTwice.Text = "Block opening corpses twice";
             this.blockOpenCorpsesTwice.CheckedChanged += new System.EventHandler(this.blockOpenCorpsesTwice_CheckedChanged);
-            //
+            // 
             // preAOSstatbar
-            //
-            this.preAOSstatbar.Location = new System.Drawing.Point(9, 12);
+            // 
+            this.preAOSstatbar.Location = new System.Drawing.Point(10, 15);
             this.preAOSstatbar.Name = "preAOSstatbar";
-            this.preAOSstatbar.Size = new System.Drawing.Size(190, 20);
+            this.preAOSstatbar.Size = new System.Drawing.Size(222, 25);
             this.preAOSstatbar.TabIndex = 95;
             this.preAOSstatbar.Text = "Use Pre-AOS status window";
             this.preAOSstatbar.CheckedChanged += new System.EventHandler(this.preAOSstatbar_CheckedChanged);
-            //
+            // 
             // corpseRange
-            //
-            this.corpseRange.Location = new System.Drawing.Point(169, 63);
+            // 
+            this.corpseRange.Location = new System.Drawing.Point(197, 79);
             this.corpseRange.Name = "corpseRange";
-            this.corpseRange.Size = new System.Drawing.Size(24, 23);
+            this.corpseRange.Size = new System.Drawing.Size(28, 27);
             this.corpseRange.TabIndex = 91;
             this.corpseRange.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.corpseRange.TextChanged += new System.EventHandler(this.corpseRange_TextChanged);
-            //
+            // 
             // autoStackRes
-            //
-            this.autoStackRes.Location = new System.Drawing.Point(9, 37);
+            // 
+            this.autoStackRes.Location = new System.Drawing.Point(10, 46);
             this.autoStackRes.Name = "autoStackRes";
-            this.autoStackRes.Size = new System.Drawing.Size(228, 20);
+            this.autoStackRes.Size = new System.Drawing.Size(266, 25);
             this.autoStackRes.TabIndex = 93;
             this.autoStackRes.Text = "Auto-Stack Ore/Fish/Logs at Feet";
             this.autoStackRes.CheckedChanged += new System.EventHandler(this.autoStackRes_CheckedChanged);
-            //
+            // 
             // label4
-            //
-            this.label4.Location = new System.Drawing.Point(201, 67);
+            // 
+            this.label4.Location = new System.Drawing.Point(234, 84);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(36, 16);
+            this.label4.Size = new System.Drawing.Size(42, 20);
             this.label4.TabIndex = 92;
             this.label4.Text = "tiles";
-            //
+            // 
             // openCorpses
-            //
-            this.openCorpses.Location = new System.Drawing.Point(9, 65);
+            // 
+            this.openCorpses.Location = new System.Drawing.Point(10, 81);
             this.openCorpses.Name = "openCorpses";
-            this.openCorpses.Size = new System.Drawing.Size(165, 20);
+            this.openCorpses.Size = new System.Drawing.Size(193, 25);
             this.openCorpses.TabIndex = 90;
             this.openCorpses.Text = "Open new corpses within";
             this.openCorpses.CheckedChanged += new System.EventHandler(this.openCorpses_CheckedChanged);
-            //
+            // 
             // blockDis
-            //
-            this.blockDis.Location = new System.Drawing.Point(9, 117);
+            // 
+            this.blockDis.Location = new System.Drawing.Point(10, 146);
             this.blockDis.Name = "blockDis";
-            this.blockDis.Size = new System.Drawing.Size(184, 20);
+            this.blockDis.Size = new System.Drawing.Size(215, 25);
             this.blockDis.TabIndex = 94;
             this.blockDis.Text = "Block dismount in war mode";
             this.blockDis.CheckedChanged += new System.EventHandler(this.blockDis_CheckedChanged);
-            //
+            // 
             // displayTab
-            //
+            // 
             this.displayTab.Controls.Add(this.tabControl4);
-            this.displayTab.Location = new System.Drawing.Point(4, 44);
+            this.displayTab.Location = new System.Drawing.Point(4, 54);
             this.displayTab.Name = "displayTab";
-            this.displayTab.Size = new System.Drawing.Size(519, 322);
+            this.displayTab.Size = new System.Drawing.Size(607, 404);
             this.displayTab.TabIndex = 1;
             this.displayTab.Text = "Display/Counters";
-            //
+            // 
             // tabControl4
-            //
+            // 
             this.tabControl4.Controls.Add(this.subDisplayTab);
             this.tabControl4.Controls.Add(this.subCountersTab);
-            this.tabControl4.Location = new System.Drawing.Point(6, 3);
+            this.tabControl4.Location = new System.Drawing.Point(7, 4);
             this.tabControl4.Name = "tabControl4";
             this.tabControl4.SelectedIndex = 0;
-            this.tabControl4.Size = new System.Drawing.Size(510, 314);
+            this.tabControl4.Size = new System.Drawing.Size(595, 392);
             this.tabControl4.TabIndex = 51;
-            //
+            // 
             // subDisplayTab
-            //
+            // 
             this.subDisplayTab.BackColor = System.Drawing.SystemColors.Control;
             this.subDisplayTab.Controls.Add(this.groupBox11);
             this.subDisplayTab.Controls.Add(this.trackDps);
@@ -2162,110 +2158,110 @@ namespace Assistant
             this.subDisplayTab.Controls.Add(this.showNotoHue);
             this.subDisplayTab.Controls.Add(this.highlightSpellReags);
             this.subDisplayTab.Controls.Add(this.groupBox3);
-            this.subDisplayTab.Location = new System.Drawing.Point(4, 24);
+            this.subDisplayTab.Location = new System.Drawing.Point(4, 29);
             this.subDisplayTab.Name = "subDisplayTab";
             this.subDisplayTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subDisplayTab.Size = new System.Drawing.Size(502, 286);
+            this.subDisplayTab.Size = new System.Drawing.Size(587, 359);
             this.subDisplayTab.TabIndex = 0;
             this.subDisplayTab.Text = "Display";
-            //
+            // 
             // groupBox11
-            //
+            // 
             this.groupBox11.Controls.Add(this.razorTitleBarKey);
             this.groupBox11.Controls.Add(this.showInRazorTitleBar);
             this.groupBox11.Controls.Add(this.razorTitleBar);
-            this.groupBox11.Location = new System.Drawing.Point(6, 207);
+            this.groupBox11.Location = new System.Drawing.Point(7, 259);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(490, 71);
+            this.groupBox11.Size = new System.Drawing.Size(572, 89);
             this.groupBox11.TabIndex = 51;
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Razor Title Bar";
-            //
+            // 
             // razorTitleBarKey
-            //
-            this.razorTitleBarKey.Location = new System.Drawing.Point(468, 17);
+            // 
+            this.razorTitleBarKey.Location = new System.Drawing.Point(546, 21);
             this.razorTitleBarKey.Name = "razorTitleBarKey";
-            this.razorTitleBarKey.Size = new System.Drawing.Size(16, 20);
+            this.razorTitleBarKey.Size = new System.Drawing.Size(19, 25);
             this.razorTitleBarKey.TabIndex = 2;
             this.razorTitleBarKey.Text = "?";
             this.razorTitleBarKey.UseVisualStyleBackColor = true;
             this.razorTitleBarKey.Click += new System.EventHandler(this.razorTitleBarKey_Click);
-            //
+            // 
             // showInRazorTitleBar
-            //
+            // 
             this.showInRazorTitleBar.AutoSize = true;
-            this.showInRazorTitleBar.Location = new System.Drawing.Point(6, 17);
+            this.showInRazorTitleBar.Location = new System.Drawing.Point(7, 21);
             this.showInRazorTitleBar.Name = "showInRazorTitleBar";
-            this.showInRazorTitleBar.Size = new System.Drawing.Size(146, 19);
+            this.showInRazorTitleBar.Size = new System.Drawing.Size(184, 24);
             this.showInRazorTitleBar.TabIndex = 1;
             this.showInRazorTitleBar.Text = "Show in Razor title bar:";
             this.showInRazorTitleBar.UseVisualStyleBackColor = true;
             this.showInRazorTitleBar.CheckedChanged += new System.EventHandler(this.showInRazorTitleBar_CheckedChanged);
-            //
+            // 
             // razorTitleBar
-            //
+            // 
             this.razorTitleBar.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.razorTitleBar.Location = new System.Drawing.Point(6, 42);
+            this.razorTitleBar.Location = new System.Drawing.Point(7, 52);
             this.razorTitleBar.Name = "razorTitleBar";
-            this.razorTitleBar.Size = new System.Drawing.Size(478, 22);
+            this.razorTitleBar.Size = new System.Drawing.Size(558, 25);
             this.razorTitleBar.TabIndex = 0;
             this.razorTitleBar.Text = "{name} ({profile} - {shard}) - Razor v{version}";
             this.razorTitleBar.TextChanged += new System.EventHandler(this.razorTitleBar_TextChanged);
-            //
+            // 
             // trackDps
-            //
+            // 
             this.trackDps.AutoSize = true;
-            this.trackDps.Location = new System.Drawing.Point(273, 178);
+            this.trackDps.Location = new System.Drawing.Point(318, 222);
             this.trackDps.Name = "trackDps";
-            this.trackDps.Size = new System.Drawing.Size(146, 19);
+            this.trackDps.Size = new System.Drawing.Size(184, 24);
             this.trackDps.TabIndex = 53;
             this.trackDps.Text = "Enable damage tracker";
             this.trackDps.UseVisualStyleBackColor = true;
             this.trackDps.CheckedChanged += new System.EventHandler(this.trackDps_CheckedChanged);
-            //
+            // 
             // trackIncomingGold
-            //
+            // 
             this.trackIncomingGold.AutoSize = true;
-            this.trackIncomingGold.Location = new System.Drawing.Point(273, 152);
+            this.trackIncomingGold.Location = new System.Drawing.Point(318, 190);
             this.trackIncomingGold.Name = "trackIncomingGold";
-            this.trackIncomingGold.Size = new System.Drawing.Size(223, 19);
+            this.trackIncomingGold.Size = new System.Drawing.Size(278, 24);
             this.trackIncomingGold.TabIndex = 52;
             this.trackIncomingGold.Text = "Enable gold per sec/min/hour tracker";
             this.trackIncomingGold.UseVisualStyleBackColor = true;
             this.trackIncomingGold.CheckedChanged += new System.EventHandler(this.trackIncomingGold_CheckedChanged);
-            //
+            // 
             // showNotoHue
-            //
-            this.showNotoHue.Location = new System.Drawing.Point(6, 177);
+            // 
+            this.showNotoHue.Location = new System.Drawing.Point(7, 221);
             this.showNotoHue.Name = "showNotoHue";
-            this.showNotoHue.Size = new System.Drawing.Size(221, 20);
+            this.showNotoHue.Size = new System.Drawing.Size(258, 25);
             this.showNotoHue.TabIndex = 51;
             this.showNotoHue.Text = "Show noto hue on {char} in TitleBar";
             this.showNotoHue.CheckedChanged += new System.EventHandler(this.showNotoHue_CheckedChanged);
-            //
+            // 
             // highlightSpellReags
-            //
-            this.highlightSpellReags.Location = new System.Drawing.Point(6, 151);
+            // 
+            this.highlightSpellReags.Location = new System.Drawing.Point(7, 189);
             this.highlightSpellReags.Name = "highlightSpellReags";
-            this.highlightSpellReags.Size = new System.Drawing.Size(205, 20);
+            this.highlightSpellReags.Size = new System.Drawing.Size(239, 25);
             this.highlightSpellReags.TabIndex = 50;
             this.highlightSpellReags.Text = "Highlight Spell Reagents on Cast";
             this.highlightSpellReags.CheckedChanged += new System.EventHandler(this.highlightSpellReags_CheckedChanged);
-            //
+            // 
             // groupBox3
-            //
+            // 
             this.groupBox3.Controls.Add(this.titleBarParams);
             this.groupBox3.Controls.Add(this.titleStr);
             this.groupBox3.Controls.Add(this.showInBar);
-            this.groupBox3.Location = new System.Drawing.Point(6, 6);
+            this.groupBox3.Location = new System.Drawing.Point(7, 8);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(490, 139);
+            this.groupBox3.Size = new System.Drawing.Size(572, 173);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Title Bar Display";
-            //
+            // 
             // titleBarParams
-            //
+            // 
             this.titleBarParams.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.titleBarParams.FormattingEnabled = true;
             this.titleBarParams.Items.AddRange(new object[] {
@@ -2320,34 +2316,34 @@ namespace Assistant
             "{physresist}",
             "{poisonresist}",
             "{tithe}"});
-            this.titleBarParams.Location = new System.Drawing.Point(380, 19);
+            this.titleBarParams.Location = new System.Drawing.Point(443, 24);
             this.titleBarParams.Name = "titleBarParams";
-            this.titleBarParams.Size = new System.Drawing.Size(104, 23);
+            this.titleBarParams.Size = new System.Drawing.Size(122, 28);
             this.titleBarParams.TabIndex = 5;
             this.titleBarParams.SelectedIndexChanged += new System.EventHandler(this.titleBarParams_SelectedIndexChanged);
-            //
+            // 
             // titleStr
-            //
+            // 
             this.titleStr.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.titleStr.Location = new System.Drawing.Point(6, 48);
+            this.titleStr.Location = new System.Drawing.Point(7, 60);
             this.titleStr.Multiline = true;
             this.titleStr.Name = "titleStr";
             this.titleStr.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.titleStr.Size = new System.Drawing.Size(478, 85);
+            this.titleStr.Size = new System.Drawing.Size(558, 106);
             this.titleStr.TabIndex = 4;
             this.titleStr.TextChanged += new System.EventHandler(this.titleStr_TextChanged);
-            //
+            // 
             // showInBar
-            //
-            this.showInBar.Location = new System.Drawing.Point(11, 22);
+            // 
+            this.showInBar.Location = new System.Drawing.Point(13, 28);
             this.showInBar.Name = "showInBar";
-            this.showInBar.Size = new System.Drawing.Size(141, 20);
+            this.showInBar.Size = new System.Drawing.Size(164, 24);
             this.showInBar.TabIndex = 3;
             this.showInBar.Text = "Show in UO title bar:";
             this.showInBar.CheckedChanged += new System.EventHandler(this.showInBar_CheckedChanged);
-            //
+            // 
             // subCountersTab
-            //
+            // 
             this.subCountersTab.BackColor = System.Drawing.SystemColors.Control;
             this.subCountersTab.Controls.Add(this.warnNum);
             this.subCountersTab.Controls.Add(this.warnCount);
@@ -2355,74 +2351,74 @@ namespace Assistant
             this.subCountersTab.Controls.Add(this.titlebarImages);
             this.subCountersTab.Controls.Add(this.checkNewConts);
             this.subCountersTab.Controls.Add(this.groupBox2);
-            this.subCountersTab.Location = new System.Drawing.Point(4, 22);
+            this.subCountersTab.Location = new System.Drawing.Point(4, 29);
             this.subCountersTab.Name = "subCountersTab";
             this.subCountersTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subCountersTab.Size = new System.Drawing.Size(502, 288);
+            this.subCountersTab.Size = new System.Drawing.Size(587, 359);
             this.subCountersTab.TabIndex = 1;
             this.subCountersTab.Text = "Counters";
-            //
+            // 
             // warnNum
-            //
-            this.warnNum.Location = new System.Drawing.Point(430, 99);
+            // 
+            this.warnNum.Location = new System.Drawing.Point(502, 124);
             this.warnNum.Name = "warnNum";
-            this.warnNum.Size = new System.Drawing.Size(30, 23);
+            this.warnNum.Size = new System.Drawing.Size(35, 27);
             this.warnNum.TabIndex = 51;
             this.warnNum.Text = "3";
             this.warnNum.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.warnNum.TextChanged += new System.EventHandler(this.warnNum_TextChanged);
-            //
+            // 
             // warnCount
-            //
-            this.warnCount.Location = new System.Drawing.Point(299, 101);
+            // 
+            this.warnCount.Location = new System.Drawing.Point(349, 126);
             this.warnCount.Name = "warnCount";
-            this.warnCount.Size = new System.Drawing.Size(192, 19);
+            this.warnCount.Size = new System.Drawing.Size(224, 24);
             this.warnCount.TabIndex = 50;
             this.warnCount.Text = "Warn when below:";
             this.warnCount.CheckedChanged += new System.EventHandler(this.warnCount_CheckedChanged);
-            //
+            // 
             // excludePouches
-            //
-            this.excludePouches.Location = new System.Drawing.Point(299, 48);
+            // 
+            this.excludePouches.Location = new System.Drawing.Point(349, 60);
             this.excludePouches.Name = "excludePouches";
-            this.excludePouches.Size = new System.Drawing.Size(192, 21);
+            this.excludePouches.Size = new System.Drawing.Size(224, 26);
             this.excludePouches.TabIndex = 49;
             this.excludePouches.Text = "Never auto-search pouches";
             this.excludePouches.CheckedChanged += new System.EventHandler(this.excludePouches_CheckedChanged);
-            //
+            // 
             // titlebarImages
-            //
-            this.titlebarImages.Location = new System.Drawing.Point(299, 75);
+            // 
+            this.titlebarImages.Location = new System.Drawing.Point(349, 94);
             this.titlebarImages.Name = "titlebarImages";
-            this.titlebarImages.Size = new System.Drawing.Size(180, 20);
+            this.titlebarImages.Size = new System.Drawing.Size(210, 25);
             this.titlebarImages.TabIndex = 48;
             this.titlebarImages.Text = "Show Images with Counters";
             this.titlebarImages.CheckedChanged += new System.EventHandler(this.titlebarImages_CheckedChanged);
-            //
+            // 
             // checkNewConts
-            //
-            this.checkNewConts.Location = new System.Drawing.Point(299, 24);
+            // 
+            this.checkNewConts.Location = new System.Drawing.Point(349, 30);
             this.checkNewConts.Name = "checkNewConts";
-            this.checkNewConts.Size = new System.Drawing.Size(200, 20);
+            this.checkNewConts.Size = new System.Drawing.Size(233, 25);
             this.checkNewConts.TabIndex = 47;
             this.checkNewConts.Text = "Auto search new containers";
             this.checkNewConts.CheckedChanged += new System.EventHandler(this.checkNewConts_CheckedChanged);
-            //
+            // 
             // groupBox2
-            //
+            // 
             this.groupBox2.Controls.Add(this.counters);
             this.groupBox2.Controls.Add(this.delCounter);
             this.groupBox2.Controls.Add(this.addCounter);
             this.groupBox2.Controls.Add(this.recount);
-            this.groupBox2.Location = new System.Drawing.Point(6, 6);
+            this.groupBox2.Location = new System.Drawing.Point(7, 8);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(284, 272);
+            this.groupBox2.Size = new System.Drawing.Size(331, 340);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Counters";
-            //
+            // 
             // counters
-            //
+            // 
             this.counters.CheckBoxes = true;
             this.counters.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.cntName,
@@ -2430,64 +2426,64 @@ namespace Assistant
             this.counters.GridLines = true;
             this.counters.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.counters.LabelWrap = false;
-            this.counters.Location = new System.Drawing.Point(6, 18);
+            this.counters.Location = new System.Drawing.Point(7, 22);
             this.counters.MultiSelect = false;
             this.counters.Name = "counters";
-            this.counters.Size = new System.Drawing.Size(272, 205);
+            this.counters.Size = new System.Drawing.Size(317, 257);
             this.counters.TabIndex = 11;
             this.counters.UseCompatibleStateImageBehavior = false;
             this.counters.View = System.Windows.Forms.View.Details;
             this.counters.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.counters_ItemCheck);
-            //
+            // 
             // cntName
-            //
+            // 
             this.cntName.Text = "Name (Format)";
             this.cntName.Width = 216;
-            //
+            // 
             // cntCount
-            //
+            // 
             this.cntCount.Text = "Count";
             this.cntCount.Width = 51;
-            //
+            // 
             // delCounter
-            //
-            this.delCounter.Location = new System.Drawing.Point(108, 229);
+            // 
+            this.delCounter.Location = new System.Drawing.Point(126, 286);
             this.delCounter.Name = "delCounter";
-            this.delCounter.Size = new System.Drawing.Size(71, 37);
+            this.delCounter.Size = new System.Drawing.Size(83, 46);
             this.delCounter.TabIndex = 4;
             this.delCounter.Text = "Del/Edit";
             this.delCounter.Click += new System.EventHandler(this.delCounter_Click);
-            //
+            // 
             // addCounter
-            //
-            this.addCounter.Location = new System.Drawing.Point(6, 229);
+            // 
+            this.addCounter.Location = new System.Drawing.Point(7, 286);
             this.addCounter.Name = "addCounter";
-            this.addCounter.Size = new System.Drawing.Size(70, 37);
+            this.addCounter.Size = new System.Drawing.Size(82, 46);
             this.addCounter.TabIndex = 3;
             this.addCounter.Text = "Add...";
             this.addCounter.Click += new System.EventHandler(this.addCounter_Click);
-            //
+            // 
             // recount
-            //
-            this.recount.Location = new System.Drawing.Point(208, 229);
+            // 
+            this.recount.Location = new System.Drawing.Point(243, 286);
             this.recount.Name = "recount";
-            this.recount.Size = new System.Drawing.Size(70, 37);
+            this.recount.Size = new System.Drawing.Size(81, 46);
             this.recount.TabIndex = 2;
             this.recount.Text = "Recount";
             this.recount.Click += new System.EventHandler(this.recount_Click);
-            //
+            // 
             // dressTab
-            //
+            // 
             this.dressTab.Controls.Add(this.groupBox6);
             this.dressTab.Controls.Add(this.groupBox5);
-            this.dressTab.Location = new System.Drawing.Point(4, 44);
+            this.dressTab.Location = new System.Drawing.Point(4, 54);
             this.dressTab.Name = "dressTab";
-            this.dressTab.Size = new System.Drawing.Size(519, 322);
+            this.dressTab.Size = new System.Drawing.Size(607, 404);
             this.dressTab.TabIndex = 3;
             this.dressTab.Text = "Arm/Dress";
-            //
+            // 
             // groupBox6
-            //
+            // 
             this.groupBox6.Controls.Add(this.clearDress);
             this.groupBox6.Controls.Add(this.dressDelSel);
             this.groupBox6.Controls.Add(this.undressBag);
@@ -2496,140 +2492,140 @@ namespace Assistant
             this.groupBox6.Controls.Add(this.targItem);
             this.groupBox6.Controls.Add(this.dressItems);
             this.groupBox6.Controls.Add(this.dressNow);
-            this.groupBox6.Location = new System.Drawing.Point(201, 3);
+            this.groupBox6.Location = new System.Drawing.Point(234, 4);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(311, 309);
+            this.groupBox6.Size = new System.Drawing.Size(363, 386);
             this.groupBox6.TabIndex = 7;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Arm/Dress Items";
-            //
+            // 
             // clearDress
-            //
-            this.clearDress.Location = new System.Drawing.Point(209, 257);
+            // 
+            this.clearDress.Location = new System.Drawing.Point(244, 321);
             this.clearDress.Name = "clearDress";
-            this.clearDress.Size = new System.Drawing.Size(96, 32);
+            this.clearDress.Size = new System.Drawing.Size(112, 40);
             this.clearDress.TabIndex = 13;
             this.clearDress.Text = "Clear List";
             this.clearDress.Click += new System.EventHandler(this.clearDress_Click);
-            //
+            // 
             // dressDelSel
-            //
-            this.dressDelSel.Location = new System.Drawing.Point(209, 170);
+            // 
+            this.dressDelSel.Location = new System.Drawing.Point(244, 212);
             this.dressDelSel.Name = "dressDelSel";
-            this.dressDelSel.Size = new System.Drawing.Size(96, 32);
+            this.dressDelSel.Size = new System.Drawing.Size(112, 40);
             this.dressDelSel.TabIndex = 12;
             this.dressDelSel.Text = "Remove";
             this.dressDelSel.Click += new System.EventHandler(this.dressDelSel_Click);
-            //
+            // 
             // undressBag
-            //
+            // 
             this.undressBag.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.undressBag.Location = new System.Drawing.Point(209, 208);
+            this.undressBag.Location = new System.Drawing.Point(244, 260);
             this.undressBag.Name = "undressBag";
-            this.undressBag.Size = new System.Drawing.Size(96, 40);
+            this.undressBag.Size = new System.Drawing.Size(112, 50);
             this.undressBag.TabIndex = 11;
             this.undressBag.Text = "Change Undress Bag";
             this.undressBag.Click += new System.EventHandler(this.undressBag_Click);
-            //
+            // 
             // undressList
-            //
-            this.undressList.Location = new System.Drawing.Point(209, 56);
+            // 
+            this.undressList.Location = new System.Drawing.Point(244, 70);
             this.undressList.Name = "undressList";
-            this.undressList.Size = new System.Drawing.Size(96, 32);
+            this.undressList.Size = new System.Drawing.Size(112, 40);
             this.undressList.TabIndex = 10;
             this.undressList.Text = "Undress";
             this.undressList.Click += new System.EventHandler(this.undressList_Click);
-            //
+            // 
             // dressUseCur
-            //
-            this.dressUseCur.Location = new System.Drawing.Point(209, 132);
+            // 
+            this.dressUseCur.Location = new System.Drawing.Point(244, 165);
             this.dressUseCur.Name = "dressUseCur";
-            this.dressUseCur.Size = new System.Drawing.Size(96, 32);
+            this.dressUseCur.Size = new System.Drawing.Size(112, 40);
             this.dressUseCur.TabIndex = 9;
             this.dressUseCur.Text = "Add Current";
             this.dressUseCur.Click += new System.EventHandler(this.dressUseCur_Click);
-            //
+            // 
             // targItem
-            //
-            this.targItem.Location = new System.Drawing.Point(209, 94);
+            // 
+            this.targItem.Location = new System.Drawing.Point(244, 118);
             this.targItem.Name = "targItem";
-            this.targItem.Size = new System.Drawing.Size(96, 32);
+            this.targItem.Size = new System.Drawing.Size(112, 40);
             this.targItem.TabIndex = 7;
             this.targItem.Text = "Add (Target)";
             this.targItem.Click += new System.EventHandler(this.targItem_Click);
-            //
+            // 
             // dressItems
-            //
+            // 
             this.dressItems.IntegralHeight = false;
-            this.dressItems.ItemHeight = 15;
-            this.dressItems.Location = new System.Drawing.Point(6, 18);
+            this.dressItems.ItemHeight = 20;
+            this.dressItems.Location = new System.Drawing.Point(7, 22);
             this.dressItems.Name = "dressItems";
-            this.dressItems.Size = new System.Drawing.Size(197, 285);
+            this.dressItems.Size = new System.Drawing.Size(230, 357);
             this.dressItems.TabIndex = 6;
             this.dressItems.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dressItems_KeyDown);
             this.dressItems.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dressItems_MouseDown);
-            //
+            // 
             // dressNow
-            //
-            this.dressNow.Location = new System.Drawing.Point(209, 18);
+            // 
+            this.dressNow.Location = new System.Drawing.Point(244, 22);
             this.dressNow.Name = "dressNow";
-            this.dressNow.Size = new System.Drawing.Size(96, 32);
+            this.dressNow.Size = new System.Drawing.Size(112, 40);
             this.dressNow.TabIndex = 6;
             this.dressNow.Text = "Dress";
             this.dressNow.Click += new System.EventHandler(this.dressNow_Click);
-            //
+            // 
             // groupBox5
-            //
+            // 
             this.groupBox5.Controls.Add(this.removeDress);
             this.groupBox5.Controls.Add(this.addDress);
             this.groupBox5.Controls.Add(this.dressList);
             this.groupBox5.Controls.Add(this.undressConflicts);
-            this.groupBox5.Location = new System.Drawing.Point(8, 3);
+            this.groupBox5.Location = new System.Drawing.Point(9, 4);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(187, 309);
+            this.groupBox5.Size = new System.Drawing.Size(218, 386);
             this.groupBox5.TabIndex = 6;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Arm/Dress Selection";
-            //
+            // 
             // removeDress
-            //
-            this.removeDress.Location = new System.Drawing.Point(121, 156);
+            // 
+            this.removeDress.Location = new System.Drawing.Point(141, 195);
             this.removeDress.Name = "removeDress";
-            this.removeDress.Size = new System.Drawing.Size(60, 33);
+            this.removeDress.Size = new System.Drawing.Size(70, 41);
             this.removeDress.TabIndex = 5;
             this.removeDress.Text = "Remove";
             this.removeDress.Click += new System.EventHandler(this.removeDress_Click);
-            //
+            // 
             // addDress
-            //
-            this.addDress.Location = new System.Drawing.Point(6, 156);
+            // 
+            this.addDress.Location = new System.Drawing.Point(7, 195);
             this.addDress.Name = "addDress";
-            this.addDress.Size = new System.Drawing.Size(60, 33);
+            this.addDress.Size = new System.Drawing.Size(70, 41);
             this.addDress.TabIndex = 4;
             this.addDress.Text = "Add...";
             this.addDress.Click += new System.EventHandler(this.addDress_Click);
-            //
+            // 
             // dressList
-            //
+            // 
             this.dressList.IntegralHeight = false;
-            this.dressList.ItemHeight = 15;
-            this.dressList.Location = new System.Drawing.Point(6, 18);
+            this.dressList.ItemHeight = 20;
+            this.dressList.Location = new System.Drawing.Point(7, 22);
             this.dressList.Name = "dressList";
-            this.dressList.Size = new System.Drawing.Size(175, 132);
+            this.dressList.Size = new System.Drawing.Size(204, 166);
             this.dressList.TabIndex = 3;
             this.dressList.SelectedIndexChanged += new System.EventHandler(this.dressList_SelectedIndexChanged);
-            //
+            // 
             // undressConflicts
-            //
-            this.undressConflicts.Location = new System.Drawing.Point(6, 195);
+            // 
+            this.undressConflicts.Location = new System.Drawing.Point(7, 244);
             this.undressConflicts.Name = "undressConflicts";
-            this.undressConflicts.Size = new System.Drawing.Size(175, 38);
+            this.undressConflicts.Size = new System.Drawing.Size(204, 47);
             this.undressConflicts.TabIndex = 6;
             this.undressConflicts.Text = "Automatically move conflicting items";
             this.undressConflicts.CheckedChanged += new System.EventHandler(this.undressConflicts_CheckedChanged);
-            //
+            // 
             // skillsTab
-            //
+            // 
             this.skillsTab.Controls.Add(this.captureMibs);
             this.skillsTab.Controls.Add(this.dispDeltaOverhead);
             this.skillsTab.Controls.Add(this.logSkillChanges);
@@ -2642,122 +2638,122 @@ namespace Assistant
             this.skillsTab.Controls.Add(this.setlocks);
             this.skillsTab.Controls.Add(this.resetDelta);
             this.skillsTab.Controls.Add(this.skillList);
-            this.skillsTab.Location = new System.Drawing.Point(4, 44);
+            this.skillsTab.Location = new System.Drawing.Point(4, 54);
             this.skillsTab.Name = "skillsTab";
-            this.skillsTab.Size = new System.Drawing.Size(519, 322);
+            this.skillsTab.Size = new System.Drawing.Size(607, 404);
             this.skillsTab.TabIndex = 2;
             this.skillsTab.Text = "Skills";
-            //
+            // 
             // captureMibs
-            //
-            this.captureMibs.Location = new System.Drawing.Point(356, 230);
+            // 
+            this.captureMibs.Location = new System.Drawing.Point(415, 288);
             this.captureMibs.Name = "captureMibs";
-            this.captureMibs.Size = new System.Drawing.Size(153, 19);
+            this.captureMibs.Size = new System.Drawing.Size(179, 23);
             this.captureMibs.TabIndex = 70;
             this.captureMibs.Text = "Capture MIBs to file";
             this.captureMibs.UseVisualStyleBackColor = true;
             this.captureMibs.CheckedChanged += new System.EventHandler(this.captureMibs_CheckedChanged);
-            //
+            // 
             // dispDeltaOverhead
-            //
+            // 
             this.dispDeltaOverhead.AutoSize = true;
             this.dispDeltaOverhead.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dispDeltaOverhead.Location = new System.Drawing.Point(441, 207);
+            this.dispDeltaOverhead.Location = new System.Drawing.Point(514, 259);
             this.dispDeltaOverhead.Name = "dispDeltaOverhead";
-            this.dispDeltaOverhead.Size = new System.Drawing.Size(71, 17);
+            this.dispDeltaOverhead.Size = new System.Drawing.Size(92, 23);
             this.dispDeltaOverhead.TabIndex = 14;
             this.dispDeltaOverhead.Text = "Overhead";
             this.dispDeltaOverhead.UseVisualStyleBackColor = true;
             this.dispDeltaOverhead.CheckedChanged += new System.EventHandler(this.dispDeltaOverhead_CheckedChanged);
-            //
+            // 
             // logSkillChanges
-            //
-            this.logSkillChanges.Location = new System.Drawing.Point(356, 157);
+            // 
+            this.logSkillChanges.Location = new System.Drawing.Point(415, 196);
             this.logSkillChanges.Name = "logSkillChanges";
-            this.logSkillChanges.Size = new System.Drawing.Size(156, 19);
+            this.logSkillChanges.Size = new System.Drawing.Size(182, 24);
             this.logSkillChanges.TabIndex = 13;
             this.logSkillChanges.Text = "Log skill changes";
             this.logSkillChanges.UseVisualStyleBackColor = true;
             this.logSkillChanges.CheckedChanged += new System.EventHandler(this.logSkillChanges_CheckedChanged);
-            //
+            // 
             // dispDelta
-            //
-            this.dispDelta.Location = new System.Drawing.Point(356, 182);
+            // 
+            this.dispDelta.Location = new System.Drawing.Point(415, 228);
             this.dispDelta.Name = "dispDelta";
-            this.dispDelta.Size = new System.Drawing.Size(156, 19);
+            this.dispDelta.Size = new System.Drawing.Size(182, 23);
             this.dispDelta.TabIndex = 11;
             this.dispDelta.Text = "Show skill/stat changes";
             this.dispDelta.CheckedChanged += new System.EventHandler(this.dispDelta_CheckedChanged);
-            //
+            // 
             // skillCopyAll
-            //
-            this.skillCopyAll.Location = new System.Drawing.Point(356, 119);
+            // 
+            this.skillCopyAll.Location = new System.Drawing.Point(415, 149);
             this.skillCopyAll.Name = "skillCopyAll";
-            this.skillCopyAll.Size = new System.Drawing.Size(156, 32);
+            this.skillCopyAll.Size = new System.Drawing.Size(182, 40);
             this.skillCopyAll.TabIndex = 9;
             this.skillCopyAll.Text = "Copy All";
             this.skillCopyAll.Click += new System.EventHandler(this.skillCopyAll_Click);
-            //
+            // 
             // skillCopySel
-            //
-            this.skillCopySel.Location = new System.Drawing.Point(356, 81);
+            // 
+            this.skillCopySel.Location = new System.Drawing.Point(415, 101);
             this.skillCopySel.Name = "skillCopySel";
-            this.skillCopySel.Size = new System.Drawing.Size(156, 32);
+            this.skillCopySel.Size = new System.Drawing.Size(182, 40);
             this.skillCopySel.TabIndex = 8;
             this.skillCopySel.Text = "Copy Selected";
             this.skillCopySel.Click += new System.EventHandler(this.skillCopySel_Click);
-            //
+            // 
             // baseTotal
-            //
+            // 
             this.baseTotal.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.baseTotal.Location = new System.Drawing.Point(428, 290);
+            this.baseTotal.Location = new System.Drawing.Point(499, 362);
             this.baseTotal.Name = "baseTotal";
             this.baseTotal.ReadOnly = true;
-            this.baseTotal.Size = new System.Drawing.Size(84, 23);
+            this.baseTotal.Size = new System.Drawing.Size(98, 27);
             this.baseTotal.TabIndex = 7;
             this.baseTotal.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            //
+            // 
             // label1
-            //
-            this.label1.Location = new System.Drawing.Point(356, 289);
+            // 
+            this.label1.Location = new System.Drawing.Point(415, 361);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(75, 23);
+            this.label1.Size = new System.Drawing.Size(88, 29);
             this.label1.TabIndex = 6;
             this.label1.Text = "Base Total:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // locks
-            //
+            // 
             this.locks.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.locks.Items.AddRange(new object[] {
             "Up",
             "Down",
             "Locked"});
-            this.locks.Location = new System.Drawing.Point(468, 49);
+            this.locks.Location = new System.Drawing.Point(546, 61);
             this.locks.Name = "locks";
-            this.locks.Size = new System.Drawing.Size(44, 23);
+            this.locks.Size = new System.Drawing.Size(51, 28);
             this.locks.TabIndex = 5;
-            //
+            // 
             // setlocks
-            //
-            this.setlocks.Location = new System.Drawing.Point(356, 43);
+            // 
+            this.setlocks.Location = new System.Drawing.Point(415, 54);
             this.setlocks.Name = "setlocks";
-            this.setlocks.Size = new System.Drawing.Size(106, 32);
+            this.setlocks.Size = new System.Drawing.Size(124, 40);
             this.setlocks.TabIndex = 4;
             this.setlocks.Text = "Set all locks:";
             this.setlocks.Click += new System.EventHandler(this.OnSetSkillLocks);
-            //
+            // 
             // resetDelta
-            //
-            this.resetDelta.Location = new System.Drawing.Point(356, 5);
+            // 
+            this.resetDelta.Location = new System.Drawing.Point(415, 6);
             this.resetDelta.Name = "resetDelta";
-            this.resetDelta.Size = new System.Drawing.Size(156, 32);
+            this.resetDelta.Size = new System.Drawing.Size(182, 40);
             this.resetDelta.TabIndex = 3;
             this.resetDelta.Text = "Reset  +/-";
             this.resetDelta.Click += new System.EventHandler(this.OnResetSkillDelta);
-            //
+            // 
             // skillList
-            //
+            // 
             this.skillList.AutoArrange = false;
             this.skillList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.skillHDRName,
@@ -2767,47 +2763,47 @@ namespace Assistant
             this.skillHDRcap,
             this.skillHDRlock});
             this.skillList.FullRowSelect = true;
-            this.skillList.Location = new System.Drawing.Point(8, 5);
+            this.skillList.Location = new System.Drawing.Point(9, 6);
             this.skillList.Name = "skillList";
-            this.skillList.Size = new System.Drawing.Size(342, 307);
+            this.skillList.Size = new System.Drawing.Size(399, 384);
             this.skillList.TabIndex = 1;
             this.skillList.UseCompatibleStateImageBehavior = false;
             this.skillList.View = System.Windows.Forms.View.Details;
             this.skillList.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.OnSkillColClick);
             this.skillList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.skillList_MouseDown);
-            //
+            // 
             // skillHDRName
-            //
+            // 
             this.skillHDRName.Text = "Skill Name";
             this.skillHDRName.Width = 112;
-            //
+            // 
             // skillHDRvalue
-            //
+            // 
             this.skillHDRvalue.Text = "Value";
             this.skillHDRvalue.Width = 46;
-            //
+            // 
             // skillHDRbase
-            //
+            // 
             this.skillHDRbase.Text = "Base";
             this.skillHDRbase.Width = 43;
-            //
+            // 
             // skillHDRdelta
-            //
+            // 
             this.skillHDRdelta.Text = "+/-";
             this.skillHDRdelta.Width = 40;
-            //
+            // 
             // skillHDRcap
-            //
+            // 
             this.skillHDRcap.Text = "Cap";
             this.skillHDRcap.Width = 40;
-            //
+            // 
             // skillHDRlock
-            //
+            // 
             this.skillHDRlock.Text = "Lock";
             this.skillHDRlock.Width = 40;
-            //
+            // 
             // agentsTab
-            //
+            // 
             this.agentsTab.Controls.Add(this.agentB6);
             this.agentsTab.Controls.Add(this.agentB5);
             this.agentsTab.Controls.Add(this.agentList);
@@ -2816,150 +2812,150 @@ namespace Assistant
             this.agentsTab.Controls.Add(this.agentB1);
             this.agentsTab.Controls.Add(this.agentB2);
             this.agentsTab.Controls.Add(this.agentB3);
-            this.agentsTab.Location = new System.Drawing.Point(4, 44);
+            this.agentsTab.Location = new System.Drawing.Point(4, 54);
             this.agentsTab.Name = "agentsTab";
-            this.agentsTab.Size = new System.Drawing.Size(519, 322);
+            this.agentsTab.Size = new System.Drawing.Size(607, 404);
             this.agentsTab.TabIndex = 6;
             this.agentsTab.Text = "Agents";
-            //
+            // 
             // agentB6
-            //
-            this.agentB6.Location = new System.Drawing.Point(8, 231);
+            // 
+            this.agentB6.Location = new System.Drawing.Point(9, 289);
             this.agentB6.Name = "agentB6";
-            this.agentB6.Size = new System.Drawing.Size(130, 32);
+            this.agentB6.Size = new System.Drawing.Size(152, 40);
             this.agentB6.TabIndex = 6;
             this.agentB6.Click += new System.EventHandler(this.agentB6_Click);
-            //
+            // 
             // agentB5
-            //
-            this.agentB5.Location = new System.Drawing.Point(8, 193);
+            // 
+            this.agentB5.Location = new System.Drawing.Point(9, 241);
             this.agentB5.Name = "agentB5";
-            this.agentB5.Size = new System.Drawing.Size(130, 32);
+            this.agentB5.Size = new System.Drawing.Size(152, 40);
             this.agentB5.TabIndex = 5;
             this.agentB5.Click += new System.EventHandler(this.agentB5_Click);
-            //
+            // 
             // agentList
-            //
+            // 
             this.agentList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.agentList.Location = new System.Drawing.Point(8, 14);
+            this.agentList.Location = new System.Drawing.Point(9, 18);
             this.agentList.Name = "agentList";
-            this.agentList.Size = new System.Drawing.Size(130, 23);
+            this.agentList.Size = new System.Drawing.Size(152, 28);
             this.agentList.TabIndex = 2;
             this.agentList.SelectedIndexChanged += new System.EventHandler(this.agentList_SelectedIndexChanged);
-            //
+            // 
             // agentGroup
-            //
+            // 
             this.agentGroup.Controls.Add(this.agentSubList);
-            this.agentGroup.Location = new System.Drawing.Point(144, 3);
+            this.agentGroup.Location = new System.Drawing.Point(168, 4);
             this.agentGroup.Name = "agentGroup";
-            this.agentGroup.Size = new System.Drawing.Size(368, 309);
+            this.agentGroup.Size = new System.Drawing.Size(429, 386);
             this.agentGroup.TabIndex = 1;
             this.agentGroup.TabStop = false;
-            //
+            // 
             // agentSubList
-            //
+            // 
             this.agentSubList.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.agentSubList.IntegralHeight = false;
-            this.agentSubList.ItemHeight = 15;
-            this.agentSubList.Location = new System.Drawing.Point(6, 15);
+            this.agentSubList.ItemHeight = 20;
+            this.agentSubList.Location = new System.Drawing.Point(7, 19);
             this.agentSubList.Name = "agentSubList";
-            this.agentSubList.Size = new System.Drawing.Size(356, 288);
+            this.agentSubList.Size = new System.Drawing.Size(415, 360);
             this.agentSubList.TabIndex = 0;
             this.agentSubList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.agentSubList_MouseDown);
-            //
+            // 
             // agentB4
-            //
-            this.agentB4.Location = new System.Drawing.Point(8, 155);
+            // 
+            this.agentB4.Location = new System.Drawing.Point(9, 194);
             this.agentB4.Name = "agentB4";
-            this.agentB4.Size = new System.Drawing.Size(130, 32);
+            this.agentB4.Size = new System.Drawing.Size(152, 40);
             this.agentB4.TabIndex = 4;
             this.agentB4.Click += new System.EventHandler(this.agentB4_Click);
-            //
+            // 
             // agentB1
-            //
-            this.agentB1.Location = new System.Drawing.Point(8, 41);
+            // 
+            this.agentB1.Location = new System.Drawing.Point(9, 51);
             this.agentB1.Name = "agentB1";
-            this.agentB1.Size = new System.Drawing.Size(130, 32);
+            this.agentB1.Size = new System.Drawing.Size(152, 40);
             this.agentB1.TabIndex = 1;
             this.agentB1.Click += new System.EventHandler(this.agentB1_Click);
-            //
+            // 
             // agentB2
-            //
-            this.agentB2.Location = new System.Drawing.Point(8, 79);
+            // 
+            this.agentB2.Location = new System.Drawing.Point(9, 99);
             this.agentB2.Name = "agentB2";
-            this.agentB2.Size = new System.Drawing.Size(130, 32);
+            this.agentB2.Size = new System.Drawing.Size(152, 40);
             this.agentB2.TabIndex = 2;
             this.agentB2.Click += new System.EventHandler(this.agentB2_Click);
-            //
+            // 
             // agentB3
-            //
-            this.agentB3.Location = new System.Drawing.Point(8, 117);
+            // 
+            this.agentB3.Location = new System.Drawing.Point(9, 146);
             this.agentB3.Name = "agentB3";
-            this.agentB3.Size = new System.Drawing.Size(130, 32);
+            this.agentB3.Size = new System.Drawing.Size(152, 40);
             this.agentB3.TabIndex = 3;
             this.agentB3.Click += new System.EventHandler(this.agentB3_Click);
-            //
+            // 
             // hotkeysTab
-            //
+            // 
             this.hotkeysTab.Controls.Add(this.filterHotkeys);
             this.hotkeysTab.Controls.Add(this.label22);
             this.hotkeysTab.Controls.Add(this.hkStatus);
             this.hotkeysTab.Controls.Add(this.hotkeyTree);
             this.hotkeysTab.Controls.Add(this.dohotkey);
             this.hotkeysTab.Controls.Add(this.groupBox8);
-            this.hotkeysTab.Location = new System.Drawing.Point(4, 44);
+            this.hotkeysTab.Location = new System.Drawing.Point(4, 54);
             this.hotkeysTab.Name = "hotkeysTab";
-            this.hotkeysTab.Size = new System.Drawing.Size(519, 322);
+            this.hotkeysTab.Size = new System.Drawing.Size(607, 404);
             this.hotkeysTab.TabIndex = 4;
             this.hotkeysTab.Text = "Hot Keys";
-            //
+            // 
             // filterHotkeys
-            //
-            this.filterHotkeys.Location = new System.Drawing.Point(50, 8);
+            // 
+            this.filterHotkeys.Location = new System.Drawing.Point(58, 10);
             this.filterHotkeys.Name = "filterHotkeys";
-            this.filterHotkeys.Size = new System.Drawing.Size(281, 23);
+            this.filterHotkeys.Size = new System.Drawing.Size(328, 27);
             this.filterHotkeys.TabIndex = 9;
             this.filterHotkeys.TextChanged += new System.EventHandler(this.filterHotkeys_TextChanged);
-            //
+            // 
             // label22
-            //
+            // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(8, 11);
+            this.label22.Location = new System.Drawing.Point(9, 14);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(36, 15);
+            this.label22.Size = new System.Drawing.Size(45, 20);
             this.label22.TabIndex = 8;
             this.label22.Text = "Filter:";
-            //
+            // 
             // hkStatus
-            //
+            // 
             this.hkStatus.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hkStatus.Location = new System.Drawing.Point(337, 206);
+            this.hkStatus.Location = new System.Drawing.Point(393, 258);
             this.hkStatus.Name = "hkStatus";
-            this.hkStatus.Size = new System.Drawing.Size(175, 64);
+            this.hkStatus.Size = new System.Drawing.Size(204, 80);
             this.hkStatus.TabIndex = 7;
             this.hkStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // hotkeyTree
-            //
+            // 
             this.hotkeyTree.HideSelection = false;
-            this.hotkeyTree.Location = new System.Drawing.Point(8, 37);
+            this.hotkeyTree.Location = new System.Drawing.Point(9, 46);
             this.hotkeyTree.Name = "hotkeyTree";
-            this.hotkeyTree.Size = new System.Drawing.Size(323, 275);
+            this.hotkeyTree.Size = new System.Drawing.Size(377, 344);
             this.hotkeyTree.Sorted = true;
             this.hotkeyTree.TabIndex = 6;
             this.hotkeyTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.hotkeyTree_AfterSelect);
-            //
+            // 
             // dohotkey
-            //
-            this.dohotkey.Location = new System.Drawing.Point(337, 140);
+            // 
+            this.dohotkey.Location = new System.Drawing.Point(393, 175);
             this.dohotkey.Name = "dohotkey";
-            this.dohotkey.Size = new System.Drawing.Size(175, 29);
+            this.dohotkey.Size = new System.Drawing.Size(204, 36);
             this.dohotkey.TabIndex = 5;
             this.dohotkey.Text = "Execute Selected Hot Key";
             this.dohotkey.Click += new System.EventHandler(this.dohotkey_Click);
-            //
+            // 
             // groupBox8
-            //
+            // 
             this.groupBox8.Controls.Add(this.chkAlt);
             this.groupBox8.Controls.Add(this.chkPass);
             this.groupBox8.Controls.Add(this.label2);
@@ -2968,104 +2964,104 @@ namespace Assistant
             this.groupBox8.Controls.Add(this.key);
             this.groupBox8.Controls.Add(this.chkCtrl);
             this.groupBox8.Controls.Add(this.chkShift);
-            this.groupBox8.Location = new System.Drawing.Point(337, 8);
+            this.groupBox8.Location = new System.Drawing.Point(393, 10);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(175, 124);
+            this.groupBox8.Size = new System.Drawing.Size(204, 155);
             this.groupBox8.TabIndex = 4;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Hot Key";
-            //
+            // 
             // chkAlt
-            //
-            this.chkAlt.Location = new System.Drawing.Point(58, 20);
+            // 
+            this.chkAlt.Location = new System.Drawing.Point(68, 25);
             this.chkAlt.Name = "chkAlt";
-            this.chkAlt.Size = new System.Drawing.Size(49, 16);
+            this.chkAlt.Size = new System.Drawing.Size(57, 20);
             this.chkAlt.TabIndex = 2;
             this.chkAlt.Text = "Alt";
-            //
+            // 
             // chkPass
-            //
-            this.chkPass.Location = new System.Drawing.Point(11, 69);
+            // 
+            this.chkPass.Location = new System.Drawing.Point(13, 86);
             this.chkPass.Name = "chkPass";
-            this.chkPass.Size = new System.Drawing.Size(113, 16);
+            this.chkPass.Size = new System.Drawing.Size(132, 20);
             this.chkPass.TabIndex = 9;
             this.chkPass.Text = "Pass to UO";
-            //
+            // 
             // label2
-            //
-            this.label2.Location = new System.Drawing.Point(8, 44);
+            // 
+            this.label2.Location = new System.Drawing.Point(9, 55);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(28, 20);
+            this.label2.Size = new System.Drawing.Size(33, 25);
             this.label2.TabIndex = 8;
             this.label2.Text = "Key:";
-            //
+            // 
             // unsetHK
-            //
-            this.unsetHK.Location = new System.Drawing.Point(8, 90);
+            // 
+            this.unsetHK.Location = new System.Drawing.Point(9, 112);
             this.unsetHK.Name = "unsetHK";
-            this.unsetHK.Size = new System.Drawing.Size(56, 26);
+            this.unsetHK.Size = new System.Drawing.Size(66, 33);
             this.unsetHK.TabIndex = 6;
             this.unsetHK.Text = "Unset";
             this.unsetHK.Click += new System.EventHandler(this.unsetHK_Click);
-            //
+            // 
             // setHK
-            //
-            this.setHK.Location = new System.Drawing.Point(113, 90);
+            // 
+            this.setHK.Location = new System.Drawing.Point(132, 112);
             this.setHK.Name = "setHK";
-            this.setHK.Size = new System.Drawing.Size(56, 26);
+            this.setHK.Size = new System.Drawing.Size(65, 33);
             this.setHK.TabIndex = 5;
             this.setHK.Text = "Set";
             this.setHK.Click += new System.EventHandler(this.setHK_Click);
-            //
+            // 
             // key
-            //
-            this.key.Location = new System.Drawing.Point(36, 40);
+            // 
+            this.key.Location = new System.Drawing.Point(42, 50);
             this.key.Name = "key";
             this.key.ReadOnly = true;
-            this.key.Size = new System.Drawing.Size(133, 23);
+            this.key.Size = new System.Drawing.Size(155, 27);
             this.key.TabIndex = 4;
             this.key.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.key.KeyUp += new System.Windows.Forms.KeyEventHandler(this.key_KeyUp);
             this.key.MouseDown += new System.Windows.Forms.MouseEventHandler(this.key_MouseDown);
             this.key.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.key_MouseWheel);
-            //
+            // 
             // chkCtrl
-            //
-            this.chkCtrl.Location = new System.Drawing.Point(8, 20);
+            // 
+            this.chkCtrl.Location = new System.Drawing.Point(9, 25);
             this.chkCtrl.Name = "chkCtrl";
-            this.chkCtrl.Size = new System.Drawing.Size(56, 16);
+            this.chkCtrl.Size = new System.Drawing.Size(66, 20);
             this.chkCtrl.TabIndex = 1;
             this.chkCtrl.Text = "Ctrl";
-            //
+            // 
             // chkShift
-            //
-            this.chkShift.Location = new System.Drawing.Point(113, 20);
+            // 
+            this.chkShift.Location = new System.Drawing.Point(132, 25);
             this.chkShift.Name = "chkShift";
-            this.chkShift.Size = new System.Drawing.Size(56, 16);
+            this.chkShift.Size = new System.Drawing.Size(65, 20);
             this.chkShift.TabIndex = 3;
             this.chkShift.Text = "Shift";
-            //
+            // 
             // macrosTab
-            //
+            // 
             this.macrosTab.Controls.Add(this.tabControl2);
-            this.macrosTab.Location = new System.Drawing.Point(4, 44);
+            this.macrosTab.Location = new System.Drawing.Point(4, 54);
             this.macrosTab.Name = "macrosTab";
-            this.macrosTab.Size = new System.Drawing.Size(519, 322);
+            this.macrosTab.Size = new System.Drawing.Size(607, 404);
             this.macrosTab.TabIndex = 7;
             this.macrosTab.Text = "Macros";
-            //
+            // 
             // tabControl2
-            //
+            // 
             this.tabControl2.Controls.Add(this.subMacrosTab);
             this.tabControl2.Controls.Add(this.subMacrosOptionsTab);
-            this.tabControl2.Location = new System.Drawing.Point(6, 3);
+            this.tabControl2.Location = new System.Drawing.Point(7, 4);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(510, 314);
+            this.tabControl2.Size = new System.Drawing.Size(595, 392);
             this.tabControl2.TabIndex = 13;
-            //
+            // 
             // subMacrosTab
-            //
+            // 
             this.subMacrosTab.BackColor = System.Drawing.SystemColors.Control;
             this.subMacrosTab.Controls.Add(this.macroActGroup);
             this.subMacrosTab.Controls.Add(this.filterMacros);
@@ -3073,126 +3069,126 @@ namespace Assistant
             this.subMacrosTab.Controls.Add(this.macroTree);
             this.subMacrosTab.Controls.Add(this.delMacro);
             this.subMacrosTab.Controls.Add(this.newMacro);
-            this.subMacrosTab.Location = new System.Drawing.Point(4, 24);
+            this.subMacrosTab.Location = new System.Drawing.Point(4, 29);
             this.subMacrosTab.Name = "subMacrosTab";
             this.subMacrosTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subMacrosTab.Size = new System.Drawing.Size(502, 286);
+            this.subMacrosTab.Size = new System.Drawing.Size(587, 359);
             this.subMacrosTab.TabIndex = 0;
             this.subMacrosTab.Text = "Macros";
-            //
+            // 
             // macroActGroup
-            //
+            // 
             this.macroActGroup.Controls.Add(this.playMacro);
             this.macroActGroup.Controls.Add(this.waitDisp);
             this.macroActGroup.Controls.Add(this.loopMacro);
             this.macroActGroup.Controls.Add(this.recMacro);
             this.macroActGroup.Controls.Add(this.actionList);
-            this.macroActGroup.Location = new System.Drawing.Point(200, 3);
+            this.macroActGroup.Location = new System.Drawing.Point(233, 4);
             this.macroActGroup.Name = "macroActGroup";
-            this.macroActGroup.Size = new System.Drawing.Size(296, 272);
+            this.macroActGroup.Size = new System.Drawing.Size(346, 340);
             this.macroActGroup.TabIndex = 18;
             this.macroActGroup.TabStop = false;
             this.macroActGroup.Text = "Actions";
             this.macroActGroup.Visible = false;
-            //
+            // 
             // playMacro
-            //
-            this.playMacro.Location = new System.Drawing.Point(230, 17);
+            // 
+            this.playMacro.Location = new System.Drawing.Point(268, 21);
             this.playMacro.Name = "playMacro";
-            this.playMacro.Size = new System.Drawing.Size(60, 33);
+            this.playMacro.Size = new System.Drawing.Size(70, 41);
             this.playMacro.TabIndex = 6;
             this.playMacro.Text = "Play";
             this.playMacro.Click += new System.EventHandler(this.playMacro_Click);
-            //
+            // 
             // waitDisp
-            //
-            this.waitDisp.Location = new System.Drawing.Point(230, 109);
+            // 
+            this.waitDisp.Location = new System.Drawing.Point(268, 136);
             this.waitDisp.Name = "waitDisp";
-            this.waitDisp.Size = new System.Drawing.Size(60, 89);
+            this.waitDisp.Size = new System.Drawing.Size(70, 112);
             this.waitDisp.TabIndex = 5;
             this.waitDisp.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // loopMacro
-            //
-            this.loopMacro.Location = new System.Drawing.Point(233, 242);
+            // 
+            this.loopMacro.Location = new System.Drawing.Point(272, 302);
             this.loopMacro.Name = "loopMacro";
-            this.loopMacro.Size = new System.Drawing.Size(57, 24);
+            this.loopMacro.Size = new System.Drawing.Size(66, 30);
             this.loopMacro.TabIndex = 4;
             this.loopMacro.Text = "Loop";
             this.loopMacro.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.loopMacro.CheckedChanged += new System.EventHandler(this.loopMacro_CheckedChanged);
-            //
+            // 
             // recMacro
-            //
-            this.recMacro.Location = new System.Drawing.Point(230, 56);
+            // 
+            this.recMacro.Location = new System.Drawing.Point(268, 70);
             this.recMacro.Name = "recMacro";
-            this.recMacro.Size = new System.Drawing.Size(60, 33);
+            this.recMacro.Size = new System.Drawing.Size(70, 41);
             this.recMacro.TabIndex = 3;
             this.recMacro.Text = "Record";
             this.recMacro.Click += new System.EventHandler(this.recMacro_Click);
-            //
+            // 
             // actionList
-            //
+            // 
             this.actionList.BackColor = System.Drawing.SystemColors.Window;
             this.actionList.HorizontalScrollbar = true;
             this.actionList.IntegralHeight = false;
-            this.actionList.ItemHeight = 15;
-            this.actionList.Location = new System.Drawing.Point(6, 17);
+            this.actionList.ItemHeight = 20;
+            this.actionList.Location = new System.Drawing.Point(7, 21);
             this.actionList.Name = "actionList";
-            this.actionList.Size = new System.Drawing.Size(218, 249);
+            this.actionList.Size = new System.Drawing.Size(254, 311);
             this.actionList.TabIndex = 0;
             this.actionList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.actionList_KeyDown);
             this.actionList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.actionList_MouseDown);
-            //
+            // 
             // filterMacros
-            //
-            this.filterMacros.Location = new System.Drawing.Point(47, 7);
+            // 
+            this.filterMacros.Location = new System.Drawing.Point(55, 9);
             this.filterMacros.Name = "filterMacros";
-            this.filterMacros.Size = new System.Drawing.Size(147, 23);
+            this.filterMacros.Size = new System.Drawing.Size(171, 27);
             this.filterMacros.TabIndex = 17;
             this.filterMacros.TextChanged += new System.EventHandler(this.filterMacros_TextChanged);
-            //
+            // 
             // filterLabel
-            //
+            // 
             this.filterLabel.AutoSize = true;
-            this.filterLabel.Location = new System.Drawing.Point(5, 10);
+            this.filterLabel.Location = new System.Drawing.Point(6, 12);
             this.filterLabel.Name = "filterLabel";
-            this.filterLabel.Size = new System.Drawing.Size(36, 15);
+            this.filterLabel.Size = new System.Drawing.Size(45, 20);
             this.filterLabel.TabIndex = 16;
             this.filterLabel.Text = "Filter:";
-            //
+            // 
             // macroTree
-            //
+            // 
             this.macroTree.FullRowSelect = true;
             this.macroTree.HideSelection = false;
-            this.macroTree.Location = new System.Drawing.Point(6, 36);
+            this.macroTree.Location = new System.Drawing.Point(7, 45);
             this.macroTree.Name = "macroTree";
-            this.macroTree.Size = new System.Drawing.Size(188, 203);
+            this.macroTree.Size = new System.Drawing.Size(219, 254);
             this.macroTree.Sorted = true;
             this.macroTree.TabIndex = 15;
             this.macroTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.macroTree_AfterSelect);
             this.macroTree.MouseDown += new System.Windows.Forms.MouseEventHandler(this.macroTree_MouseDown);
-            //
+            // 
             // delMacro
-            //
-            this.delMacro.Location = new System.Drawing.Point(120, 245);
+            // 
+            this.delMacro.Location = new System.Drawing.Point(140, 306);
             this.delMacro.Name = "delMacro";
-            this.delMacro.Size = new System.Drawing.Size(74, 30);
+            this.delMacro.Size = new System.Drawing.Size(86, 38);
             this.delMacro.TabIndex = 14;
             this.delMacro.Text = "Remove";
             this.delMacro.Click += new System.EventHandler(this.delMacro_Click);
-            //
+            // 
             // newMacro
-            //
-            this.newMacro.Location = new System.Drawing.Point(8, 245);
+            // 
+            this.newMacro.Location = new System.Drawing.Point(9, 306);
             this.newMacro.Name = "newMacro";
-            this.newMacro.Size = new System.Drawing.Size(74, 30);
+            this.newMacro.Size = new System.Drawing.Size(87, 38);
             this.newMacro.TabIndex = 13;
             this.newMacro.Text = "New...";
             this.newMacro.Click += new System.EventHandler(this.newMacro_Click);
-            //
+            // 
             // subMacrosOptionsTab
-            //
+            // 
             this.subMacrosOptionsTab.BackColor = System.Drawing.SystemColors.Control;
             this.subMacrosOptionsTab.Controls.Add(this.macroActionDelay);
             this.subMacrosOptionsTab.Controls.Add(this.rangeCheckDoubleClick);
@@ -3201,147 +3197,158 @@ namespace Assistant
             this.subMacrosOptionsTab.Controls.Add(this.stepThroughMacro);
             this.subMacrosOptionsTab.Controls.Add(this.targetByTypeDifferent);
             this.subMacrosOptionsTab.Controls.Add(this.absoluteTargetGroup);
-            this.subMacrosOptionsTab.Location = new System.Drawing.Point(4, 24);
+            this.subMacrosOptionsTab.Location = new System.Drawing.Point(4, 29);
             this.subMacrosOptionsTab.Name = "subMacrosOptionsTab";
             this.subMacrosOptionsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subMacrosOptionsTab.Size = new System.Drawing.Size(502, 286);
+            this.subMacrosOptionsTab.Size = new System.Drawing.Size(587, 359);
             this.subMacrosOptionsTab.TabIndex = 1;
             this.subMacrosOptionsTab.Text = "Options";
-            //
+            // 
+            // macroActionDelay
+            // 
+            this.macroActionDelay.AutoSize = true;
+            this.macroActionDelay.Location = new System.Drawing.Point(317, 198);
+            this.macroActionDelay.Name = "macroActionDelay";
+            this.macroActionDelay.Size = new System.Drawing.Size(260, 24);
+            this.macroActionDelay.TabIndex = 16;
+            this.macroActionDelay.Text = "Default macro action delay (50ms)";
+            this.macroActionDelay.UseVisualStyleBackColor = true;
+            this.macroActionDelay.CheckedChanged += new System.EventHandler(this.macroActionDelay_CheckedChanged);
+            // 
             // rangeCheckDoubleClick
-            //
+            // 
             this.rangeCheckDoubleClick.AutoSize = true;
-            this.rangeCheckDoubleClick.Location = new System.Drawing.Point(272, 78);
+            this.rangeCheckDoubleClick.Location = new System.Drawing.Point(317, 98);
             this.rangeCheckDoubleClick.Name = "rangeCheckDoubleClick";
-            this.rangeCheckDoubleClick.Size = new System.Drawing.Size(208, 19);
+            this.rangeCheckDoubleClick.Size = new System.Drawing.Size(256, 24);
             this.rangeCheckDoubleClick.TabIndex = 15;
             this.rangeCheckDoubleClick.Text = "Range check on \'DoubleClickType\'";
             this.rangeCheckDoubleClick.UseVisualStyleBackColor = true;
             this.rangeCheckDoubleClick.CheckedChanged += new System.EventHandler(this.rangeCheckDoubleClick_CheckedChanged);
-            //
+            // 
             // rangeCheckTargetByType
-            //
+            // 
             this.rangeCheckTargetByType.AutoSize = true;
-            this.rangeCheckTargetByType.Location = new System.Drawing.Point(272, 53);
+            this.rangeCheckTargetByType.Location = new System.Drawing.Point(317, 66);
             this.rangeCheckTargetByType.Name = "rangeCheckTargetByType";
-            this.rangeCheckTargetByType.Size = new System.Drawing.Size(190, 19);
+            this.rangeCheckTargetByType.Size = new System.Drawing.Size(233, 24);
             this.rangeCheckTargetByType.TabIndex = 14;
             this.rangeCheckTargetByType.Text = "Range check on \'TargetByType\'";
             this.rangeCheckTargetByType.UseVisualStyleBackColor = true;
             this.rangeCheckTargetByType.CheckedChanged += new System.EventHandler(this.rangeCheckTargetByType_CheckedChanged);
-            //
+            // 
             // nextMacroAction
-            //
+            // 
             this.nextMacroAction.Enabled = false;
-            this.nextMacroAction.Location = new System.Drawing.Point(412, 115);
+            this.nextMacroAction.Location = new System.Drawing.Point(481, 144);
             this.nextMacroAction.Name = "nextMacroAction";
-            this.nextMacroAction.Size = new System.Drawing.Size(60, 23);
+            this.nextMacroAction.Size = new System.Drawing.Size(70, 28);
             this.nextMacroAction.TabIndex = 13;
             this.nextMacroAction.Text = "Next";
             this.nextMacroAction.UseVisualStyleBackColor = true;
             this.nextMacroAction.Click += new System.EventHandler(this.nextMacroAction_Click);
-            //
+            // 
             // stepThroughMacro
-            //
+            // 
             this.stepThroughMacro.AutoSize = true;
-            this.stepThroughMacro.Location = new System.Drawing.Point(272, 118);
+            this.stepThroughMacro.Location = new System.Drawing.Point(317, 148);
             this.stepThroughMacro.Name = "stepThroughMacro";
-            this.stepThroughMacro.Size = new System.Drawing.Size(135, 19);
+            this.stepThroughMacro.Size = new System.Drawing.Size(166, 24);
             this.stepThroughMacro.TabIndex = 12;
             this.stepThroughMacro.Text = "Step Through Macro";
             this.stepThroughMacro.UseVisualStyleBackColor = true;
             this.stepThroughMacro.CheckedChanged += new System.EventHandler(this.stepThroughMacro_CheckedChanged);
-            //
+            // 
             // targetByTypeDifferent
-            //
+            // 
             this.targetByTypeDifferent.AutoSize = true;
-            this.targetByTypeDifferent.Location = new System.Drawing.Point(272, 28);
+            this.targetByTypeDifferent.Location = new System.Drawing.Point(317, 35);
             this.targetByTypeDifferent.Name = "targetByTypeDifferent";
-            this.targetByTypeDifferent.Size = new System.Drawing.Size(183, 19);
+            this.targetByTypeDifferent.Size = new System.Drawing.Size(226, 24);
             this.targetByTypeDifferent.TabIndex = 11;
             this.targetByTypeDifferent.Text = "Force different \'TargetByType\'";
             this.targetByTypeDifferent.UseVisualStyleBackColor = true;
             this.targetByTypeDifferent.CheckedChanged += new System.EventHandler(this.targetByTypeDifferent_CheckedChanged);
-            //
+            // 
             // absoluteTargetGroup
-            //
+            // 
             this.absoluteTargetGroup.Controls.Add(this.macroVariableList);
             this.absoluteTargetGroup.Controls.Add(this.retargetMacroVariable);
             this.absoluteTargetGroup.Controls.Add(this.insertMacroVariable);
             this.absoluteTargetGroup.Controls.Add(this.removeMacroVariable);
             this.absoluteTargetGroup.Controls.Add(this.addMacroVariable);
             this.absoluteTargetGroup.Controls.Add(this.macroVariables);
-            this.absoluteTargetGroup.Location = new System.Drawing.Point(6, 6);
+            this.absoluteTargetGroup.Location = new System.Drawing.Point(7, 8);
             this.absoluteTargetGroup.Name = "absoluteTargetGroup";
-            this.absoluteTargetGroup.Size = new System.Drawing.Size(240, 269);
+            this.absoluteTargetGroup.Size = new System.Drawing.Size(280, 336);
             this.absoluteTargetGroup.TabIndex = 6;
             this.absoluteTargetGroup.TabStop = false;
             this.absoluteTargetGroup.Text = "Macro Variables:";
-            //
+            // 
             // macroVariableList
-            //
+            // 
             this.macroVariableList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.macroVariableList.FormattingEnabled = true;
             this.macroVariableList.Items.AddRange(new object[] {
             "Absolute Targets",
             "DoubleClick Targets"});
-            this.macroVariableList.Location = new System.Drawing.Point(6, 22);
+            this.macroVariableList.Location = new System.Drawing.Point(7, 28);
             this.macroVariableList.Name = "macroVariableList";
-            this.macroVariableList.Size = new System.Drawing.Size(153, 23);
+            this.macroVariableList.Size = new System.Drawing.Size(178, 28);
             this.macroVariableList.TabIndex = 6;
             this.macroVariableList.SelectedIndexChanged += new System.EventHandler(this.macroVariableList_SelectedIndexChanged);
-            //
+            // 
             // retargetMacroVariable
-            //
-            this.retargetMacroVariable.Location = new System.Drawing.Point(165, 84);
+            // 
+            this.retargetMacroVariable.Location = new System.Drawing.Point(192, 105);
             this.retargetMacroVariable.Name = "retargetMacroVariable";
-            this.retargetMacroVariable.Size = new System.Drawing.Size(67, 25);
+            this.retargetMacroVariable.Size = new System.Drawing.Size(79, 31);
             this.retargetMacroVariable.TabIndex = 5;
             this.retargetMacroVariable.Text = "Retarget";
             this.retargetMacroVariable.UseVisualStyleBackColor = true;
             this.retargetMacroVariable.Click += new System.EventHandler(this.retargetMacroVariable_Click);
-            //
+            // 
             // insertMacroVariable
-            //
-            this.insertMacroVariable.Location = new System.Drawing.Point(165, 53);
+            // 
+            this.insertMacroVariable.Location = new System.Drawing.Point(192, 66);
             this.insertMacroVariable.Name = "insertMacroVariable";
-            this.insertMacroVariable.Size = new System.Drawing.Size(67, 25);
+            this.insertMacroVariable.Size = new System.Drawing.Size(79, 32);
             this.insertMacroVariable.TabIndex = 4;
             this.insertMacroVariable.Text = "Insert";
             this.insertMacroVariable.UseVisualStyleBackColor = true;
             this.insertMacroVariable.Click += new System.EventHandler(this.insertMacroVariable_Click);
-            //
+            // 
             // removeMacroVariable
-            //
-            this.removeMacroVariable.Location = new System.Drawing.Point(165, 115);
+            // 
+            this.removeMacroVariable.Location = new System.Drawing.Point(192, 144);
             this.removeMacroVariable.Name = "removeMacroVariable";
-            this.removeMacroVariable.Size = new System.Drawing.Size(67, 25);
+            this.removeMacroVariable.Size = new System.Drawing.Size(79, 31);
             this.removeMacroVariable.TabIndex = 3;
             this.removeMacroVariable.Text = "Remove";
             this.removeMacroVariable.UseVisualStyleBackColor = true;
             this.removeMacroVariable.Click += new System.EventHandler(this.removeMacroVariable_Click);
-            //
+            // 
             // addMacroVariable
-            //
-            this.addMacroVariable.Location = new System.Drawing.Point(165, 22);
+            // 
+            this.addMacroVariable.Location = new System.Drawing.Point(192, 28);
             this.addMacroVariable.Name = "addMacroVariable";
-            this.addMacroVariable.Size = new System.Drawing.Size(67, 25);
+            this.addMacroVariable.Size = new System.Drawing.Size(79, 31);
             this.addMacroVariable.TabIndex = 2;
             this.addMacroVariable.Text = "Add";
             this.addMacroVariable.UseVisualStyleBackColor = true;
             this.addMacroVariable.Click += new System.EventHandler(this.addMacroVariable_Click);
-            //
+            // 
             // macroVariables
-            //
+            // 
             this.macroVariables.FormattingEnabled = true;
-            this.macroVariables.ItemHeight = 15;
-            this.macroVariables.Location = new System.Drawing.Point(6, 53);
+            this.macroVariables.ItemHeight = 20;
+            this.macroVariables.Location = new System.Drawing.Point(7, 66);
             this.macroVariables.Name = "macroVariables";
-            this.macroVariables.Size = new System.Drawing.Size(153, 199);
+            this.macroVariables.Size = new System.Drawing.Size(178, 224);
             this.macroVariables.TabIndex = 1;
-            //
+            // 
             // screenshotTab
-            //
+            // 
             this.screenshotTab.Controls.Add(this.imgurUploads);
             this.screenshotTab.Controls.Add(this.screenShotClipboard);
             this.screenshotTab.Controls.Add(this.screenShotNotification);
@@ -3357,51 +3364,51 @@ namespace Assistant
             this.screenshotTab.Controls.Add(this.screensList);
             this.screenshotTab.Controls.Add(this.screenPrev);
             this.screenshotTab.Controls.Add(this.dispTime);
-            this.screenshotTab.Location = new System.Drawing.Point(4, 44);
+            this.screenshotTab.Location = new System.Drawing.Point(4, 54);
             this.screenshotTab.Name = "screenshotTab";
-            this.screenshotTab.Size = new System.Drawing.Size(519, 322);
+            this.screenshotTab.Size = new System.Drawing.Size(607, 404);
             this.screenshotTab.TabIndex = 8;
             this.screenshotTab.Text = "Screen Shots";
-            //
+            // 
             // imgurUploads
-            //
+            // 
             this.imgurUploads.FormattingEnabled = true;
-            this.imgurUploads.ItemHeight = 15;
-            this.imgurUploads.Location = new System.Drawing.Point(266, 203);
+            this.imgurUploads.ItemHeight = 20;
+            this.imgurUploads.Location = new System.Drawing.Point(310, 254);
             this.imgurUploads.Name = "imgurUploads";
-            this.imgurUploads.Size = new System.Drawing.Size(246, 109);
+            this.imgurUploads.Size = new System.Drawing.Size(287, 124);
             this.imgurUploads.TabIndex = 15;
             this.imgurUploads.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imgurUploads_MouseDown);
-            //
+            // 
             // screenShotClipboard
-            //
-            this.screenShotClipboard.Location = new System.Drawing.Point(12, 264);
+            // 
+            this.screenShotClipboard.Location = new System.Drawing.Point(14, 330);
             this.screenShotClipboard.Name = "screenShotClipboard";
-            this.screenShotClipboard.Size = new System.Drawing.Size(239, 20);
+            this.screenShotClipboard.Size = new System.Drawing.Size(279, 25);
             this.screenShotClipboard.TabIndex = 14;
             this.screenShotClipboard.Text = "Copy link to clipboard after upload";
             this.screenShotClipboard.CheckedChanged += new System.EventHandler(this.screenShotClipboard_CheckedChanged);
-            //
+            // 
             // screenShotNotification
-            //
-            this.screenShotNotification.Location = new System.Drawing.Point(12, 238);
+            // 
+            this.screenShotNotification.Location = new System.Drawing.Point(14, 298);
             this.screenShotNotification.Name = "screenShotNotification";
-            this.screenShotNotification.Size = new System.Drawing.Size(216, 20);
+            this.screenShotNotification.Size = new System.Drawing.Size(252, 24);
             this.screenShotNotification.TabIndex = 13;
             this.screenShotNotification.Text = "Show upload notification";
             this.screenShotNotification.CheckedChanged += new System.EventHandler(this.screenShotNotification_CheckedChanged);
-            //
+            // 
             // screenShotOpenBrowser
-            //
-            this.screenShotOpenBrowser.Location = new System.Drawing.Point(12, 290);
+            // 
+            this.screenShotOpenBrowser.Location = new System.Drawing.Point(14, 362);
             this.screenShotOpenBrowser.Name = "screenShotOpenBrowser";
-            this.screenShotOpenBrowser.Size = new System.Drawing.Size(216, 20);
+            this.screenShotOpenBrowser.Size = new System.Drawing.Size(252, 26);
             this.screenShotOpenBrowser.TabIndex = 12;
             this.screenShotOpenBrowser.Text = "Open link in browser when shared";
             this.screenShotOpenBrowser.CheckedChanged += new System.EventHandler(this.screenShotOpenBrowser_CheckedChanged);
-            //
+            // 
             // imgFmt
-            //
+            // 
             this.imgFmt.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.imgFmt.Items.AddRange(new object[] {
             "jpg",
@@ -3412,108 +3419,108 @@ namespace Assistant
             "wmf",
             "exif",
             "emf"});
-            this.imgFmt.Location = new System.Drawing.Point(102, 134);
+            this.imgFmt.Location = new System.Drawing.Point(119, 168);
             this.imgFmt.Name = "imgFmt";
-            this.imgFmt.Size = new System.Drawing.Size(98, 23);
+            this.imgFmt.Size = new System.Drawing.Size(114, 28);
             this.imgFmt.TabIndex = 11;
             this.imgFmt.SelectedIndexChanged += new System.EventHandler(this.imgFmt_SelectedIndexChanged);
-            //
+            // 
             // label12
-            //
-            this.label12.Location = new System.Drawing.Point(5, 134);
+            // 
+            this.label12.Location = new System.Drawing.Point(6, 168);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(92, 20);
+            this.label12.Size = new System.Drawing.Size(107, 24);
             this.label12.TabIndex = 10;
             this.label12.Text = "Image Format:";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // capNow
-            //
-            this.capNow.Location = new System.Drawing.Point(371, 9);
+            // 
+            this.capNow.Location = new System.Drawing.Point(433, 11);
             this.capNow.Name = "capNow";
-            this.capNow.Size = new System.Drawing.Size(141, 22);
+            this.capNow.Size = new System.Drawing.Size(164, 28);
             this.capNow.TabIndex = 8;
             this.capNow.Text = "Take Screen Shot Now";
             this.capNow.Click += new System.EventHandler(this.capNow_Click);
-            //
+            // 
             // screenPath
-            //
-            this.screenPath.Location = new System.Drawing.Point(8, 8);
+            // 
+            this.screenPath.Location = new System.Drawing.Point(9, 10);
             this.screenPath.Name = "screenPath";
-            this.screenPath.Size = new System.Drawing.Size(316, 23);
+            this.screenPath.Size = new System.Drawing.Size(369, 27);
             this.screenPath.TabIndex = 7;
             this.screenPath.TextChanged += new System.EventHandler(this.screenPath_TextChanged);
-            //
+            // 
             // radioUO
-            //
-            this.radioUO.Location = new System.Drawing.Point(12, 157);
+            // 
+            this.radioUO.Location = new System.Drawing.Point(14, 196);
             this.radioUO.Name = "radioUO";
-            this.radioUO.Size = new System.Drawing.Size(75, 26);
+            this.radioUO.Size = new System.Drawing.Size(87, 33);
             this.radioUO.TabIndex = 6;
             this.radioUO.Text = "UO Only";
             this.radioUO.CheckedChanged += new System.EventHandler(this.radioUO_CheckedChanged);
-            //
+            // 
             // radioFull
-            //
-            this.radioFull.Location = new System.Drawing.Point(102, 157);
+            // 
+            this.radioFull.Location = new System.Drawing.Point(119, 196);
             this.radioFull.Name = "radioFull";
-            this.radioFull.Size = new System.Drawing.Size(88, 26);
+            this.radioFull.Size = new System.Drawing.Size(103, 33);
             this.radioFull.TabIndex = 5;
             this.radioFull.Text = "Full Screen";
             this.radioFull.CheckedChanged += new System.EventHandler(this.radioFull_CheckedChanged);
-            //
+            // 
             // screenAutoCap
-            //
-            this.screenAutoCap.Location = new System.Drawing.Point(12, 212);
+            // 
+            this.screenAutoCap.Location = new System.Drawing.Point(14, 265);
             this.screenAutoCap.Name = "screenAutoCap";
-            this.screenAutoCap.Size = new System.Drawing.Size(180, 20);
+            this.screenAutoCap.Size = new System.Drawing.Size(210, 25);
             this.screenAutoCap.TabIndex = 4;
             this.screenAutoCap.Text = "Auto Death Screen Capture";
             this.screenAutoCap.CheckedChanged += new System.EventHandler(this.screenAutoCap_CheckedChanged);
-            //
+            // 
             // setScnPath
-            //
-            this.setScnPath.Location = new System.Drawing.Point(330, 9);
+            // 
+            this.setScnPath.Location = new System.Drawing.Point(385, 11);
             this.setScnPath.Name = "setScnPath";
-            this.setScnPath.Size = new System.Drawing.Size(35, 22);
+            this.setScnPath.Size = new System.Drawing.Size(41, 28);
             this.setScnPath.TabIndex = 3;
             this.setScnPath.Text = "...";
             this.setScnPath.Click += new System.EventHandler(this.setScnPath_Click);
-            //
+            // 
             // screensList
-            //
+            // 
             this.screensList.IntegralHeight = false;
-            this.screensList.ItemHeight = 15;
-            this.screensList.Location = new System.Drawing.Point(8, 36);
+            this.screensList.ItemHeight = 20;
+            this.screensList.Location = new System.Drawing.Point(9, 45);
             this.screensList.Name = "screensList";
-            this.screensList.Size = new System.Drawing.Size(252, 92);
+            this.screensList.Size = new System.Drawing.Size(294, 115);
             this.screensList.Sorted = true;
             this.screensList.TabIndex = 1;
             this.screensList.SelectedIndexChanged += new System.EventHandler(this.screensList_SelectedIndexChanged);
             this.screensList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.screensList_MouseDown);
-            //
+            // 
             // screenPrev
-            //
+            // 
             this.screenPrev.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.screenPrev.Location = new System.Drawing.Point(266, 36);
+            this.screenPrev.Location = new System.Drawing.Point(310, 45);
             this.screenPrev.Name = "screenPrev";
-            this.screenPrev.Size = new System.Drawing.Size(246, 153);
+            this.screenPrev.Size = new System.Drawing.Size(287, 191);
             this.screenPrev.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.screenPrev.TabIndex = 0;
             this.screenPrev.TabStop = false;
             this.screenPrev.Click += new System.EventHandler(this.screenPrev_Click);
-            //
+            // 
             // dispTime
-            //
-            this.dispTime.Location = new System.Drawing.Point(12, 186);
+            // 
+            this.dispTime.Location = new System.Drawing.Point(14, 232);
             this.dispTime.Name = "dispTime";
-            this.dispTime.Size = new System.Drawing.Size(206, 20);
+            this.dispTime.Size = new System.Drawing.Size(240, 26);
             this.dispTime.TabIndex = 9;
             this.dispTime.Text = "Include Timestamp on images";
             this.dispTime.CheckedChanged += new System.EventHandler(this.dispTime_CheckedChanged);
-            //
+            // 
             // advancedTab
-            //
+            // 
             this.advancedTab.BackColor = System.Drawing.SystemColors.Control;
             this.advancedTab.Controls.Add(this.enableUOAAPI);
             this.advancedTab.Controls.Add(this.disableSmartCPU);
@@ -3524,111 +3531,111 @@ namespace Assistant
             this.advancedTab.Controls.Add(this.logPackets);
             this.advancedTab.Controls.Add(this.statusBox);
             this.advancedTab.Controls.Add(this.features);
-            this.advancedTab.Location = new System.Drawing.Point(4, 44);
+            this.advancedTab.Location = new System.Drawing.Point(4, 54);
             this.advancedTab.Name = "advancedTab";
-            this.advancedTab.Size = new System.Drawing.Size(519, 322);
+            this.advancedTab.Size = new System.Drawing.Size(607, 404);
             this.advancedTab.TabIndex = 12;
             this.advancedTab.Text = "Advanced";
-            //
+            // 
             // enableUOAAPI
-            //
+            // 
             this.enableUOAAPI.Checked = true;
             this.enableUOAAPI.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.enableUOAAPI.Location = new System.Drawing.Point(241, 102);
+            this.enableUOAAPI.Location = new System.Drawing.Point(281, 128);
             this.enableUOAAPI.Name = "enableUOAAPI";
-            this.enableUOAAPI.Size = new System.Drawing.Size(146, 23);
+            this.enableUOAAPI.Size = new System.Drawing.Size(170, 28);
             this.enableUOAAPI.TabIndex = 75;
             this.enableUOAAPI.Text = "Enable UOA API";
             this.enableUOAAPI.CheckedChanged += new System.EventHandler(this.enableUOAAPI_CheckedChanged);
-            //
+            // 
             // disableSmartCPU
-            //
-            this.disableSmartCPU.Location = new System.Drawing.Point(392, 156);
+            // 
+            this.disableSmartCPU.Location = new System.Drawing.Point(457, 195);
             this.disableSmartCPU.Name = "disableSmartCPU";
-            this.disableSmartCPU.Size = new System.Drawing.Size(119, 22);
+            this.disableSmartCPU.Size = new System.Drawing.Size(139, 27);
             this.disableSmartCPU.TabIndex = 74;
             this.disableSmartCPU.Text = "Disable SmartCPU";
             this.disableSmartCPU.UseVisualStyleBackColor = true;
             this.disableSmartCPU.Click += new System.EventHandler(this.disableSmartCPU_Click);
-            //
+            // 
             // negotiate
-            //
-            this.negotiate.Location = new System.Drawing.Point(241, 76);
+            // 
+            this.negotiate.Location = new System.Drawing.Point(281, 95);
             this.negotiate.Name = "negotiate";
-            this.negotiate.Size = new System.Drawing.Size(197, 20);
+            this.negotiate.Size = new System.Drawing.Size(230, 25);
             this.negotiate.TabIndex = 72;
             this.negotiate.Text = "Negotiate features with server";
             this.negotiate.CheckedChanged += new System.EventHandler(this.negotiate_CheckedChanged);
-            //
+            // 
             // openRazorDataDir
-            //
-            this.openRazorDataDir.Location = new System.Drawing.Point(241, 8);
+            // 
+            this.openRazorDataDir.Location = new System.Drawing.Point(281, 10);
             this.openRazorDataDir.Name = "openRazorDataDir";
-            this.openRazorDataDir.Size = new System.Drawing.Size(271, 33);
+            this.openRazorDataDir.Size = new System.Drawing.Size(316, 41);
             this.openRazorDataDir.TabIndex = 70;
             this.openRazorDataDir.Text = "Open Data Directory";
             this.openRazorDataDir.UseVisualStyleBackColor = true;
             this.openRazorDataDir.Click += new System.EventHandler(this.openRazorDataDir_Click);
-            //
+            // 
             // msglvl
-            //
+            // 
             this.msglvl.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.msglvl.Items.AddRange(new object[] {
             "Show All",
             "Warnings & Errors",
             "Errors Only",
             "None"});
-            this.msglvl.Location = new System.Drawing.Point(343, 127);
+            this.msglvl.Location = new System.Drawing.Point(400, 159);
             this.msglvl.Name = "msglvl";
-            this.msglvl.Size = new System.Drawing.Size(168, 23);
+            this.msglvl.Size = new System.Drawing.Size(196, 28);
             this.msglvl.TabIndex = 69;
             this.msglvl.SelectedIndexChanged += new System.EventHandler(this.msglvl_SelectedIndexChanged);
-            //
+            // 
             // label17
-            //
-            this.label17.Location = new System.Drawing.Point(238, 128);
+            // 
+            this.label17.Location = new System.Drawing.Point(278, 160);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(99, 18);
+            this.label17.Size = new System.Drawing.Size(115, 22);
             this.label17.TabIndex = 68;
             this.label17.Text = "Razor messages:";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            //
+            // 
             // logPackets
-            //
-            this.logPackets.Location = new System.Drawing.Point(241, 47);
+            // 
+            this.logPackets.Location = new System.Drawing.Point(281, 59);
             this.logPackets.Name = "logPackets";
-            this.logPackets.Size = new System.Drawing.Size(146, 23);
+            this.logPackets.Size = new System.Drawing.Size(170, 29);
             this.logPackets.TabIndex = 67;
             this.logPackets.Text = "Enable packet logging";
             this.logPackets.CheckedChanged += new System.EventHandler(this.logPackets_CheckedChanged);
-            //
+            // 
             // statusBox
-            //
+            // 
             this.statusBox.BackColor = System.Drawing.SystemColors.Control;
             this.statusBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.statusBox.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.statusBox.HideSelection = false;
-            this.statusBox.Location = new System.Drawing.Point(10, 8);
+            this.statusBox.Location = new System.Drawing.Point(12, 10);
             this.statusBox.Multiline = true;
             this.statusBox.Name = "statusBox";
             this.statusBox.ReadOnly = true;
-            this.statusBox.Size = new System.Drawing.Size(225, 255);
+            this.statusBox.Size = new System.Drawing.Size(262, 319);
             this.statusBox.TabIndex = 66;
-            //
+            // 
             // features
-            //
+            // 
             this.features.Cursor = System.Windows.Forms.Cursors.No;
-            this.features.Location = new System.Drawing.Point(241, 184);
+            this.features.Location = new System.Drawing.Point(281, 230);
             this.features.Multiline = true;
             this.features.Name = "features";
             this.features.ReadOnly = true;
             this.features.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.features.Size = new System.Drawing.Size(271, 79);
+            this.features.Size = new System.Drawing.Size(316, 99);
             this.features.TabIndex = 65;
             this.features.Visible = false;
-            //
+            // 
             // aboutTab
-            //
+            // 
             this.aboutTab.Controls.Add(this.linkGitHub);
             this.aboutTab.Controls.Add(this.lblCredits3);
             this.aboutTab.Controls.Add(this.linkHelp);
@@ -3640,145 +3647,134 @@ namespace Assistant
             this.aboutTab.Controls.Add(this.linkMain);
             this.aboutTab.Controls.Add(this.label21);
             this.aboutTab.Controls.Add(this.aboutVer);
-            this.aboutTab.Location = new System.Drawing.Point(4, 44);
+            this.aboutTab.Location = new System.Drawing.Point(4, 54);
             this.aboutTab.Name = "aboutTab";
-            this.aboutTab.Size = new System.Drawing.Size(519, 322);
+            this.aboutTab.Size = new System.Drawing.Size(607, 404);
             this.aboutTab.TabIndex = 9;
             this.aboutTab.Text = "About";
-            //
+            // 
             // linkGitHub
-            //
+            // 
             this.linkGitHub.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkGitHub.Location = new System.Drawing.Point(6, 163);
+            this.linkGitHub.Location = new System.Drawing.Point(7, 204);
             this.linkGitHub.Name = "linkGitHub";
-            this.linkGitHub.Size = new System.Drawing.Size(506, 20);
+            this.linkGitHub.Size = new System.Drawing.Size(590, 25);
             this.linkGitHub.TabIndex = 25;
             this.linkGitHub.TabStop = true;
             this.linkGitHub.Text = "https://github.com/markdwags/Razor";
             this.linkGitHub.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkGitHub.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkGitHub_LinkClicked);
-            //
+            // 
             // lblCredits3
-            //
+            // 
             this.lblCredits3.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCredits3.Location = new System.Drawing.Point(8, 259);
+            this.lblCredits3.Location = new System.Drawing.Point(9, 324);
             this.lblCredits3.Name = "lblCredits3";
-            this.lblCredits3.Size = new System.Drawing.Size(503, 20);
+            this.lblCredits3.Size = new System.Drawing.Size(587, 25);
             this.lblCredits3.TabIndex = 24;
             this.lblCredits3.Text = "Cross-platform implementation by DarkLotus";
             this.lblCredits3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // linkHelp
-            //
+            // 
             this.linkHelp.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkHelp.Location = new System.Drawing.Point(434, 10);
+            this.linkHelp.Location = new System.Drawing.Point(506, 12);
             this.linkHelp.Name = "linkHelp";
-            this.linkHelp.Size = new System.Drawing.Size(78, 20);
+            this.linkHelp.Size = new System.Drawing.Size(91, 26);
             this.linkHelp.TabIndex = 23;
             this.linkHelp.TabStop = true;
             this.linkHelp.Text = "Need Help?";
             this.linkHelp.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkHelp.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkHelp_LinkClicked);
-            //
+            // 
             // lblCredits2
-            //
+            // 
             this.lblCredits2.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCredits2.Location = new System.Drawing.Point(9, 239);
+            this.lblCredits2.Location = new System.Drawing.Point(10, 299);
             this.lblCredits2.Name = "lblCredits2";
-            this.lblCredits2.Size = new System.Drawing.Size(503, 20);
+            this.lblCredits2.Size = new System.Drawing.Size(587, 25);
             this.lblCredits2.TabIndex = 22;
             this.lblCredits2.Text = "Major design changes including ClassicUO integration by Jaedan";
             this.lblCredits2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // label20
-            //
+            // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(93, 126);
+            this.label20.Location = new System.Drawing.Point(108, 158);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(343, 17);
+            this.label20.Size = new System.Drawing.Size(441, 23);
             this.label20.TabIndex = 21;
             this.label20.Text = "For feedback, support and the latest releases please visit:\r\n";
-            //
+            // 
             // linkLabel1
-            //
+            // 
             this.linkLabel1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkLabel1.Location = new System.Drawing.Point(6, 94);
+            this.linkLabel1.Location = new System.Drawing.Point(7, 118);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(506, 20);
+            this.linkLabel1.Size = new System.Drawing.Size(590, 24);
             this.linkLabel1.TabIndex = 20;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "http://www.uorenaissance.com";
             this.linkLabel1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
-            //
+            // 
             // lblCredits1
-            //
+            // 
             this.lblCredits1.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCredits1.Location = new System.Drawing.Point(6, 219);
+            this.lblCredits1.Location = new System.Drawing.Point(7, 274);
             this.lblCredits1.Name = "lblCredits1";
-            this.lblCredits1.Size = new System.Drawing.Size(506, 20);
+            this.lblCredits1.Size = new System.Drawing.Size(590, 25);
             this.lblCredits1.TabIndex = 19;
             this.lblCredits1.Text = "Razor was designed by Zippy, modified and maintained by Quick";
             this.lblCredits1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // aboutSubInfo
-            //
+            // 
             this.aboutSubInfo.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.aboutSubInfo.Location = new System.Drawing.Point(6, 75);
+            this.aboutSubInfo.Location = new System.Drawing.Point(7, 94);
             this.aboutSubInfo.Name = "aboutSubInfo";
-            this.aboutSubInfo.Size = new System.Drawing.Size(506, 19);
+            this.aboutSubInfo.Size = new System.Drawing.Size(590, 24);
             this.aboutSubInfo.TabIndex = 17;
             this.aboutSubInfo.Text = "UO Renaissance Community Edition";
             this.aboutSubInfo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // linkMain
-            //
+            // 
             this.linkMain.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkMain.Location = new System.Drawing.Point(6, 143);
+            this.linkMain.Location = new System.Drawing.Point(7, 179);
             this.linkMain.Name = "linkMain";
-            this.linkMain.Size = new System.Drawing.Size(506, 20);
+            this.linkMain.Size = new System.Drawing.Size(590, 25);
             this.linkMain.TabIndex = 16;
             this.linkMain.TabStop = true;
             this.linkMain.Text = "http://www.uor-razor.com";
             this.linkMain.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkMain.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
-            //
+            // 
             // label21
-            //
+            // 
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(52, 98);
+            this.label21.Location = new System.Drawing.Point(61, 122);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(0, 15);
+            this.label21.Size = new System.Drawing.Size(0, 20);
             this.label21.TabIndex = 15;
             this.label21.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
+            // 
             // aboutVer
-            //
+            // 
             this.aboutVer.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.aboutVer.Location = new System.Drawing.Point(6, 40);
+            this.aboutVer.Location = new System.Drawing.Point(7, 50);
             this.aboutVer.Name = "aboutVer";
-            this.aboutVer.Size = new System.Drawing.Size(506, 35);
+            this.aboutVer.Size = new System.Drawing.Size(590, 44);
             this.aboutVer.TabIndex = 14;
             this.aboutVer.Text = "Razor v{0}";
             this.aboutVer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            //
-            // macroActionDelay
-            //
-            this.macroActionDelay.AutoSize = true;
-            this.macroActionDelay.Location = new System.Drawing.Point(272, 158);
-            this.macroActionDelay.Name = "macroActionDelay";
-            this.macroActionDelay.Size = new System.Drawing.Size(207, 19);
-            this.macroActionDelay.TabIndex = 16;
-            this.macroActionDelay.Text = "Default macro action delay (50ms)";
-            this.macroActionDelay.UseVisualStyleBackColor = true;
-            this.macroActionDelay.CheckedChanged += new System.EventHandler(this.macroActionDelay_CheckedChanged);
-            //
+            // 
             // MainForm
-            //
-            this.AutoScaleBaseSize = new System.Drawing.Size(6, 16);
-            this.ClientSize = new System.Drawing.Size(530, 372);
+            // 
+            this.AutoScaleBaseSize = new System.Drawing.Size(7, 20);
+            this.ClientSize = new System.Drawing.Size(610, 456);
             this.Controls.Add(this.tabs);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
