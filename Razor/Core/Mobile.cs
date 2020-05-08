@@ -1,9 +1,28 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-
+using Assistant.Agents;
 using Assistant.UI;
 
 namespace Assistant
@@ -98,24 +117,24 @@ namespace Assistant
             base.SaveState(writer);
 
             writer.Write(m_Body);
-            writer.Write((byte)m_Direction);
+            writer.Write((byte) m_Direction);
             writer.Write(m_Name == null ? "" : m_Name);
             writer.Write(m_Notoriety);
-            writer.Write((byte)GetPacketFlags());
+            writer.Write((byte) GetPacketFlags());
             writer.Write(m_HitsMax);
             writer.Write(m_Hits);
             writer.Write(m_Map);
 
-            writer.Write((int)m_Items.Count);
+            writer.Write((int) m_Items.Count);
             for (int i = 0; i < m_Items.Count; i++)
-                writer.Write((uint)(((Item)m_Items[i]).Serial));
+                writer.Write((uint) (((Item) m_Items[i]).Serial));
             //writer.Write(	(int)0 );
         }
 
         public Mobile(BinaryReader reader, int version) : base(reader, version)
         {
             m_Body = reader.ReadUInt16();
-            m_Direction = (Direction)reader.ReadByte();
+            m_Direction = (Direction) reader.ReadByte();
             m_Name = reader.ReadString();
             m_Notoriety = reader.ReadByte();
             ProcessPacketFlags(reader.ReadByte());
@@ -140,12 +159,13 @@ namespace Assistant
                 if (it != null)
                     m_Items.Add(it);
             }
-            m_LoadSerials = null;//per il GC e per liberare RAM
+
+            m_LoadSerials = null; //per il GC e per liberare RAM
         }
 
         public Mobile(Serial serial) : base(serial)
         {
-            m_Map = World.Player == null ? (byte)0 : World.Player.Map;
+            m_Map = World.Player == null ? (byte) 0 : World.Player.Map;
             m_Visible = true;
 
             Agent.InvokeMobileCreated(this);
@@ -162,13 +182,43 @@ namespace Assistant
             }
             set
             {
-                if (value != null)
+                if (!string.IsNullOrEmpty(value) && value != m_Name)
                 {
-                    string trim = value.Trim();
+                    string trim = ClilocConversion(value);
                     if (trim.Length > 0)
+                    {
                         m_Name = trim;
+                    }
                 }
             }
+        }
+
+        private static StringBuilder _InternalSB = new StringBuilder(32);
+
+        private static string ClilocConversion(string old)
+        {
+            _InternalSB.Clear();
+            string[] arr = old.Split(' ');
+            for (int i = 0; i < arr.Length; i++)
+            {
+                string ss = arr[i];
+                if (ss.Length > 1 && ss.StartsWith("#"))
+                {
+                    if (int.TryParse(ss.Substring(1), out int x))
+                    {
+                        ss = Language.GetCliloc(x);
+                        if (string.IsNullOrEmpty(ss))
+                        {
+                            ss = arr[i];
+                        }
+                    }
+                }
+
+                _InternalSB.Append(ss);
+                _InternalSB.Append(' ');
+            }
+
+            return _InternalSB.ToString().Trim();
         }
 
         public ushort Body
@@ -214,10 +264,10 @@ namespace Assistant
             get
             {
                 return m_Body == 402
-                     || m_Body == 403
-                     || m_Body == 607
-                     || m_Body == 608
-                     || m_Body == 970;
+                       || m_Body == 403
+                       || m_Body == 607
+                       || m_Body == 608
+                       || m_Body == 970;
             }
         }
 
@@ -226,43 +276,43 @@ namespace Assistant
             get
             {
                 return m_Body >= 0
-                    && (m_Body == 400
-                    || m_Body == 401
-                    || m_Body == 402
-                    || m_Body == 403
-                    || m_Body == 605
-                    || m_Body == 606
-                    || m_Body == 607
-                    || m_Body == 608
-                    || m_Body == 970); //player ghost
+                       && (m_Body == 400
+                           || m_Body == 401
+                           || m_Body == 402
+                           || m_Body == 403
+                           || m_Body == 605
+                           || m_Body == 606
+                           || m_Body == 607
+                           || m_Body == 608
+                           || m_Body == 970); //player ghost
             }
         }
 
         public bool IsMonster
         {
-            get
-            {
-                return !IsHuman;
-            }
+            get { return !IsHuman; }
         }
-        
+
         //new
         public bool Unknown
         {
             get { return m_Unknown; }
             set { m_Unknown = value; }
         }
+
         public bool Unknown2
         {
             get { return m_Unknown2; }
             set { m_Unknown2 = value; }
         }
+
         public bool Unknown3
         {
             get { return m_Unknown3; }
             set { m_Unknown3 = value; }
         }
-        public bool CanRename       //A pet! (where the health bar is open, we can add this to an arraylist of mobiles...
+
+        public bool CanRename //A pet! (where the health bar is open, we can add this to an arraylist of mobiles...
         {
             get { return m_CanRename; }
             set { m_CanRename = value; }
@@ -300,29 +350,29 @@ namespace Assistant
 
         // grey, blue, green, 'canbeattacked'
         private static uint[] m_NotoHues = new uint[8]
-        { 
-			// hue color #30
-			0x000000, // black		unused 0
-			0x30d0e0, // blue		0x0059 1 
-			0x60e000, // green		0x003F 2
-			0x9090b2, // greyish	0x03b2 3
-			0x909090, // grey		   "   4
-			0xd88038, // orange		0x0090 5
-			0xb01000, // red		0x0022 6
-			0xe0e000 // yellow		0x0035 7
+        {
+            // hue color #30
+            0x000000, // black		unused 0
+            0x30d0e0, // blue		0x0059 1 
+            0x60e000, // green		0x003F 2
+            0x9090b2, // greyish	0x03b2 3
+            0x909090, // grey		   "   4
+            0xd88038, // orange		0x0090 5
+            0xb01000, // red		0x0022 6
+            0xe0e000 // yellow		0x0035 7
         };
 
         private static int[] m_NotoHuesInt = new int[8]
-          {
-               1, // black		unused 0
-			0x059, // blue		0x0059 1
-			0x03F, // green		0x003F 2
-			0x3B2, // greyish	0x03b2 3
-			0x3B2, // grey		   "   4
-			0x090, // orange		0x0090 5
-			0x022, // red		0x0022 6
-			0x035, // yellow		0x0035 7
-		};
+        {
+            1, // black		unused 0
+            0x059, // blue		0x0059 1
+            0x03F, // green		0x003F 2
+            0x3B2, // greyish	0x03b2 3
+            0x3B2, // grey		   "   4
+            0x090, // orange		0x0090 5
+            0x022, // red		0x0022 6
+            0x035, // yellow		0x0035 7
+        };
 
         public uint GetNotorietyColor()
         {
@@ -433,29 +483,24 @@ namespace Assistant
 
         public bool InParty
         {
-            get
-            {
-                return PacketHandlers.Party.Contains(this.Serial);
-            }
+            get { return PacketHandlers.Party.Contains(this.Serial); }
         }
 
         public Item GetItemOnLayer(Layer layer)
         {
             for (int i = 0; i < m_Items.Count; i++)
             {
-                Item item = (Item)m_Items[i];
+                Item item = (Item) m_Items[i];
                 if (item.Layer == layer)
                     return item;
             }
+
             return null;
         }
 
         public Item Backpack
         {
-            get
-            {
-                return GetItemOnLayer(Layer.Backpack);
-            }
+            get { return GetItemOnLayer(Layer.Backpack); }
         }
 
         public Item Quiver
@@ -475,10 +520,11 @@ namespace Assistant
         {
             for (int i = 0; i < Contains.Count; i++)
             {
-                Item item = (Item)Contains[i];
+                Item item = (Item) Contains[i];
                 if (item.ItemID == id)
                     return item;
             }
+
             return null;
         }
 
@@ -530,18 +576,19 @@ namespace Assistant
             if (!PacketHandlers.UseNewStatus)
                 m_Poisoned = (flags & 0x04) != 0;
 
-            m_Unknown = (flags & 0x01) != 0;  //new
+            m_Unknown = (flags & 0x01) != 0; //new
             m_Female = (flags & 0x02) != 0;
             m_Blessed = (flags & 0x08) != 0;
-            m_Unknown2 = (flags & 0x10) != 0;  //new
-            m_Unknown3 = (flags & 0x10) != 0;  //new
+            m_Unknown2 = (flags & 0x10) != 0; //new
+            m_Unknown3 = (flags & 0x10) != 0; //new
             m_Warmode = (flags & 0x40) != 0;
             m_Visible = (flags & 0x80) == 0;
-
-
         }
 
-        public List<Item> Contains { get { return m_Items; } }
+        public List<Item> Contains
+        {
+            get { return m_Items; }
+        }
 
         internal void OverheadMessageFrom(int hue, string from, string format, params object[] args)
         {
@@ -550,13 +597,22 @@ namespace Assistant
 
         internal void OverheadMessageFrom(int hue, string from, string text, bool ascii)
         {
+            if (Config.GetBool("FilterOverheadMessages"))
+            {
+                if (!MessageQueue.Enqueue(this, hue, "O", text))
+                {
+                    return;
+                }
+            }
+
             if (ascii)
             {
                 Client.Instance.SendToClient(new AsciiMessage(Serial, m_Body, MessageType.Regular, hue, 3, from, text));
             }
             else
             {
-                Client.Instance.SendToClient(new UnicodeMessage(Serial, m_Body, MessageType.Regular, hue, 3, Language.CliLocName, from, text));
+                Client.Instance.SendToClient(new UnicodeMessage(Serial, m_Body, MessageType.Regular, hue, 3,
+                    Language.CliLocName, from, text));
             }
         }
 
@@ -598,12 +654,89 @@ namespace Assistant
         }
 
         private Point2D m_ButtonPoint = Point2D.Zero;
+
         internal Point2D ButtonPoint
         {
             get { return m_ButtonPoint; }
             set { m_ButtonPoint = value; }
         }
+
+        private static List<Layer> _layers = new List<Layer>
+        {
+            Layer.Backpack,
+            Layer.Invalid,
+            Layer.FirstValid,
+            Layer.RightHand,
+            Layer.LeftHand,
+            Layer.Shoes,
+            Layer.Pants,
+            Layer.Shirt,
+            Layer.Head,
+            Layer.Neck,
+            Layer.Gloves,
+            Layer.InnerTorso,
+            Layer.MiddleTorso,
+            Layer.Arms,
+            Layer.Cloak,
+            Layer.OuterTorso,
+            Layer.OuterLegs,
+            Layer.InnerLegs,
+            Layer.LastUserValid,
+            Layer.Mount,
+            Layer.LastValid,
+            Layer.Hair
+        };
+
+        internal void ResetLayerHue()
+        {
+            if (IsGhost)
+                return;
+
+            foreach (Layer l in _layers)
+            {
+                Item i = GetItemOnLayer(l);
+
+                if (i == null)
+                    continue;
+
+                if (i.ItemID == 0x204E && i.Hue == 0x08FD) // death shroud
+                    i.ItemID = 0x1F03;
+
+                Client.Instance.SendToClient(new EquipmentItem(i, i.Hue, Serial));
+            }
+        }
+
+        internal void SetLayerHue(int hue)
+        {
+            if (IsGhost)
+                return;
+
+            foreach (Layer l in _layers)
+            {
+                Item i = GetItemOnLayer(l);
+                if (i == null)
+                    continue;
+
+                Client.Instance.SendToClient(new EquipmentItem(i, (ushort) hue, Serial));
+            }
+        }
+
+        internal Packet SetMobileHue(Packet p, int hue)
+        {
+            if (IsGhost)
+                return p;
+
+            p = WriteHueToPacket(p, (ushort) hue);
+
+            return p;
+        }
+
+        private static Packet WriteHueToPacket(Packet p, ushort color)
+        {
+            p.Seek(-3, SeekOrigin.Current);
+            p.Write((short) color);
+            p.Seek(+1, SeekOrigin.Current);
+            return p;
+        }
     }
 }
-
-

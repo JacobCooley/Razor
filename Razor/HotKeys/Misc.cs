@@ -1,7 +1,25 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
-using Assistant;
 using Assistant.Core;
-using Assistant.Macros;
 
 namespace Assistant.HotKeys
 {
@@ -31,10 +49,13 @@ namespace Assistant.HotKeys
             HotKey.Add(HKCategory.Items, LocString.BandageSelf, new HotKeyCallback(BandageSelf));
             HotKey.Add(HKCategory.Items, LocString.BandageLT, new HotKeyCallback(BandageLastTarg));
             HotKey.Add(HKCategory.Items, LocString.UseHand, new HotKeyCallback(UseItemInHand));
+            HotKey.Add(HKCategory.Items, LocString.UseRightHand, new HotKeyCallback(UseItemInRightHand));
+            HotKey.Add(HKCategory.Items, LocString.UseLeftHand, new HotKeyCallback(UseItemInLeftHand));
 
             HotKey.Add(HKCategory.Misc, LocString.PartyAccept, new HotKeyCallback(PartyAccept));
             HotKey.Add(HKCategory.Misc, LocString.PartyDecline, new HotKeyCallback(PartyDecline));
-            
+            HotKey.Add(HKCategory.Misc, LocString.PartyAdd, new HotKeyCallback(PartyAdd));
+
             HotKey.Add(HKCategory.Misc, HKSubCat.PetCommands, LocString.AllCome, new HotKeyCallback(PetAllCome));
             HotKey.Add(HKCategory.Misc, HKSubCat.PetCommands, LocString.AllFollowMe,
                 new HotKeyCallback(PetAllFollowMe));
@@ -176,6 +197,11 @@ namespace Assistant.HotKeys
             }
         }
 
+        private static void PartyAdd()
+        {
+            Client.Instance.SendToServer(new AddParty());
+        }
+
         private static void Dismount()
         {
             if (World.Player.GetItemOnLayer(Layer.Mount) != null)
@@ -195,6 +221,12 @@ namespace Assistant.HotKeys
 
                 if (textFlags)
                     Targeting.CheckTextFlags(m);
+
+                if (Config.GetBool("ShowFriendOverhead") && FriendsManager.IsFriend(m.Serial))
+                {
+                    m.OverheadMessage(Config.GetInt("FriendOverheadFormatHue"),
+                        $"{Config.GetString("FriendOverheadFormat")}");
+                }
             }
 
             foreach (Item i in World.Items.Values)
@@ -224,6 +256,12 @@ namespace Assistant.HotKeys
 
                 if (textFlags)
                     Targeting.CheckTextFlags(m);
+
+                if (Config.GetBool("ShowFriendOverhead") && FriendsManager.IsFriend(m.Serial))
+                {
+                    m.OverheadMessage(Config.GetInt("FriendOverheadFormatHue"),
+                        $"{Config.GetString("FriendOverheadFormat")}");
+                }
             }
         }
 
@@ -266,14 +304,14 @@ namespace Assistant.HotKeys
             Item pack = World.Player.Backpack;
             if (pack != null)
             {
-                if (!UseItem(pack, 3617))
+                if (!World.Player.UseItem(pack, 3617))
                 {
                     World.Player.SendMessage(MsgLevel.Warning, LocString.NoBandages);
                 }
                 else
                 {
                     Targeting.LastTarget(true); //force a targetself to be queued
-                    BandageTimer.Start();
+                    //BandageTimer.Start(); // Bandage timer will be started automatically after the "You begin applying the bandages." message
                 }
             }
         }
@@ -283,7 +321,7 @@ namespace Assistant.HotKeys
             Item pack = World.Player.Backpack;
             if (pack != null)
             {
-                if (!UseItem(pack, 3617))
+                if (!World.Player.UseItem(pack, 3617))
                 {
                     World.Player.SendMessage(MsgLevel.Warning, LocString.NoBandages);
                 }
@@ -291,7 +329,7 @@ namespace Assistant.HotKeys
                 {
                     Targeting.ClearQueue();
                     Targeting.TargetSelf(true); //force a targetself to be queued
-                    BandageTimer.Start();
+                    //BandageTimer.Start(); // Bandage timer will be started automatically after the "You begin applying the bandages." message
                 }
             }
         }
@@ -340,7 +378,7 @@ namespace Assistant.HotKeys
                 return;
             }
 
-            if (!UseItem(pack, id))
+            if (!World.Player.UseItem(pack, id))
                 World.Player.SendMessage(LocString.NoItemOfType, (ItemID) id);
         }
 
@@ -354,28 +392,20 @@ namespace Assistant.HotKeys
                 PlayerData.DoubleClick(item);
         }
 
-        private static bool UseItem(Item cont, ushort find)
+        private static void UseItemInRightHand()
         {
-            if (!Client.Instance.AllowBit(FeatureBit.PotionHotkeys))
-                return false;
+            Item item = World.Player.GetItemOnLayer(Layer.RightHand);
 
-            for (int i = 0; i < cont.Contains.Count; i++)
-            {
-                Item item = (Item) cont.Contains[i];
+            if (item != null)
+                PlayerData.DoubleClick(item);
+        }
 
-                if (item.ItemID == find)
-                {
-                    PlayerData.DoubleClick(item);
-                    return true;
-                }
-                else if (item.Contains != null && item.Contains.Count > 0)
-                {
-                    if (UseItem(item, find))
-                        return true;
-                }
-            }
+        private static void UseItemInLeftHand()
+        {
+            Item item = World.Player.GetItemOnLayer(Layer.LeftHand);
 
-            return false;
+            if (item != null)
+                PlayerData.DoubleClick(item);
         }
 
         private static void GrabItem()
@@ -442,7 +472,8 @@ namespace Assistant.HotKeys
                     gfx = c.ItemID.Value;
                 }
 
-                Client.Instance.SendToClient(new UnicodeMessage(_grabHotBag, gfx, MessageType.Label, 0x3B2, 3, Language.CliLocName, "", Language.GetString(LocString.GrabHB)));
+                Client.Instance.SendToClient(new UnicodeMessage(_grabHotBag, gfx, MessageType.Label, 0x3B2, 3,
+                    Language.CliLocName, "", Language.GetString(LocString.GrabHB)));
             }
         }
     }

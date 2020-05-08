@@ -1,3 +1,23 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
 using System.Windows.Forms;
 using Assistant.Macros;
@@ -12,6 +32,8 @@ namespace Assistant
         private Macro m_Macro;
         private int m_Idx;
         private MacroAction m_Action;
+
+        private int m_SkillStart = -1;
 
         private System.Windows.Forms.Button insert;
         private System.Windows.Forms.TextBox txtAmount;
@@ -37,6 +59,16 @@ namespace Assistant
 
             foreach (Counter c in Counter.List)
                 varList.Items.Add(c.Name);
+
+            m_SkillStart = varList.Items.Count;
+
+            if (World.Player != null && World.Player.SkillsSent)
+            {
+                foreach (Skill skill in World.Player.Skills)
+                {
+                    varList.Items.Add(Language.Skill2Str(skill.Index));
+                }
+            }
         }
 
         public MacroInsertIf(MacroAction a)
@@ -49,6 +81,16 @@ namespace Assistant
 
             foreach (Counter c in Counter.List)
                 varList.Items.Add(c.Name);
+
+            m_SkillStart = varList.Items.Count;
+
+            if (World.Player != null && World.Player.SkillsSent)
+            {
+                foreach (Skill skill in World.Player.Skills)
+                {
+                    varList.Items.Add(Language.Skill2Str(skill.Index));
+                }
+            }
         }
 
         /// <summary>
@@ -103,16 +145,18 @@ namespace Assistant
             // varList
             // 
             this.varList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.varList.Items.AddRange(new object[] {
-            "Hits",
-            "Mana",
-            "Stamina",
-            "Poisoned",
-            "SysMessage",
-            "Weight",
-            "Mounted",
-            "R Hand Empty",
-            "L Hand Empty"});
+            this.varList.Items.AddRange(new object[]
+            {
+                "Hits",
+                "Mana",
+                "Stamina",
+                "Poisoned",
+                "SysMessage",
+                "Weight",
+                "Mounted",
+                "R Hand Empty",
+                "L Hand Empty"
+            });
             this.varList.Location = new System.Drawing.Point(30, 9);
             this.varList.Name = "varList";
             this.varList.Size = new System.Drawing.Size(143, 23);
@@ -132,11 +176,13 @@ namespace Assistant
             // opList
             // 
             this.opList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.opList.Items.AddRange(new object[] {
-            "<=",
-            ">=",
-            "<",
-            ">"});
+            this.opList.Items.AddRange(new object[]
+            {
+                "<=",
+                ">=",
+                "<",
+                ">"
+            });
             this.opList.Location = new System.Drawing.Point(179, 9);
             this.opList.Name = "opList";
             this.opList.Size = new System.Drawing.Size(53, 23);
@@ -144,7 +190,8 @@ namespace Assistant
             // 
             // label1
             // 
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold,
+                System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label1.Location = new System.Drawing.Point(8, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(16, 20);
@@ -155,10 +202,12 @@ namespace Assistant
             // 
             this.ifVariables.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ifVariables.FormattingEnabled = true;
-            this.ifVariables.Items.AddRange(new object[] {
-            "{maxhp}",
-            "{maxstam}",
-            "{maxmana}"});
+            this.ifVariables.Items.AddRange(new object[]
+            {
+                "{maxhp}",
+                "{maxstam}",
+                "{maxmana}"
+            });
             this.ifVariables.Location = new System.Drawing.Point(288, 44);
             this.ifVariables.Name = "ifVariables";
             this.ifVariables.Size = new System.Drawing.Size(104, 23);
@@ -177,7 +226,8 @@ namespace Assistant
             this.Controls.Add(this.varList);
             this.Controls.Add(this.txtAmount);
             this.Controls.Add(this.insert);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular,
+                System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "MacroInsertIf";
             this.ShowInTaskbar = false;
@@ -186,7 +236,6 @@ namespace Assistant
             this.Load += new System.EventHandler(this.MacroInsertIf_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion
@@ -206,6 +255,23 @@ namespace Assistant
                 if (varList.SelectedIndex == (int) IfAction.IfVarType.SysMessage)
                 {
                     a = new IfAction((IfAction.IfVarType) varList.SelectedIndex, txtAmount.Text);
+                }
+                else if (varList.SelectedIndex >= m_SkillStart)
+                {
+                    int skillId = -1;
+
+                    foreach (Skill skill in World.Player.Skills)
+                    {
+                        if (Language.Skill2Str(skill.Index).Equals(varList.SelectedItem as string))
+                        {
+                            skillId = skill.Index;
+                            break;
+                        }
+                    }
+
+                    if (skillId != -1)
+                        a = new IfAction(IfAction.IfVarType.Skill, (sbyte) opList.SelectedIndex,
+                            Utility.ToDouble(txtAmount.Text, 0.0), skillId);
                 }
                 else if (varList.SelectedIndex >= (int) IfAction.IfVarType.BeginCountersMarker)
                 {
@@ -272,6 +338,16 @@ namespace Assistant
                     try
                     {
                         varList.SelectedItem = ((IfAction) m_Action).Counter;
+                    }
+                    catch
+                    {
+                    }
+
+                if (((IfAction) m_Action).SkillId != -1 &&
+                    ((IfAction) m_Action).Variable == IfAction.IfVarType.Skill)
+                    try
+                    {
+                        varList.SelectedItem = Language.Skill2Str(((IfAction) m_Action).SkillId);
                     }
                     catch
                     {

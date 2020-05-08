@@ -1,6 +1,24 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
-using System.Drawing;
-using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
@@ -12,7 +30,7 @@ namespace Assistant
     public class InputDropdown : System.Windows.Forms.Form
     {
         private static InputDropdown m_Instance;
-        
+
 
         public static bool Show(Form parent, string prompt, string[] dropDownItems)
         {
@@ -21,7 +39,7 @@ namespace Assistant
 
         public static bool Show(Form parent, string prompt, string title)
         {
-            return Show(parent, prompt, new string[] {}, title);
+            return Show(parent, prompt, new string[] { }, title);
         }
 
         public static bool Show(Form parent, string prompt, string[] dropDownItems, string title)
@@ -176,7 +194,8 @@ namespace Assistant
             this.Controls.Add(this.cancel);
             this.Controls.Add(this.ok);
             this.Controls.Add(this.Prompt);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular,
+                System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "InputDropdown";
             this.ShowInTaskbar = false;
@@ -184,7 +203,6 @@ namespace Assistant
             this.Text = "Input";
             this.Load += new System.EventHandler(this.InputDropdown_Load);
             this.ResumeLayout(false);
-
         }
 
         #endregion

@@ -1,14 +1,32 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
 using System.Reflection;
 using System.Threading;
-using System.Collections;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Security.Principal;
-using CUO_API;
 
 namespace Assistant
 {
@@ -217,7 +235,7 @@ namespace Assistant
                 if (_previousHour != DateTime.UtcNow.Hour)
                 {
                     _previousHour = DateTime.UtcNow.Hour;
-                    _Differential = Engine.MistedDateTime.Subtract(DateTime.UtcNow).Hours;
+                    _Differential = DateTimeOffset.Now.Offset.Hours;
                 }
 
                 return _Differential;
@@ -229,8 +247,14 @@ namespace Assistant
             get { return DateTime.UtcNow.AddHours(Differential); }
         }
 
+        public static CultureInfo Culture;
+
         public static void Load()
         {
+            Culture = new CultureInfo("en-US", false);
+            Culture.NumberFormat.NumberDecimalSeparator = ".";
+            Culture.NumberFormat.NumberGroupSeparator = ",";
+
             /* Load localization files */
             string defLang = Config.GetAppSetting<string>("DefaultLanguage");
             if (defLang == null)
@@ -286,9 +310,9 @@ namespace Assistant
             if (result != Client.Loader_Error.SUCCESS)
             {
                 MessageBox.Show(SplashScreen.Instance,
-                        String.Format("Unable to launch the client specified. (Error: {1})\n \"{0}\"",
-                            clientPath != null ? clientPath : "-null-", result),
-                        "Could Not Start Client", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    String.Format("Unable to launch the client specified. (Error: {1})\n \"{0}\"",
+                        clientPath != null ? clientPath : "-null-", result),
+                    "Could Not Start Client", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 SplashScreen.End();
                 return;
             }
@@ -348,6 +372,8 @@ namespace Assistant
                 defLang = "ENU";
             }
 
+            Client.Init(true);
+
             if (!Language.Load(defLang))
             {
                 MessageBox.Show(
@@ -371,15 +397,15 @@ namespace Assistant
                 m_ActiveWnd = SplashScreen.Instance;
             }
 
-            Client.Init(true);
-
             Load();
             RunUI();
             Close();
         }
-        
+
         private static string _rootPath = null;
-        public static string RootPath => _rootPath ?? (_rootPath = Path.GetDirectoryName(Assembly.GetAssembly(typeof(Engine)).Location));
+
+        public static string RootPath =>
+            _rootPath ?? (_rootPath = Path.GetDirectoryName(Assembly.GetAssembly(typeof(Engine)).Location));
 
         /*public static string GetDirectory( string relPath )
         {
@@ -400,7 +426,7 @@ namespace Assistant
 
             for (int i = 0; i < types.Length; i++)
             {
-                if ( types[i].Namespace == "Ultima" )
+                if (types[i].Namespace == "Ultima")
                     continue;
                 MethodInfo init = types[i].GetMethod("Initialize", BindingFlags.Static | BindingFlags.Public);
 

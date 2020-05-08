@@ -1,10 +1,27 @@
-﻿using System;
-using System.Collections;
+﻿#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Assistant.Core
 {
@@ -17,8 +34,8 @@ namespace Assistant.Core
 
             internal SpeechEntry(int idKeyword, string keyword)
             {
-                m_KeywordID = (short)idKeyword;
-                m_Keywords = keyword.Split(new char[] { '*' });
+                m_KeywordID = (short) idKeyword;
+                m_Keywords = keyword.Split(new char[] {'*'});
             }
 
             public int CompareTo(SpeechEntry entry)
@@ -27,39 +44,25 @@ namespace Assistant.Core
                 {
                     return -1;
                 }
+
                 if (entry != this)
                 {
                     if (m_KeywordID < entry.m_KeywordID)
                     {
                         return -1;
                     }
+
                     if (m_KeywordID > entry.m_KeywordID)
                     {
                         return 1;
                     }
                 }
+
                 return 0;
             }
         }
 
         private static List<SpeechEntry> m_Speech;
-
-        [DllImport("Kernel32", EntryPoint = "_lread")]
-        internal static extern unsafe int lread(IntPtr hFile, void* lpBuffer, int wBytes);
-
-        private static unsafe int NativeRead(FileStream fs, void* pBuffer, int bytes)
-        {
-            return lread(fs.Handle, pBuffer, bytes);
-        }
-
-        private static unsafe int NativeRead(FileStream fs, byte[] buffer, int offset, int length)
-        {
-            fixed (byte* numRef = buffer)
-            {
-                return NativeRead(fs, (void*)(numRef + offset), length);
-            }
-        }
-
         internal static unsafe void LoadSpeechTable()
         {
             string path = Ultima.Files.GetFilePath("Speech.mul");
@@ -70,27 +73,25 @@ namespace Assistant.Core
             }
             else
             {
+                m_Speech = new List<SpeechEntry>();
                 byte[] buffer = new byte[0x400];
                 fixed (byte* numRef = buffer)
                 {
-                    List<SpeechEntry> list = new List<SpeechEntry>();
-                    FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    int num = 0;
-                    while ((num = NativeRead(fs, (void*)numRef, 4)) > 0)
-                    {
-                        int idKeyword = numRef[1] | (numRef[0] << 8);
-                        int bytes = numRef[3] | (numRef[2] << 8);
-                        if (bytes > 0)
+                    using(var file = new FileStream(path, FileMode.Open,FileAccess.Read)) 
+                        while (file.Position < file.Length)
                         {
-                            NativeRead(fs, (void*)numRef, bytes);
-                            list.Add(new SpeechEntry(idKeyword, new string((sbyte*)numRef, 0, bytes)));
+                            int id = (ushort)((file.ReadByte() << 8) | file.ReadByte());
+                            int length = (ushort)((file.ReadByte() << 8) | file.ReadByte());
+                            if (length > 0 && file.Position + length <= file.Length)
+                            {
+                                file.Read(buffer, 0, length);
+                                m_Speech.Add(new SpeechEntry(id, new string((sbyte*) numRef,0, length)));
+                            }
                         }
-                    }
-
-                    fs.Close();
-                    m_Speech = list;
                 }
+
             }
+            
         }
 
         internal static List<ushort> GetKeywords(string text)
@@ -113,6 +114,7 @@ namespace Assistant.Core
                     keywords.Add(entry);
                 }
             }
+
             keywords.Sort();
 
             bool flag = false;
@@ -126,13 +128,13 @@ namespace Assistant.Core
 
                 if (flag)
                 {
-                    keynumber.Add((byte)(keywordID >> 4));
+                    keynumber.Add((byte) (keywordID >> 4));
                     numk = keywordID & 15;
                 }
                 else
                 {
-                    keynumber.Add((byte)((numk << 4) | ((keywordID >> 8) & 15)));
-                    keynumber.Add((byte)keywordID);
+                    keynumber.Add((byte) ((numk << 4) | ((keywordID >> 8) & 15)));
+                    keynumber.Add((byte) keywordID);
                 }
 
                 index++;
@@ -141,7 +143,7 @@ namespace Assistant.Core
 
             if (!flag)
             {
-                keynumber.Add((byte)(numk << 4));
+                keynumber.Add((byte) (numk << 4));
             }
 
             return keynumber;
@@ -160,10 +162,12 @@ namespace Assistant.Core
                     {
                         return false;
                     }
+
                     if (index < 0)
                     {
                         return false;
                     }
+
                     startIndex = index + split[i].Length;
                 }
             }

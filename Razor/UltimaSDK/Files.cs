@@ -1,10 +1,29 @@
-﻿using System;
+﻿#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
-
 using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
 
 namespace Ultima
 {
@@ -216,10 +235,10 @@ namespace Ultima
             foreach (string file in m_Files)
             {
                 string filePath = Path.Combine(m_RootDir, file);
-                if ( File.Exists( filePath ) )
+                if (File.Exists(filePath))
                     m_MulPath[file] = file;
-                else if ( File.Exists( Path.Combine( m_RootDir, char.ToUpper( file[0] ) + file.Substring( 1 ) ) ) )
-                    m_MulPath[file] = Path.Combine( m_RootDir, char.ToUpper( file[0] ) + file.Substring( 1 ) );
+                else if (File.Exists(Path.Combine(m_RootDir, char.ToUpper(file[0]) + file.Substring(1))))
+                    m_MulPath[file] = Path.Combine(m_RootDir, char.ToUpper(file[0]) + file.Substring(1));
                 else
                     m_MulPath[file] = "";
             }
@@ -327,14 +346,29 @@ namespace Ultima
         {
             string dir = ConfigurationManager.AppSettings["UODataDir"];
 
-            if (string.IsNullOrEmpty(dir) || !System.IO.Directory.Exists(dir)) // If the path in the config looks bad, try the registry as a fallback
+            // If they're using the ClassicUO client, pull the UO data dir from the plugin
+            if (!Assistant.Client.IsOSI)
+            {
+                //dir = Assistant.Client.Instance.GetUoFilePath();
+
+                // Check in the root of this process for the file
+                if (File.Exists("settings.json"))
+                {
+                    dynamic cuoJson = JObject.Parse(File.ReadAllText("settings.json"));
+                    dir = cuoJson.ultimaonlinedirectory.ToString();
+                }
+            }
+
+
+            if (string.IsNullOrEmpty(dir) || !System.IO.Directory.Exists(dir)
+            ) // If the path in the config looks bad, try the registry as a fallback
             {
                 for (int i = knownRegkeys.Length - 1; i >= 0; i--)
                 {
                     string exePath;
 
                     if (Environment.Is64BitOperatingSystem)
-                        exePath = GetPath(string.Format(@"Wow6432Node\{0}", knownRegkeys[i]));
+                        exePath = GetPath($@"Wow6432Node\{knownRegkeys[i]}");
                     else
                         exePath = GetPath(knownRegkeys[i]);
 

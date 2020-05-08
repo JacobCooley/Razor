@@ -1,3 +1,23 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -75,7 +95,8 @@ namespace Assistant.Core
             World.Player.SendMessage(MsgLevel.Force, "-- [Damage Tracking Stopped] ---");
             World.Player.SendMessage(MsgLevel.Force, $"Total Damage Dealt: {TotalDamageDealt}");
             World.Player.SendMessage(MsgLevel.Force, $"Total Damage Taken: {TotalDamageTaken}");
-            World.Player.SendMessage(MsgLevel.Force, $"Max Single Damage Dealt: {MaxSingleDamageDealt} on '{MaxSingleDamageDealtName}'");
+            World.Player.SendMessage(MsgLevel.Force,
+                $"Max Single Damage Dealt: {MaxSingleDamageDealt} on '{MaxSingleDamageDealtName}'");
             World.Player.SendMessage(MsgLevel.Force, $"Max Single Damage Taken: {MaxSingleDamageTaken}");
             World.Player.SendMessage(MsgLevel.Force, $"Final DPS: {DamagePerSecond:N2}");
             World.Player.SendMessage(MsgLevel.Force, $"Max DPS: {MaxDamagePerSecond:N2}");

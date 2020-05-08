@@ -1,4 +1,24 @@
-﻿﻿using System;
+﻿#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
+using System;
 using System.Drawing;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +26,6 @@ using System.Windows.Forms;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Runtime.InteropServices;
 using Assistant.Filters;
 using Assistant.Macros;
 using System.Diagnostics;
@@ -14,11 +33,11 @@ using Assistant.Boat;
 using Newtonsoft.Json;
 using System.Net;
 using System.Collections.Specialized;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Assistant.Agents;
 using Assistant.Core;
+using Assistant.Scripts;
 using Assistant.UI;
-using Newtonsoft.Json.Linq;
 using Ultima;
 using ContainerLabels = Assistant.UI.ContainerLabels;
 using Exception = System.Exception;
@@ -26,3847 +45,27 @@ using OverheadMessages = Assistant.UI.OverheadMessages;
 
 namespace Assistant
 {
-    public class MainForm : System.Windows.Forms.Form
+    public partial class MainForm
     {
-        #region Class Variables
-
-        private System.Windows.Forms.NotifyIcon m_NotifyIcon;
-        private System.Windows.Forms.TabControl tabs;
-        private System.Windows.Forms.ColumnHeader skillHDRName;
-        private System.Windows.Forms.ColumnHeader skillHDRvalue;
-        private System.Windows.Forms.ColumnHeader skillHDRbase;
-        private System.Windows.Forms.ColumnHeader skillHDRdelta;
-        private System.Windows.Forms.Button resetDelta;
-        private System.Windows.Forms.Button setlocks;
-        private System.Windows.Forms.ComboBox locks;
-        private System.Windows.Forms.ListView skillList;
-        private System.Windows.Forms.ColumnHeader skillHDRcap;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox baseTotal;
-        private System.Windows.Forms.TabPage dressTab;
-        private System.Windows.Forms.Button skillCopySel;
-        private System.Windows.Forms.Button skillCopyAll;
-        private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.Button removeDress;
-        private System.Windows.Forms.Button addDress;
-        private System.Windows.Forms.ListBox dressList;
-        private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.Button targItem;
-        private System.Windows.Forms.ListBox dressItems;
-        private System.Windows.Forms.Button dressUseCur;
-        private System.Windows.Forms.TabPage generalTab;
-        private System.Windows.Forms.TabPage displayTab;
-        private System.Windows.Forms.TabPage skillsTab;
-        private System.Windows.Forms.TabPage hotkeysTab;
-        private System.Windows.Forms.CheckBox chkCtrl;
-        private System.Windows.Forms.CheckBox chkAlt;
-        private System.Windows.Forms.CheckBox chkShift;
-        private System.Windows.Forms.GroupBox groupBox8;
-        private System.Windows.Forms.TextBox key;
-        private System.Windows.Forms.Button setHK;
-        private System.Windows.Forms.Button unsetHK;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.CheckBox chkPass;
-        private System.Windows.Forms.TabPage moreOptTab;
-        private System.Windows.Forms.TabPage agentsTab;
-        private System.Windows.Forms.GroupBox agentGroup;
-        private System.Windows.Forms.ListBox agentSubList;
-        private System.Windows.Forms.Button agentB1;
-        private System.Windows.Forms.Button agentB2;
-        private System.Windows.Forms.Button agentB3;
-        private System.Windows.Forms.Button dohotkey;
-        private System.Windows.Forms.Button agentB4;
-        private System.Windows.Forms.CheckBox dispDelta;
-        private System.Windows.Forms.ComboBox agentList;
-        private System.Windows.Forms.TabPage macrosTab;
-        private System.Windows.Forms.TreeView hotkeyTree;
-        private System.Windows.Forms.TabPage screenshotTab;
-        private System.Windows.Forms.TabPage aboutTab;
-        private System.Windows.Forms.Button dressNow;
-        private System.Windows.Forms.Button undressList;
-        private System.Windows.Forms.PictureBox screenPrev;
-        private System.Windows.Forms.ListBox screensList;
-        private System.Windows.Forms.Button setScnPath;
-        private System.Windows.Forms.RadioButton radioFull;
-        private System.Windows.Forms.RadioButton radioUO;
-        private System.Windows.Forms.CheckBox screenAutoCap;
-        private System.Windows.Forms.TextBox screenPath;
-        private System.Windows.Forms.Button capNow;
-        private System.Windows.Forms.CheckBox dispTime;
-        private System.Windows.Forms.Button agentB5;
-        private System.Windows.Forms.Button agentB6;
-        private System.Windows.Forms.CheckBox undressConflicts;
-        private System.Windows.Forms.ColumnHeader skillHDRlock;
-        private System.ComponentModel.IContainer components;
-        private System.Windows.Forms.Button undressBag;
-        private System.Windows.Forms.Button dressDelSel;
-        private System.Windows.Forms.Label hkStatus;
-        private System.Windows.Forms.Button clearDress;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.ComboBox imgFmt;
-        private ToolTip m_Tip;
-
-        #endregion
-
-        private int m_LastKV = 0;
-        private bool m_ProfileConfirmLoad;
-        private LinkLabel linkMain;
-        private Label label21;
-        private Label aboutVer;
-        private TextBox filterHotkeys;
-        private Label label22;
-        private bool m_CanClose = true;
-        private TabPage advancedTab;
-        private Button openRazorDataDir;
-        private ComboBox msglvl;
-        private Label label17;
-        private CheckBox logPackets;
-        private TextBox statusBox;
-        private TextBox features;
-        private CheckBox negotiate;
-        private Label aboutSubInfo;
-        private Label lblCredits1;
-        private LinkLabel linkLabel1;
-        private Label label20;
-        private Button disableSmartCPU;
-        private CheckBox logSkillChanges;
-        private CheckBox screenShotOpenBrowser;
-        private CheckBox screenShotNotification;
-        private ListBox imgurUploads;
-        private CheckBox screenShotClipboard;
-        private TreeView _hotkeyTreeViewCache = new TreeView();
-        private LinkLabel linkHelp;
-        private CheckBox enableUOAAPI;
-        private TabControl tabControl2;
-        private TabPage subMacrosTab;
-        private TabPage subMacrosOptionsTab;
-        private CheckBox rangeCheckDoubleClick;
-        private CheckBox rangeCheckTargetByType;
-        private Button nextMacroAction;
-        private CheckBox stepThroughMacro;
-        private CheckBox targetByTypeDifferent;
-        private GroupBox absoluteTargetGroup;
-        private ComboBox macroVariableList;
-        private Button retargetMacroVariable;
-        private Button insertMacroVariable;
-        private Button removeMacroVariable;
-        private Button addMacroVariable;
-        private ListBox macroVariables;
-        private TextBox filterMacros;
-        private Label filterLabel;
-        private TreeView macroTree;
-        private Button delMacro;
-        private Button newMacro;
-        private GroupBox macroActGroup;
-        private Button playMacro;
-        private Label waitDisp;
-        private CheckBox loopMacro;
-        private Button recMacro;
-        private ListBox actionList;
-        private TabControl optionsTabCtrl;
-        private TabPage subOptionsSpeechTab;
-        private Button setLTHilight;
-        private CheckBox lthilight;
-        private Button setHarmHue;
-        private Button setNeuHue;
-        private Label lblHarmHue;
-        private Label lblNeuHue;
-        private Label lblBeneHue;
-        private Button setBeneHue;
-        private Button setSpeechHue;
-        private Button setWarnHue;
-        private Button setMsgHue;
-        private Button setExHue;
-        private Label lblWarnHue;
-        private Label lblMsgHue;
-        private Label lblExHue;
-        private TextBox txtSpellFormat;
-        private CheckBox chkForceSpellHue;
-        private CheckBox chkForceSpeechHue;
-        private Label label3;
-        private TabPage subOptionsTargetTab;
-        private CheckBox filterSnoop;
-        private CheckBox incomingMob;
-        private CheckBox incomingCorpse;
-        private CheckBox showAttackTargetNewOnly;
-        private CheckBox showTextTargetIndicator;
-        private CheckBox showAttackTarget;
-        private CheckBox showTargetMessagesOverChar;
-        private TextBox txtObjDelay;
-        private CheckBox objectDelay;
-        private TextBox ltRange;
-        private CheckBox QueueActions;
-        private CheckBox rangeCheckLT;
-        private CheckBox actionStatusMsg;
-        private Label label8;
-        private Label label6;
-        private CheckBox smartLT;
-        private CheckBox queueTargets;
-        private CheckBox showtargtext;
-        private CheckBox autoFriend;
-        private Button containerLabels;
-        private CheckBox showContainerLabels;
-        private Button overHeadMessages;
-        private CheckBox showOverheadMessages;
-        private Label lblBuffDebuff;
-        private TextBox buffDebuffFormat;
-        private CheckBox showBuffDebuffOverhead;
-        private TextBox healthFmt;
-        private Label label10;
-        private CheckBox showHealthOH;
-        private CheckBox chkPartyOverhead;
-        private TabPage subOptionsMiscTab;
-        private Button setMinLightLevel;
-        private Button setMaxLightLevel;
-        private CheckBox realSeason;
-        private ComboBox seasonList;
-        private Label lblSeason;
-        private Label lightLevel;
-        private TrackBar lightLevelBar;
-        private CheckBox minMaxLightLevel;
-        private CheckBox blockPartyInvites;
-        private CheckBox blockTradeRequests;
-        private CheckBox blockOpenCorpsesTwice;
-        private CheckBox preAOSstatbar;
-        private TextBox corpseRange;
-        private CheckBox autoStackRes;
-        private Label label4;
-        private CheckBox openCorpses;
-        private CheckBox blockDis;
-        private CheckBox showStaticWalls;
-        private CheckBox showStaticWallLabels;
-        private CheckBox autoAcceptParty;
-        private CheckBox stealthOverhead;
-        private TextBox forceSizeX;
-        private TextBox forceSizeY;
-        private CheckBox blockHealPoison;
-        private CheckBox potionEquip;
-        private CheckBox spellUnequip;
-        private CheckBox autoOpenDoors;
-        private CheckBox chkStealth;
-        private Label label18;
-        private CheckBox gameSize;
-        private CheckBox damageTakenOverhead;
-        private CheckBox showDamageTaken;
-        private CheckBox damageDealtOverhead;
-        private CheckBox showDamageDealt;
-        private CheckBox rememberPwds;
-        private TabControl tabControl4;
-        private TabPage subDisplayTab;
-        private GroupBox groupBox11;
-        private Button razorTitleBarKey;
-        private CheckBox showInRazorTitleBar;
-        private TextBox razorTitleBar;
-        private CheckBox trackDps;
-        private CheckBox trackIncomingGold;
-        private CheckBox showNotoHue;
-        private CheckBox highlightSpellReags;
-        private GroupBox groupBox3;
-        private ComboBox titleBarParams;
-        private TextBox titleStr;
-        private CheckBox showInBar;
-        private TabPage subCountersTab;
-        private TextBox warnNum;
-        private CheckBox warnCount;
-        private CheckBox excludePouches;
-        private CheckBox titlebarImages;
-        private CheckBox checkNewConts;
-        private GroupBox groupBox2;
-        private ListView counters;
-        private ColumnHeader cntName;
-        private ColumnHeader cntCount;
-        private Button delCounter;
-        private Button addCounter;
-        private Button recount;
-        private TabControl subGeneralTab;
-        private TabPage tabPage1;
-        private TabPage subFiltersTab;
-        private CheckedListBox filters;
-        private GroupBox groupBox16;
-        private Button setBackupFolder;
-        private Label lastBackup;
-        private Button createBackup;
-        private ComboBox clientPrio;
-        private RadioButton systray;
-        private RadioButton taskbar;
-        private ComboBox langSel;
-        private Label label7;
-        private Label label11;
-        private CheckBox showWelcome;
-        private TrackBar opacity;
-        private CheckBox alwaysTop;
-        private Label opacityLabel;
-        private Label label9;
-        private GroupBox groupBox4;
-        private Button saveProfile;
-        private Button cloneProfile;
-        private Button delProfile;
-        private Button newProfile;
-        private ComboBox profiles;
-        private ComboBox drakeAnimationList;
-        private CheckBox filterDrakeGraphics;
-        private ComboBox dragonAnimationList;
-        private CheckBox filterDragonGraphics;
-        private Button openBackupFolder;
-        private TextBox targetIndictorFormat;
-        private Label lblTargetFormat;
-        private CheckBox nextPrevIgnoresFriends;
-        private CheckBox castOnClosest;
-        private Label lblStealthFormat;
-        private TextBox stealthStepsFormat;
-        private CheckBox showFriendOverhead;
-        private CheckBox dispDeltaOverhead;
-        private Label lblCredits2;
-        private LinkLabel linkGitHub;
-        private Label lblCredits3;
-        private GroupBox groupBox15;
-        private Button openUOAM;
-        private Button openUltimaMapper;
-        private Button btnMap;
-        private Button boatControl;
-        private CheckBox captureMibs;
-        private CheckBox macroActionDelay;
-        private TreeView _macroTreeViewCache = new TreeView();
-
-
-
-        public Label WaitDisplay
-        {
-            get { return waitDisp; }
-        }
-
-        public MainForm()
-        {
-            m_ProfileConfirmLoad = true;
-            m_Tip = new ToolTip();
-            //
-            // Required for Windows Form Designer support
-            //
-            InitializeComponent();
-
-            m_NotifyIcon.ContextMenu =
-                new ContextMenu(new MenuItem[]
-                {
-                    new MenuItem("Show Razor", new EventHandler(DoShowMe)),
-                    new MenuItem("Hide Razor", new EventHandler(HideMe)),
-                    new MenuItem("-"),
-                    new MenuItem("Toggle Razor Visibility", new EventHandler(ToggleVisible)),
-                    new MenuItem("-"),
-                    new MenuItem("Close Razor && UO", new EventHandler(OnClose))
-                });
-            m_NotifyIcon.ContextMenu.MenuItems[0].DefaultItem = true;
-        }
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-
-            base.Dispose(disposing);
-        }
-
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.m_NotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.tabs = new System.Windows.Forms.TabControl();
-            this.generalTab = new System.Windows.Forms.TabPage();
-            this.subGeneralTab = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.groupBox15 = new System.Windows.Forms.GroupBox();
-            this.boatControl = new System.Windows.Forms.Button();
-            this.openUOAM = new System.Windows.Forms.Button();
-            this.openUltimaMapper = new System.Windows.Forms.Button();
-            this.btnMap = new System.Windows.Forms.Button();
-            this.groupBox16 = new System.Windows.Forms.GroupBox();
-            this.openBackupFolder = new System.Windows.Forms.Button();
-            this.setBackupFolder = new System.Windows.Forms.Button();
-            this.lastBackup = new System.Windows.Forms.Label();
-            this.createBackup = new System.Windows.Forms.Button();
-            this.clientPrio = new System.Windows.Forms.ComboBox();
-            this.systray = new System.Windows.Forms.RadioButton();
-            this.taskbar = new System.Windows.Forms.RadioButton();
-            this.langSel = new System.Windows.Forms.ComboBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.showWelcome = new System.Windows.Forms.CheckBox();
-            this.opacity = new System.Windows.Forms.TrackBar();
-            this.alwaysTop = new System.Windows.Forms.CheckBox();
-            this.opacityLabel = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.saveProfile = new System.Windows.Forms.Button();
-            this.cloneProfile = new System.Windows.Forms.Button();
-            this.delProfile = new System.Windows.Forms.Button();
-            this.newProfile = new System.Windows.Forms.Button();
-            this.profiles = new System.Windows.Forms.ComboBox();
-            this.subFiltersTab = new System.Windows.Forms.TabPage();
-            this.drakeAnimationList = new System.Windows.Forms.ComboBox();
-            this.filterDrakeGraphics = new System.Windows.Forms.CheckBox();
-            this.dragonAnimationList = new System.Windows.Forms.ComboBox();
-            this.filterDragonGraphics = new System.Windows.Forms.CheckBox();
-            this.filters = new System.Windows.Forms.CheckedListBox();
-            this.moreOptTab = new System.Windows.Forms.TabPage();
-            this.optionsTabCtrl = new System.Windows.Forms.TabControl();
-            this.subOptionsSpeechTab = new System.Windows.Forms.TabPage();
-            this.showFriendOverhead = new System.Windows.Forms.CheckBox();
-            this.damageTakenOverhead = new System.Windows.Forms.CheckBox();
-            this.showDamageTaken = new System.Windows.Forms.CheckBox();
-            this.damageDealtOverhead = new System.Windows.Forms.CheckBox();
-            this.showDamageDealt = new System.Windows.Forms.CheckBox();
-            this.lblBuffDebuff = new System.Windows.Forms.Label();
-            this.buffDebuffFormat = new System.Windows.Forms.TextBox();
-            this.showBuffDebuffOverhead = new System.Windows.Forms.CheckBox();
-            this.healthFmt = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.showHealthOH = new System.Windows.Forms.CheckBox();
-            this.chkPartyOverhead = new System.Windows.Forms.CheckBox();
-            this.containerLabels = new System.Windows.Forms.Button();
-            this.showContainerLabels = new System.Windows.Forms.CheckBox();
-            this.overHeadMessages = new System.Windows.Forms.Button();
-            this.showOverheadMessages = new System.Windows.Forms.CheckBox();
-            this.filterSnoop = new System.Windows.Forms.CheckBox();
-            this.incomingMob = new System.Windows.Forms.CheckBox();
-            this.incomingCorpse = new System.Windows.Forms.CheckBox();
-            this.setLTHilight = new System.Windows.Forms.Button();
-            this.lthilight = new System.Windows.Forms.CheckBox();
-            this.setHarmHue = new System.Windows.Forms.Button();
-            this.setNeuHue = new System.Windows.Forms.Button();
-            this.lblHarmHue = new System.Windows.Forms.Label();
-            this.lblNeuHue = new System.Windows.Forms.Label();
-            this.lblBeneHue = new System.Windows.Forms.Label();
-            this.setBeneHue = new System.Windows.Forms.Button();
-            this.setSpeechHue = new System.Windows.Forms.Button();
-            this.setWarnHue = new System.Windows.Forms.Button();
-            this.setMsgHue = new System.Windows.Forms.Button();
-            this.setExHue = new System.Windows.Forms.Button();
-            this.lblWarnHue = new System.Windows.Forms.Label();
-            this.lblMsgHue = new System.Windows.Forms.Label();
-            this.lblExHue = new System.Windows.Forms.Label();
-            this.txtSpellFormat = new System.Windows.Forms.TextBox();
-            this.chkForceSpellHue = new System.Windows.Forms.CheckBox();
-            this.chkForceSpeechHue = new System.Windows.Forms.CheckBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.subOptionsTargetTab = new System.Windows.Forms.TabPage();
-            this.nextPrevIgnoresFriends = new System.Windows.Forms.CheckBox();
-            this.castOnClosest = new System.Windows.Forms.CheckBox();
-            this.lblTargetFormat = new System.Windows.Forms.Label();
-            this.targetIndictorFormat = new System.Windows.Forms.TextBox();
-            this.autoFriend = new System.Windows.Forms.CheckBox();
-            this.showtargtext = new System.Windows.Forms.CheckBox();
-            this.showAttackTargetNewOnly = new System.Windows.Forms.CheckBox();
-            this.showTextTargetIndicator = new System.Windows.Forms.CheckBox();
-            this.showAttackTarget = new System.Windows.Forms.CheckBox();
-            this.showTargetMessagesOverChar = new System.Windows.Forms.CheckBox();
-            this.txtObjDelay = new System.Windows.Forms.TextBox();
-            this.objectDelay = new System.Windows.Forms.CheckBox();
-            this.ltRange = new System.Windows.Forms.TextBox();
-            this.QueueActions = new System.Windows.Forms.CheckBox();
-            this.rangeCheckLT = new System.Windows.Forms.CheckBox();
-            this.actionStatusMsg = new System.Windows.Forms.CheckBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.smartLT = new System.Windows.Forms.CheckBox();
-            this.queueTargets = new System.Windows.Forms.CheckBox();
-            this.subOptionsMiscTab = new System.Windows.Forms.TabPage();
-            this.lblStealthFormat = new System.Windows.Forms.Label();
-            this.stealthStepsFormat = new System.Windows.Forms.TextBox();
-            this.rememberPwds = new System.Windows.Forms.CheckBox();
-            this.showStaticWalls = new System.Windows.Forms.CheckBox();
-            this.showStaticWallLabels = new System.Windows.Forms.CheckBox();
-            this.autoAcceptParty = new System.Windows.Forms.CheckBox();
-            this.stealthOverhead = new System.Windows.Forms.CheckBox();
-            this.forceSizeX = new System.Windows.Forms.TextBox();
-            this.forceSizeY = new System.Windows.Forms.TextBox();
-            this.blockHealPoison = new System.Windows.Forms.CheckBox();
-            this.potionEquip = new System.Windows.Forms.CheckBox();
-            this.spellUnequip = new System.Windows.Forms.CheckBox();
-            this.autoOpenDoors = new System.Windows.Forms.CheckBox();
-            this.chkStealth = new System.Windows.Forms.CheckBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.gameSize = new System.Windows.Forms.CheckBox();
-            this.setMinLightLevel = new System.Windows.Forms.Button();
-            this.setMaxLightLevel = new System.Windows.Forms.Button();
-            this.realSeason = new System.Windows.Forms.CheckBox();
-            this.seasonList = new System.Windows.Forms.ComboBox();
-            this.lblSeason = new System.Windows.Forms.Label();
-            this.lightLevel = new System.Windows.Forms.Label();
-            this.lightLevelBar = new System.Windows.Forms.TrackBar();
-            this.minMaxLightLevel = new System.Windows.Forms.CheckBox();
-            this.blockPartyInvites = new System.Windows.Forms.CheckBox();
-            this.blockTradeRequests = new System.Windows.Forms.CheckBox();
-            this.blockOpenCorpsesTwice = new System.Windows.Forms.CheckBox();
-            this.preAOSstatbar = new System.Windows.Forms.CheckBox();
-            this.corpseRange = new System.Windows.Forms.TextBox();
-            this.autoStackRes = new System.Windows.Forms.CheckBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.openCorpses = new System.Windows.Forms.CheckBox();
-            this.blockDis = new System.Windows.Forms.CheckBox();
-            this.displayTab = new System.Windows.Forms.TabPage();
-            this.tabControl4 = new System.Windows.Forms.TabControl();
-            this.subDisplayTab = new System.Windows.Forms.TabPage();
-            this.groupBox11 = new System.Windows.Forms.GroupBox();
-            this.razorTitleBarKey = new System.Windows.Forms.Button();
-            this.showInRazorTitleBar = new System.Windows.Forms.CheckBox();
-            this.razorTitleBar = new System.Windows.Forms.TextBox();
-            this.trackDps = new System.Windows.Forms.CheckBox();
-            this.trackIncomingGold = new System.Windows.Forms.CheckBox();
-            this.showNotoHue = new System.Windows.Forms.CheckBox();
-            this.highlightSpellReags = new System.Windows.Forms.CheckBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.titleBarParams = new System.Windows.Forms.ComboBox();
-            this.titleStr = new System.Windows.Forms.TextBox();
-            this.showInBar = new System.Windows.Forms.CheckBox();
-            this.subCountersTab = new System.Windows.Forms.TabPage();
-            this.warnNum = new System.Windows.Forms.TextBox();
-            this.warnCount = new System.Windows.Forms.CheckBox();
-            this.excludePouches = new System.Windows.Forms.CheckBox();
-            this.titlebarImages = new System.Windows.Forms.CheckBox();
-            this.checkNewConts = new System.Windows.Forms.CheckBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.counters = new System.Windows.Forms.ListView();
-            this.cntName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.cntCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.delCounter = new System.Windows.Forms.Button();
-            this.addCounter = new System.Windows.Forms.Button();
-            this.recount = new System.Windows.Forms.Button();
-            this.dressTab = new System.Windows.Forms.TabPage();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.clearDress = new System.Windows.Forms.Button();
-            this.dressDelSel = new System.Windows.Forms.Button();
-            this.undressBag = new System.Windows.Forms.Button();
-            this.undressList = new System.Windows.Forms.Button();
-            this.dressUseCur = new System.Windows.Forms.Button();
-            this.targItem = new System.Windows.Forms.Button();
-            this.dressItems = new System.Windows.Forms.ListBox();
-            this.dressNow = new System.Windows.Forms.Button();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.removeDress = new System.Windows.Forms.Button();
-            this.addDress = new System.Windows.Forms.Button();
-            this.dressList = new System.Windows.Forms.ListBox();
-            this.undressConflicts = new System.Windows.Forms.CheckBox();
-            this.skillsTab = new System.Windows.Forms.TabPage();
-            this.captureMibs = new System.Windows.Forms.CheckBox();
-            this.dispDeltaOverhead = new System.Windows.Forms.CheckBox();
-            this.logSkillChanges = new System.Windows.Forms.CheckBox();
-            this.dispDelta = new System.Windows.Forms.CheckBox();
-            this.skillCopyAll = new System.Windows.Forms.Button();
-            this.skillCopySel = new System.Windows.Forms.Button();
-            this.baseTotal = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.locks = new System.Windows.Forms.ComboBox();
-            this.setlocks = new System.Windows.Forms.Button();
-            this.resetDelta = new System.Windows.Forms.Button();
-            this.skillList = new System.Windows.Forms.ListView();
-            this.skillHDRName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.skillHDRvalue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.skillHDRbase = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.skillHDRdelta = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.skillHDRcap = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.skillHDRlock = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.agentsTab = new System.Windows.Forms.TabPage();
-            this.agentB6 = new System.Windows.Forms.Button();
-            this.agentB5 = new System.Windows.Forms.Button();
-            this.agentList = new System.Windows.Forms.ComboBox();
-            this.agentGroup = new System.Windows.Forms.GroupBox();
-            this.agentSubList = new System.Windows.Forms.ListBox();
-            this.agentB4 = new System.Windows.Forms.Button();
-            this.agentB1 = new System.Windows.Forms.Button();
-            this.agentB2 = new System.Windows.Forms.Button();
-            this.agentB3 = new System.Windows.Forms.Button();
-            this.hotkeysTab = new System.Windows.Forms.TabPage();
-            this.filterHotkeys = new System.Windows.Forms.TextBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.hkStatus = new System.Windows.Forms.Label();
-            this.hotkeyTree = new System.Windows.Forms.TreeView();
-            this.dohotkey = new System.Windows.Forms.Button();
-            this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.chkAlt = new System.Windows.Forms.CheckBox();
-            this.chkPass = new System.Windows.Forms.CheckBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.unsetHK = new System.Windows.Forms.Button();
-            this.setHK = new System.Windows.Forms.Button();
-            this.key = new System.Windows.Forms.TextBox();
-            this.chkCtrl = new System.Windows.Forms.CheckBox();
-            this.chkShift = new System.Windows.Forms.CheckBox();
-            this.macrosTab = new System.Windows.Forms.TabPage();
-            this.tabControl2 = new System.Windows.Forms.TabControl();
-            this.subMacrosTab = new System.Windows.Forms.TabPage();
-            this.macroActGroup = new System.Windows.Forms.GroupBox();
-            this.playMacro = new System.Windows.Forms.Button();
-            this.waitDisp = new System.Windows.Forms.Label();
-            this.loopMacro = new System.Windows.Forms.CheckBox();
-            this.recMacro = new System.Windows.Forms.Button();
-            this.actionList = new System.Windows.Forms.ListBox();
-            this.filterMacros = new System.Windows.Forms.TextBox();
-            this.filterLabel = new System.Windows.Forms.Label();
-            this.macroTree = new System.Windows.Forms.TreeView();
-            this.delMacro = new System.Windows.Forms.Button();
-            this.newMacro = new System.Windows.Forms.Button();
-            this.subMacrosOptionsTab = new System.Windows.Forms.TabPage();
-            this.macroActionDelay = new System.Windows.Forms.CheckBox();
-            this.rangeCheckDoubleClick = new System.Windows.Forms.CheckBox();
-            this.rangeCheckTargetByType = new System.Windows.Forms.CheckBox();
-            this.nextMacroAction = new System.Windows.Forms.Button();
-            this.stepThroughMacro = new System.Windows.Forms.CheckBox();
-            this.targetByTypeDifferent = new System.Windows.Forms.CheckBox();
-            this.absoluteTargetGroup = new System.Windows.Forms.GroupBox();
-            this.macroVariableList = new System.Windows.Forms.ComboBox();
-            this.retargetMacroVariable = new System.Windows.Forms.Button();
-            this.insertMacroVariable = new System.Windows.Forms.Button();
-            this.removeMacroVariable = new System.Windows.Forms.Button();
-            this.addMacroVariable = new System.Windows.Forms.Button();
-            this.macroVariables = new System.Windows.Forms.ListBox();
-            this.screenshotTab = new System.Windows.Forms.TabPage();
-            this.imgurUploads = new System.Windows.Forms.ListBox();
-            this.screenShotClipboard = new System.Windows.Forms.CheckBox();
-            this.screenShotNotification = new System.Windows.Forms.CheckBox();
-            this.screenShotOpenBrowser = new System.Windows.Forms.CheckBox();
-            this.imgFmt = new System.Windows.Forms.ComboBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.capNow = new System.Windows.Forms.Button();
-            this.screenPath = new System.Windows.Forms.TextBox();
-            this.radioUO = new System.Windows.Forms.RadioButton();
-            this.radioFull = new System.Windows.Forms.RadioButton();
-            this.screenAutoCap = new System.Windows.Forms.CheckBox();
-            this.setScnPath = new System.Windows.Forms.Button();
-            this.screensList = new System.Windows.Forms.ListBox();
-            this.screenPrev = new System.Windows.Forms.PictureBox();
-            this.dispTime = new System.Windows.Forms.CheckBox();
-            this.advancedTab = new System.Windows.Forms.TabPage();
-            this.enableUOAAPI = new System.Windows.Forms.CheckBox();
-            this.disableSmartCPU = new System.Windows.Forms.Button();
-            this.negotiate = new System.Windows.Forms.CheckBox();
-            this.openRazorDataDir = new System.Windows.Forms.Button();
-            this.msglvl = new System.Windows.Forms.ComboBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.logPackets = new System.Windows.Forms.CheckBox();
-            this.statusBox = new System.Windows.Forms.TextBox();
-            this.features = new System.Windows.Forms.TextBox();
-            this.aboutTab = new System.Windows.Forms.TabPage();
-            this.linkGitHub = new System.Windows.Forms.LinkLabel();
-            this.lblCredits3 = new System.Windows.Forms.Label();
-            this.linkHelp = new System.Windows.Forms.LinkLabel();
-            this.lblCredits2 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
-            this.lblCredits1 = new System.Windows.Forms.Label();
-            this.aboutSubInfo = new System.Windows.Forms.Label();
-            this.linkMain = new System.Windows.Forms.LinkLabel();
-            this.label21 = new System.Windows.Forms.Label();
-            this.aboutVer = new System.Windows.Forms.Label();
-            this.tabs.SuspendLayout();
-            this.generalTab.SuspendLayout();
-            this.subGeneralTab.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.groupBox15.SuspendLayout();
-            this.groupBox16.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.opacity)).BeginInit();
-            this.groupBox4.SuspendLayout();
-            this.subFiltersTab.SuspendLayout();
-            this.moreOptTab.SuspendLayout();
-            this.optionsTabCtrl.SuspendLayout();
-            this.subOptionsSpeechTab.SuspendLayout();
-            this.subOptionsTargetTab.SuspendLayout();
-            this.subOptionsMiscTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.lightLevelBar)).BeginInit();
-            this.displayTab.SuspendLayout();
-            this.tabControl4.SuspendLayout();
-            this.subDisplayTab.SuspendLayout();
-            this.groupBox11.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.subCountersTab.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.dressTab.SuspendLayout();
-            this.groupBox6.SuspendLayout();
-            this.groupBox5.SuspendLayout();
-            this.skillsTab.SuspendLayout();
-            this.agentsTab.SuspendLayout();
-            this.agentGroup.SuspendLayout();
-            this.hotkeysTab.SuspendLayout();
-            this.groupBox8.SuspendLayout();
-            this.macrosTab.SuspendLayout();
-            this.tabControl2.SuspendLayout();
-            this.subMacrosTab.SuspendLayout();
-            this.macroActGroup.SuspendLayout();
-            this.subMacrosOptionsTab.SuspendLayout();
-            this.absoluteTargetGroup.SuspendLayout();
-            this.screenshotTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.screenPrev)).BeginInit();
-            this.advancedTab.SuspendLayout();
-            this.aboutTab.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // m_NotifyIcon
-            // 
-            this.m_NotifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("m_NotifyIcon.Icon")));
-            this.m_NotifyIcon.Text = "Razor";
-            this.m_NotifyIcon.DoubleClick += new System.EventHandler(this.NotifyIcon_DoubleClick);
-            // 
-            // tabs
-            // 
-            this.tabs.Controls.Add(this.generalTab);
-            this.tabs.Controls.Add(this.moreOptTab);
-            this.tabs.Controls.Add(this.displayTab);
-            this.tabs.Controls.Add(this.dressTab);
-            this.tabs.Controls.Add(this.skillsTab);
-            this.tabs.Controls.Add(this.agentsTab);
-            this.tabs.Controls.Add(this.hotkeysTab);
-            this.tabs.Controls.Add(this.macrosTab);
-            this.tabs.Controls.Add(this.screenshotTab);
-            this.tabs.Controls.Add(this.advancedTab);
-            this.tabs.Controls.Add(this.aboutTab);
-            this.tabs.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tabs.Location = new System.Drawing.Point(2, 0);
-            this.tabs.Multiline = true;
-            this.tabs.Name = "tabs";
-            this.tabs.SelectedIndex = 0;
-            this.tabs.Size = new System.Drawing.Size(615, 462);
-            this.tabs.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
-            this.tabs.TabIndex = 0;
-            this.tabs.SelectedIndexChanged += new System.EventHandler(this.tabs_IndexChanged);
-            this.tabs.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabs_KeyDown);
-            // 
-            // generalTab
-            // 
-            this.generalTab.Controls.Add(this.subGeneralTab);
-            this.generalTab.Location = new System.Drawing.Point(4, 54);
-            this.generalTab.Name = "generalTab";
-            this.generalTab.Size = new System.Drawing.Size(607, 404);
-            this.generalTab.TabIndex = 0;
-            this.generalTab.Text = "General";
-            // 
-            // subGeneralTab
-            // 
-            this.subGeneralTab.Controls.Add(this.tabPage1);
-            this.subGeneralTab.Controls.Add(this.subFiltersTab);
-            this.subGeneralTab.Location = new System.Drawing.Point(7, 4);
-            this.subGeneralTab.Name = "subGeneralTab";
-            this.subGeneralTab.SelectedIndex = 0;
-            this.subGeneralTab.Size = new System.Drawing.Size(595, 392);
-            this.subGeneralTab.TabIndex = 63;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage1.Controls.Add(this.groupBox15);
-            this.tabPage1.Controls.Add(this.groupBox16);
-            this.tabPage1.Controls.Add(this.clientPrio);
-            this.tabPage1.Controls.Add(this.systray);
-            this.tabPage1.Controls.Add(this.taskbar);
-            this.tabPage1.Controls.Add(this.langSel);
-            this.tabPage1.Controls.Add(this.label7);
-            this.tabPage1.Controls.Add(this.label11);
-            this.tabPage1.Controls.Add(this.showWelcome);
-            this.tabPage1.Controls.Add(this.opacity);
-            this.tabPage1.Controls.Add(this.alwaysTop);
-            this.tabPage1.Controls.Add(this.opacityLabel);
-            this.tabPage1.Controls.Add(this.label9);
-            this.tabPage1.Controls.Add(this.groupBox4);
-            this.tabPage1.Location = new System.Drawing.Point(4, 29);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(587, 359);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "General";
-            // 
-            // groupBox15
-            // 
-            this.groupBox15.Controls.Add(this.boatControl);
-            this.groupBox15.Controls.Add(this.openUOAM);
-            this.groupBox15.Controls.Add(this.openUltimaMapper);
-            this.groupBox15.Controls.Add(this.btnMap);
-            this.groupBox15.Location = new System.Drawing.Point(7, 290);
-            this.groupBox15.Name = "groupBox15";
-            this.groupBox15.Size = new System.Drawing.Size(572, 60);
-            this.groupBox15.TabIndex = 77;
-            this.groupBox15.TabStop = false;
-            this.groupBox15.Text = "Maps / Boat";
-            // 
-            // boatControl
-            // 
-            this.boatControl.Location = new System.Drawing.Point(453, 20);
-            this.boatControl.Name = "boatControl";
-            this.boatControl.Size = new System.Drawing.Size(112, 32);
-            this.boatControl.TabIndex = 70;
-            this.boatControl.Text = "Boat Control";
-            this.boatControl.UseVisualStyleBackColor = true;
-            this.boatControl.Click += new System.EventHandler(this.boatControl_Click);
-            // 
-            // openUOAM
-            // 
-            this.openUOAM.Location = new System.Drawing.Point(278, 20);
-            this.openUOAM.Name = "openUOAM";
-            this.openUOAM.Size = new System.Drawing.Size(124, 32);
-            this.openUOAM.TabIndex = 69;
-            this.openUOAM.Text = "UOAM";
-            this.openUOAM.Click += new System.EventHandler(this.openUOAM_Click);
-            // 
-            // openUltimaMapper
-            // 
-            this.openUltimaMapper.Location = new System.Drawing.Point(142, 20);
-            this.openUltimaMapper.Name = "openUltimaMapper";
-            this.openUltimaMapper.Size = new System.Drawing.Size(125, 32);
-            this.openUltimaMapper.TabIndex = 68;
-            this.openUltimaMapper.Text = "Ultima Mapper";
-            this.openUltimaMapper.Click += new System.EventHandler(this.openUltimaMapper_Click);
-            // 
-            // btnMap
-            // 
-            this.btnMap.Location = new System.Drawing.Point(7, 20);
-            this.btnMap.Name = "btnMap";
-            this.btnMap.Size = new System.Drawing.Size(125, 32);
-            this.btnMap.TabIndex = 67;
-            this.btnMap.Text = "UOPS";
-            this.btnMap.Click += new System.EventHandler(this.btnMap_Click);
-            // 
-            // groupBox16
-            // 
-            this.groupBox16.Controls.Add(this.openBackupFolder);
-            this.groupBox16.Controls.Add(this.setBackupFolder);
-            this.groupBox16.Controls.Add(this.lastBackup);
-            this.groupBox16.Controls.Add(this.createBackup);
-            this.groupBox16.Location = new System.Drawing.Point(7, 134);
-            this.groupBox16.Name = "groupBox16";
-            this.groupBox16.Size = new System.Drawing.Size(267, 148);
-            this.groupBox16.TabIndex = 74;
-            this.groupBox16.TabStop = false;
-            this.groupBox16.Text = "Backup Profiles && Macros";
-            // 
-            // openBackupFolder
-            // 
-            this.openBackupFolder.Location = new System.Drawing.Point(139, 101);
-            this.openBackupFolder.Name = "openBackupFolder";
-            this.openBackupFolder.Size = new System.Drawing.Size(121, 38);
-            this.openBackupFolder.TabIndex = 75;
-            this.openBackupFolder.Text = "Open Folder";
-            this.openBackupFolder.UseVisualStyleBackColor = true;
-            this.openBackupFolder.Click += new System.EventHandler(this.openBackupFolder_Click);
-            // 
-            // setBackupFolder
-            // 
-            this.setBackupFolder.Location = new System.Drawing.Point(7, 101);
-            this.setBackupFolder.Name = "setBackupFolder";
-            this.setBackupFolder.Size = new System.Drawing.Size(125, 38);
-            this.setBackupFolder.TabIndex = 74;
-            this.setBackupFolder.Text = "Set Folder";
-            this.setBackupFolder.UseVisualStyleBackColor = true;
-            this.setBackupFolder.Click += new System.EventHandler(this.setBackupFolder_Click);
-            // 
-            // lastBackup
-            // 
-            this.lastBackup.Location = new System.Drawing.Point(7, 69);
-            this.lastBackup.Name = "lastBackup";
-            this.lastBackup.Size = new System.Drawing.Size(253, 29);
-            this.lastBackup.TabIndex = 73;
-            this.lastBackup.Text = "Last Backup: 01/01/2019 5:54PM";
-            this.lastBackup.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // createBackup
-            // 
-            this.createBackup.Location = new System.Drawing.Point(71, 28);
-            this.createBackup.Name = "createBackup";
-            this.createBackup.Size = new System.Drawing.Size(125, 37);
-            this.createBackup.TabIndex = 72;
-            this.createBackup.Text = "Create Backup";
-            this.createBackup.UseVisualStyleBackColor = true;
-            this.createBackup.Click += new System.EventHandler(this.createBackup_Click);
-            // 
-            // clientPrio
-            // 
-            this.clientPrio.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.clientPrio.Items.AddRange(new object[] {
-            "Idle",
-            "BelowNormal",
-            "Normal",
-            "AboveNormal",
-            "High",
-            "Realtime"});
-            this.clientPrio.Location = new System.Drawing.Point(433, 159);
-            this.clientPrio.Name = "clientPrio";
-            this.clientPrio.Size = new System.Drawing.Size(146, 28);
-            this.clientPrio.TabIndex = 73;
-            this.clientPrio.SelectedIndexChanged += new System.EventHandler(this.clientPrio_SelectedIndexChanged);
-            // 
-            // systray
-            // 
-            this.systray.Location = new System.Drawing.Point(433, 111);
-            this.systray.Name = "systray";
-            this.systray.Size = new System.Drawing.Size(102, 29);
-            this.systray.TabIndex = 69;
-            this.systray.Text = "System Tray";
-            this.systray.CheckedChanged += new System.EventHandler(this.systray_CheckedChanged);
-            // 
-            // taskbar
-            // 
-            this.taskbar.Location = new System.Drawing.Point(351, 111);
-            this.taskbar.Name = "taskbar";
-            this.taskbar.Size = new System.Drawing.Size(92, 29);
-            this.taskbar.TabIndex = 68;
-            this.taskbar.Text = "Taskbar";
-            this.taskbar.CheckedChanged += new System.EventHandler(this.taskbar_CheckedChanged);
-            // 
-            // langSel
-            // 
-            this.langSel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.langSel.Location = new System.Drawing.Point(433, 195);
-            this.langSel.Name = "langSel";
-            this.langSel.Size = new System.Drawing.Size(146, 28);
-            this.langSel.TabIndex = 71;
-            this.langSel.SelectedIndexChanged += new System.EventHandler(this.langSel_SelectedIndexChanged);
-            // 
-            // label7
-            // 
-            this.label7.Location = new System.Drawing.Point(281, 199);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(79, 22);
-            this.label7.TabIndex = 70;
-            this.label7.Text = "Language:";
-            // 
-            // label11
-            // 
-            this.label11.Location = new System.Drawing.Point(281, 116);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(63, 20);
-            this.label11.TabIndex = 67;
-            this.label11.Text = "Show in:";
-            // 
-            // showWelcome
-            // 
-            this.showWelcome.Location = new System.Drawing.Point(285, 35);
-            this.showWelcome.Name = "showWelcome";
-            this.showWelcome.Size = new System.Drawing.Size(177, 29);
-            this.showWelcome.TabIndex = 66;
-            this.showWelcome.Text = "Show Welcome Screen";
-            this.showWelcome.CheckedChanged += new System.EventHandler(this.showWelcome_CheckedChanged);
-            // 
-            // opacity
-            // 
-            this.opacity.AutoSize = false;
-            this.opacity.Cursor = System.Windows.Forms.Cursors.SizeWE;
-            this.opacity.Location = new System.Drawing.Point(381, 242);
-            this.opacity.Maximum = 100;
-            this.opacity.Minimum = 10;
-            this.opacity.Name = "opacity";
-            this.opacity.Size = new System.Drawing.Size(198, 27);
-            this.opacity.TabIndex = 64;
-            this.opacity.TickFrequency = 0;
-            this.opacity.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.opacity.Value = 100;
-            this.opacity.Scroll += new System.EventHandler(this.opacity_Scroll);
-            // 
-            // alwaysTop
-            // 
-            this.alwaysTop.Location = new System.Drawing.Point(285, 71);
-            this.alwaysTop.Name = "alwaysTop";
-            this.alwaysTop.Size = new System.Drawing.Size(189, 29);
-            this.alwaysTop.TabIndex = 63;
-            this.alwaysTop.Text = "Use Smart Always on Top";
-            this.alwaysTop.CheckedChanged += new System.EventHandler(this.alwaysTop_CheckedChanged);
-            // 
-            // opacityLabel
-            // 
-            this.opacityLabel.Location = new System.Drawing.Point(281, 245);
-            this.opacityLabel.Name = "opacityLabel";
-            this.opacityLabel.Size = new System.Drawing.Size(104, 24);
-            this.opacityLabel.TabIndex = 65;
-            this.opacityLabel.Text = "Opacity: 100%";
-            // 
-            // label9
-            // 
-            this.label9.Location = new System.Drawing.Point(281, 162);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(151, 23);
-            this.label9.TabIndex = 72;
-            this.label9.Text = "Default Client Priority:";
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.saveProfile);
-            this.groupBox4.Controls.Add(this.cloneProfile);
-            this.groupBox4.Controls.Add(this.delProfile);
-            this.groupBox4.Controls.Add(this.newProfile);
-            this.groupBox4.Controls.Add(this.profiles);
-            this.groupBox4.Location = new System.Drawing.Point(7, 8);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(267, 118);
-            this.groupBox4.TabIndex = 5;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Profiles";
-            // 
-            // saveProfile
-            // 
-            this.saveProfile.Location = new System.Drawing.Point(73, 70);
-            this.saveProfile.Name = "saveProfile";
-            this.saveProfile.Size = new System.Drawing.Size(59, 38);
-            this.saveProfile.TabIndex = 4;
-            this.saveProfile.Text = "Save";
-            this.saveProfile.Click += new System.EventHandler(this.saveProfile_Click);
-            // 
-            // cloneProfile
-            // 
-            this.cloneProfile.Location = new System.Drawing.Point(139, 70);
-            this.cloneProfile.Name = "cloneProfile";
-            this.cloneProfile.Size = new System.Drawing.Size(58, 38);
-            this.cloneProfile.TabIndex = 3;
-            this.cloneProfile.Text = "Clone";
-            this.cloneProfile.Click += new System.EventHandler(this.cloneProfile_Click);
-            // 
-            // delProfile
-            // 
-            this.delProfile.Location = new System.Drawing.Point(204, 70);
-            this.delProfile.Name = "delProfile";
-            this.delProfile.Size = new System.Drawing.Size(58, 38);
-            this.delProfile.TabIndex = 2;
-            this.delProfile.Text = "Delete";
-            this.delProfile.Click += new System.EventHandler(this.delProfile_Click);
-            // 
-            // newProfile
-            // 
-            this.newProfile.Location = new System.Drawing.Point(8, 70);
-            this.newProfile.Name = "newProfile";
-            this.newProfile.Size = new System.Drawing.Size(58, 38);
-            this.newProfile.TabIndex = 1;
-            this.newProfile.Text = "New";
-            this.newProfile.Click += new System.EventHandler(this.newProfile_Click);
-            // 
-            // profiles
-            // 
-            this.profiles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.profiles.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.profiles.ItemHeight = 25;
-            this.profiles.Location = new System.Drawing.Point(7, 28);
-            this.profiles.MaxDropDownItems = 5;
-            this.profiles.Name = "profiles";
-            this.profiles.Size = new System.Drawing.Size(253, 33);
-            this.profiles.TabIndex = 0;
-            this.profiles.SelectedIndexChanged += new System.EventHandler(this.profiles_SelectedIndexChanged);
-            // 
-            // subFiltersTab
-            // 
-            this.subFiltersTab.BackColor = System.Drawing.SystemColors.Control;
-            this.subFiltersTab.Controls.Add(this.drakeAnimationList);
-            this.subFiltersTab.Controls.Add(this.filterDrakeGraphics);
-            this.subFiltersTab.Controls.Add(this.dragonAnimationList);
-            this.subFiltersTab.Controls.Add(this.filterDragonGraphics);
-            this.subFiltersTab.Controls.Add(this.filters);
-            this.subFiltersTab.Location = new System.Drawing.Point(4, 29);
-            this.subFiltersTab.Name = "subFiltersTab";
-            this.subFiltersTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subFiltersTab.Size = new System.Drawing.Size(587, 359);
-            this.subFiltersTab.TabIndex = 1;
-            this.subFiltersTab.Text = "Filters";
-            // 
-            // drakeAnimationList
-            // 
-            this.drakeAnimationList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.drakeAnimationList.DropDownWidth = 250;
-            this.drakeAnimationList.FormattingEnabled = true;
-            this.drakeAnimationList.Location = new System.Drawing.Point(244, 106);
-            this.drakeAnimationList.Name = "drakeAnimationList";
-            this.drakeAnimationList.Size = new System.Drawing.Size(235, 28);
-            this.drakeAnimationList.TabIndex = 104;
-            this.drakeAnimationList.SelectedIndexChanged += new System.EventHandler(this.drakeAnimationList_SelectedIndexChanged);
-            // 
-            // filterDrakeGraphics
-            // 
-            this.filterDrakeGraphics.AutoSize = true;
-            this.filterDrakeGraphics.Location = new System.Drawing.Point(244, 75);
-            this.filterDrakeGraphics.Name = "filterDrakeGraphics";
-            this.filterDrakeGraphics.Size = new System.Drawing.Size(111, 24);
-            this.filterDrakeGraphics.TabIndex = 103;
-            this.filterDrakeGraphics.Text = "Filter drakes";
-            this.filterDrakeGraphics.UseVisualStyleBackColor = true;
-            this.filterDrakeGraphics.CheckedChanged += new System.EventHandler(this.filterDrakeGraphics_CheckedChanged);
-            // 
-            // dragonAnimationList
-            // 
-            this.dragonAnimationList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.dragonAnimationList.DropDownWidth = 250;
-            this.dragonAnimationList.FormattingEnabled = true;
-            this.dragonAnimationList.Location = new System.Drawing.Point(244, 39);
-            this.dragonAnimationList.Name = "dragonAnimationList";
-            this.dragonAnimationList.Size = new System.Drawing.Size(235, 28);
-            this.dragonAnimationList.TabIndex = 102;
-            this.dragonAnimationList.SelectedIndexChanged += new System.EventHandler(this.dragonAnimationList_SelectedIndexChanged);
-            // 
-            // filterDragonGraphics
-            // 
-            this.filterDragonGraphics.AutoSize = true;
-            this.filterDragonGraphics.Location = new System.Drawing.Point(244, 8);
-            this.filterDragonGraphics.Name = "filterDragonGraphics";
-            this.filterDragonGraphics.Size = new System.Drawing.Size(122, 24);
-            this.filterDragonGraphics.TabIndex = 101;
-            this.filterDragonGraphics.Text = "Filter dragons";
-            this.filterDragonGraphics.UseVisualStyleBackColor = true;
-            this.filterDragonGraphics.CheckedChanged += new System.EventHandler(this.filterDragonGraphics_CheckedChanged);
-            // 
-            // filters
-            // 
-            this.filters.CheckOnClick = true;
-            this.filters.IntegralHeight = false;
-            this.filters.Location = new System.Drawing.Point(7, 8);
-            this.filters.Name = "filters";
-            this.filters.Size = new System.Drawing.Size(230, 342);
-            this.filters.TabIndex = 3;
-            this.filters.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.OnFilterCheck);
-            // 
-            // moreOptTab
-            // 
-            this.moreOptTab.Controls.Add(this.optionsTabCtrl);
-            this.moreOptTab.Location = new System.Drawing.Point(4, 54);
-            this.moreOptTab.Name = "moreOptTab";
-            this.moreOptTab.Size = new System.Drawing.Size(607, 404);
-            this.moreOptTab.TabIndex = 5;
-            this.moreOptTab.Text = "Options";
-            // 
-            // optionsTabCtrl
-            // 
-            this.optionsTabCtrl.Controls.Add(this.subOptionsSpeechTab);
-            this.optionsTabCtrl.Controls.Add(this.subOptionsTargetTab);
-            this.optionsTabCtrl.Controls.Add(this.subOptionsMiscTab);
-            this.optionsTabCtrl.Location = new System.Drawing.Point(7, 4);
-            this.optionsTabCtrl.Name = "optionsTabCtrl";
-            this.optionsTabCtrl.SelectedIndex = 0;
-            this.optionsTabCtrl.Size = new System.Drawing.Size(595, 392);
-            this.optionsTabCtrl.TabIndex = 93;
-            // 
-            // subOptionsSpeechTab
-            // 
-            this.subOptionsSpeechTab.BackColor = System.Drawing.SystemColors.Control;
-            this.subOptionsSpeechTab.Controls.Add(this.showFriendOverhead);
-            this.subOptionsSpeechTab.Controls.Add(this.damageTakenOverhead);
-            this.subOptionsSpeechTab.Controls.Add(this.showDamageTaken);
-            this.subOptionsSpeechTab.Controls.Add(this.damageDealtOverhead);
-            this.subOptionsSpeechTab.Controls.Add(this.showDamageDealt);
-            this.subOptionsSpeechTab.Controls.Add(this.lblBuffDebuff);
-            this.subOptionsSpeechTab.Controls.Add(this.buffDebuffFormat);
-            this.subOptionsSpeechTab.Controls.Add(this.showBuffDebuffOverhead);
-            this.subOptionsSpeechTab.Controls.Add(this.healthFmt);
-            this.subOptionsSpeechTab.Controls.Add(this.label10);
-            this.subOptionsSpeechTab.Controls.Add(this.showHealthOH);
-            this.subOptionsSpeechTab.Controls.Add(this.chkPartyOverhead);
-            this.subOptionsSpeechTab.Controls.Add(this.containerLabels);
-            this.subOptionsSpeechTab.Controls.Add(this.showContainerLabels);
-            this.subOptionsSpeechTab.Controls.Add(this.overHeadMessages);
-            this.subOptionsSpeechTab.Controls.Add(this.showOverheadMessages);
-            this.subOptionsSpeechTab.Controls.Add(this.filterSnoop);
-            this.subOptionsSpeechTab.Controls.Add(this.incomingMob);
-            this.subOptionsSpeechTab.Controls.Add(this.incomingCorpse);
-            this.subOptionsSpeechTab.Controls.Add(this.setLTHilight);
-            this.subOptionsSpeechTab.Controls.Add(this.lthilight);
-            this.subOptionsSpeechTab.Controls.Add(this.setHarmHue);
-            this.subOptionsSpeechTab.Controls.Add(this.setNeuHue);
-            this.subOptionsSpeechTab.Controls.Add(this.lblHarmHue);
-            this.subOptionsSpeechTab.Controls.Add(this.lblNeuHue);
-            this.subOptionsSpeechTab.Controls.Add(this.lblBeneHue);
-            this.subOptionsSpeechTab.Controls.Add(this.setBeneHue);
-            this.subOptionsSpeechTab.Controls.Add(this.setSpeechHue);
-            this.subOptionsSpeechTab.Controls.Add(this.setWarnHue);
-            this.subOptionsSpeechTab.Controls.Add(this.setMsgHue);
-            this.subOptionsSpeechTab.Controls.Add(this.setExHue);
-            this.subOptionsSpeechTab.Controls.Add(this.lblWarnHue);
-            this.subOptionsSpeechTab.Controls.Add(this.lblMsgHue);
-            this.subOptionsSpeechTab.Controls.Add(this.lblExHue);
-            this.subOptionsSpeechTab.Controls.Add(this.txtSpellFormat);
-            this.subOptionsSpeechTab.Controls.Add(this.chkForceSpellHue);
-            this.subOptionsSpeechTab.Controls.Add(this.chkForceSpeechHue);
-            this.subOptionsSpeechTab.Controls.Add(this.label3);
-            this.subOptionsSpeechTab.Location = new System.Drawing.Point(4, 29);
-            this.subOptionsSpeechTab.Name = "subOptionsSpeechTab";
-            this.subOptionsSpeechTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subOptionsSpeechTab.Size = new System.Drawing.Size(587, 359);
-            this.subOptionsSpeechTab.TabIndex = 0;
-            this.subOptionsSpeechTab.Text = "Speech & Messages  ";
-            // 
-            // showFriendOverhead
-            // 
-            this.showFriendOverhead.Location = new System.Drawing.Point(303, 325);
-            this.showFriendOverhead.Name = "showFriendOverhead";
-            this.showFriendOverhead.Size = new System.Drawing.Size(215, 29);
-            this.showFriendOverhead.TabIndex = 129;
-            this.showFriendOverhead.Text = "Show [Friend] overhead";
-            this.showFriendOverhead.UseVisualStyleBackColor = true;
-            this.showFriendOverhead.CheckedChanged += new System.EventHandler(this.showFriendOverhead_CheckedChanged);
-            // 
-            // damageTakenOverhead
-            // 
-            this.damageTakenOverhead.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.damageTakenOverhead.Location = new System.Drawing.Point(460, 296);
-            this.damageTakenOverhead.Name = "damageTakenOverhead";
-            this.damageTakenOverhead.Size = new System.Drawing.Size(89, 24);
-            this.damageTakenOverhead.TabIndex = 128;
-            this.damageTakenOverhead.Text = "Overhead";
-            this.damageTakenOverhead.UseVisualStyleBackColor = true;
-            this.damageTakenOverhead.CheckedChanged += new System.EventHandler(this.damageTakenOverhead_CheckedChanged);
-            // 
-            // showDamageTaken
-            // 
-            this.showDamageTaken.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.showDamageTaken.Location = new System.Drawing.Point(303, 296);
-            this.showDamageTaken.Name = "showDamageTaken";
-            this.showDamageTaken.Size = new System.Drawing.Size(162, 24);
-            this.showDamageTaken.TabIndex = 127;
-            this.showDamageTaken.Text = "Show damage taken";
-            this.showDamageTaken.UseVisualStyleBackColor = true;
-            this.showDamageTaken.CheckedChanged += new System.EventHandler(this.showDamageTaken_CheckedChanged);
-            // 
-            // damageDealtOverhead
-            // 
-            this.damageDealtOverhead.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.damageDealtOverhead.Location = new System.Drawing.Point(460, 265);
-            this.damageDealtOverhead.Name = "damageDealtOverhead";
-            this.damageDealtOverhead.Size = new System.Drawing.Size(89, 24);
-            this.damageDealtOverhead.TabIndex = 126;
-            this.damageDealtOverhead.Text = "Overhead";
-            this.damageDealtOverhead.UseVisualStyleBackColor = true;
-            this.damageDealtOverhead.CheckedChanged += new System.EventHandler(this.damageDealtOverhead_CheckedChanged);
-            // 
-            // showDamageDealt
-            // 
-            this.showDamageDealt.AutoSize = true;
-            this.showDamageDealt.Location = new System.Drawing.Point(303, 265);
-            this.showDamageDealt.Name = "showDamageDealt";
-            this.showDamageDealt.Size = new System.Drawing.Size(164, 24);
-            this.showDamageDealt.TabIndex = 125;
-            this.showDamageDealt.Text = "Show damage dealt";
-            this.showDamageDealt.UseVisualStyleBackColor = true;
-            this.showDamageDealt.CheckedChanged += new System.EventHandler(this.showDamageDealt_CheckedChanged);
-            // 
-            // lblBuffDebuff
-            // 
-            this.lblBuffDebuff.Location = new System.Drawing.Point(10, 322);
-            this.lblBuffDebuff.Name = "lblBuffDebuff";
-            this.lblBuffDebuff.Size = new System.Drawing.Size(135, 23);
-            this.lblBuffDebuff.TabIndex = 93;
-            this.lblBuffDebuff.Text = "Buff/Debuff Format:";
-            this.lblBuffDebuff.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // buffDebuffFormat
-            // 
-            this.buffDebuffFormat.Location = new System.Drawing.Point(152, 321);
-            this.buffDebuffFormat.Name = "buffDebuffFormat";
-            this.buffDebuffFormat.Size = new System.Drawing.Size(129, 27);
-            this.buffDebuffFormat.TabIndex = 92;
-            this.buffDebuffFormat.Text = "[{action}{name}]";
-            this.buffDebuffFormat.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.buffDebuffFormat.TextChanged += new System.EventHandler(this.buffDebuffFormat_TextChanged);
-            // 
-            // showBuffDebuffOverhead
-            // 
-            this.showBuffDebuffOverhead.AutoSize = true;
-            this.showBuffDebuffOverhead.Location = new System.Drawing.Point(10, 296);
-            this.showBuffDebuffOverhead.Name = "showBuffDebuffOverhead";
-            this.showBuffDebuffOverhead.Size = new System.Drawing.Size(214, 24);
-            this.showBuffDebuffOverhead.TabIndex = 91;
-            this.showBuffDebuffOverhead.Text = "Show buff/debuff overhead";
-            this.showBuffDebuffOverhead.UseVisualStyleBackColor = true;
-            this.showBuffDebuffOverhead.CheckedChanged += new System.EventHandler(this.showBuffDebuffOverhead_CheckedChanged);
-            // 
-            // healthFmt
-            // 
-            this.healthFmt.Location = new System.Drawing.Point(440, 202);
-            this.healthFmt.Name = "healthFmt";
-            this.healthFmt.Size = new System.Drawing.Size(62, 27);
-            this.healthFmt.TabIndex = 89;
-            this.healthFmt.Text = "[{0}%]";
-            this.healthFmt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.healthFmt.TextChanged += new System.EventHandler(this.healthFmt_TextChanged);
-            // 
-            // label10
-            // 
-            this.label10.Location = new System.Drawing.Point(330, 204);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(134, 22);
-            this.label10.TabIndex = 88;
-            this.label10.Text = "Health Format:";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // showHealthOH
-            // 
-            this.showHealthOH.Location = new System.Drawing.Point(303, 175);
-            this.showHealthOH.Name = "showHealthOH";
-            this.showHealthOH.Size = new System.Drawing.Size(270, 25);
-            this.showHealthOH.TabIndex = 87;
-            this.showHealthOH.Text = "Show health above people/creatures";
-            this.showHealthOH.CheckedChanged += new System.EventHandler(this.showHealthOH_CheckedChanged);
-            // 
-            // chkPartyOverhead
-            // 
-            this.chkPartyOverhead.Location = new System.Drawing.Point(303, 232);
-            this.chkPartyOverhead.Name = "chkPartyOverhead";
-            this.chkPartyOverhead.Size = new System.Drawing.Size(278, 26);
-            this.chkPartyOverhead.TabIndex = 90;
-            this.chkPartyOverhead.Text = "Show mana/stam above party members";
-            this.chkPartyOverhead.CheckedChanged += new System.EventHandler(this.chkPartyOverhead_CheckedChanged);
-            // 
-            // containerLabels
-            // 
-            this.containerLabels.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.containerLabels.Location = new System.Drawing.Point(511, 144);
-            this.containerLabels.Name = "containerLabels";
-            this.containerLabels.Size = new System.Drawing.Size(38, 24);
-            this.containerLabels.TabIndex = 86;
-            this.containerLabels.Text = "...";
-            this.containerLabels.UseVisualStyleBackColor = true;
-            this.containerLabels.Click += new System.EventHandler(this.containerLabels_Click);
-            // 
-            // showContainerLabels
-            // 
-            this.showContainerLabels.AutoSize = true;
-            this.showContainerLabels.Location = new System.Drawing.Point(303, 144);
-            this.showContainerLabels.Name = "showContainerLabels";
-            this.showContainerLabels.Size = new System.Drawing.Size(176, 24);
-            this.showContainerLabels.TabIndex = 85;
-            this.showContainerLabels.Text = "Show container labels";
-            this.showContainerLabels.UseVisualStyleBackColor = true;
-            this.showContainerLabels.CheckedChanged += new System.EventHandler(this.showContainerLabels_CheckedChanged);
-            // 
-            // overHeadMessages
-            // 
-            this.overHeadMessages.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.overHeadMessages.Location = new System.Drawing.Point(511, 112);
-            this.overHeadMessages.Name = "overHeadMessages";
-            this.overHeadMessages.Size = new System.Drawing.Size(38, 24);
-            this.overHeadMessages.TabIndex = 84;
-            this.overHeadMessages.Text = "...";
-            this.overHeadMessages.UseVisualStyleBackColor = true;
-            this.overHeadMessages.Click += new System.EventHandler(this.overHeadMessages_Click);
-            // 
-            // showOverheadMessages
-            // 
-            this.showOverheadMessages.AutoSize = true;
-            this.showOverheadMessages.Location = new System.Drawing.Point(303, 112);
-            this.showOverheadMessages.Name = "showOverheadMessages";
-            this.showOverheadMessages.Size = new System.Drawing.Size(201, 24);
-            this.showOverheadMessages.TabIndex = 83;
-            this.showOverheadMessages.Text = "Show overhead messages";
-            this.showOverheadMessages.UseVisualStyleBackColor = true;
-            this.showOverheadMessages.CheckedChanged += new System.EventHandler(this.showMessagesOverhead_CheckedChanged);
-            // 
-            // filterSnoop
-            // 
-            this.filterSnoop.Location = new System.Drawing.Point(303, 15);
-            this.filterSnoop.Name = "filterSnoop";
-            this.filterSnoop.Size = new System.Drawing.Size(257, 25);
-            this.filterSnoop.TabIndex = 73;
-            this.filterSnoop.Text = "Filter Snooping Messages";
-            this.filterSnoop.CheckedChanged += new System.EventHandler(this.filterSnoop_CheckedChanged);
-            // 
-            // incomingMob
-            // 
-            this.incomingMob.Location = new System.Drawing.Point(303, 48);
-            this.incomingMob.Name = "incomingMob";
-            this.incomingMob.Size = new System.Drawing.Size(246, 24);
-            this.incomingMob.TabIndex = 71;
-            this.incomingMob.Text = "Show Names of Incoming People/Creatures";
-            this.incomingMob.CheckedChanged += new System.EventHandler(this.incomingMob_CheckedChanged);
-            // 
-            // incomingCorpse
-            // 
-            this.incomingCorpse.Location = new System.Drawing.Point(303, 80);
-            this.incomingCorpse.Name = "incomingCorpse";
-            this.incomingCorpse.Size = new System.Drawing.Size(278, 25);
-            this.incomingCorpse.TabIndex = 72;
-            this.incomingCorpse.Text = "Show Names of New/Incoming Corpses";
-            this.incomingCorpse.CheckedChanged += new System.EventHandler(this.incomingCorpse_CheckedChanged);
-            // 
-            // setLTHilight
-            // 
-            this.setLTHilight.Location = new System.Drawing.Point(196, 145);
-            this.setLTHilight.Name = "setLTHilight";
-            this.setLTHilight.Size = new System.Drawing.Size(55, 25);
-            this.setLTHilight.TabIndex = 70;
-            this.setLTHilight.Text = "Set";
-            this.setLTHilight.Click += new System.EventHandler(this.setLTHilight_Click);
-            // 
-            // lthilight
-            // 
-            this.lthilight.Location = new System.Drawing.Point(10, 145);
-            this.lthilight.Name = "lthilight";
-            this.lthilight.Size = new System.Drawing.Size(241, 24);
-            this.lthilight.TabIndex = 69;
-            this.lthilight.Text = "Last Target Highlight:";
-            this.lthilight.CheckedChanged += new System.EventHandler(this.lthilight_CheckedChanged);
-            // 
-            // setHarmHue
-            // 
-            this.setHarmHue.Enabled = false;
-            this.setHarmHue.Location = new System.Drawing.Point(115, 224);
-            this.setHarmHue.Name = "setHarmHue";
-            this.setHarmHue.Size = new System.Drawing.Size(38, 25);
-            this.setHarmHue.TabIndex = 64;
-            this.setHarmHue.Text = "Set";
-            this.setHarmHue.Click += new System.EventHandler(this.setHarmHue_Click);
-            // 
-            // setNeuHue
-            // 
-            this.setNeuHue.Enabled = false;
-            this.setNeuHue.Location = new System.Drawing.Point(201, 224);
-            this.setNeuHue.Name = "setNeuHue";
-            this.setNeuHue.Size = new System.Drawing.Size(37, 25);
-            this.setNeuHue.TabIndex = 65;
-            this.setNeuHue.Text = "Set";
-            this.setNeuHue.Click += new System.EventHandler(this.setNeuHue_Click);
-            // 
-            // lblHarmHue
-            // 
-            this.lblHarmHue.Location = new System.Drawing.Point(100, 206);
-            this.lblHarmHue.Name = "lblHarmHue";
-            this.lblHarmHue.Size = new System.Drawing.Size(69, 18);
-            this.lblHarmHue.TabIndex = 68;
-            this.lblHarmHue.Text = "Harmful";
-            this.lblHarmHue.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblNeuHue
-            // 
-            this.lblNeuHue.Location = new System.Drawing.Point(190, 206);
-            this.lblNeuHue.Name = "lblNeuHue";
-            this.lblNeuHue.Size = new System.Drawing.Size(61, 18);
-            this.lblNeuHue.TabIndex = 67;
-            this.lblNeuHue.Text = "Neutral";
-            this.lblNeuHue.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblBeneHue
-            // 
-            this.lblBeneHue.Location = new System.Drawing.Point(10, 206);
-            this.lblBeneHue.Name = "lblBeneHue";
-            this.lblBeneHue.Size = new System.Drawing.Size(77, 18);
-            this.lblBeneHue.TabIndex = 66;
-            this.lblBeneHue.Text = "Beneficial";
-            this.lblBeneHue.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // setBeneHue
-            // 
-            this.setBeneHue.Enabled = false;
-            this.setBeneHue.Location = new System.Drawing.Point(31, 224);
-            this.setBeneHue.Name = "setBeneHue";
-            this.setBeneHue.Size = new System.Drawing.Size(38, 25);
-            this.setBeneHue.TabIndex = 63;
-            this.setBeneHue.Text = "Set";
-            this.setBeneHue.Click += new System.EventHandler(this.setBeneHue_Click);
-            // 
-            // setSpeechHue
-            // 
-            this.setSpeechHue.Location = new System.Drawing.Point(196, 112);
-            this.setSpeechHue.Name = "setSpeechHue";
-            this.setSpeechHue.Size = new System.Drawing.Size(55, 26);
-            this.setSpeechHue.TabIndex = 62;
-            this.setSpeechHue.Text = "Set";
-            this.setSpeechHue.Click += new System.EventHandler(this.setSpeechHue_Click);
-            // 
-            // setWarnHue
-            // 
-            this.setWarnHue.Location = new System.Drawing.Point(196, 80);
-            this.setWarnHue.Name = "setWarnHue";
-            this.setWarnHue.Size = new System.Drawing.Size(55, 25);
-            this.setWarnHue.TabIndex = 61;
-            this.setWarnHue.Text = "Set";
-            this.setWarnHue.Click += new System.EventHandler(this.setWarnHue_Click);
-            // 
-            // setMsgHue
-            // 
-            this.setMsgHue.Location = new System.Drawing.Point(196, 48);
-            this.setMsgHue.Name = "setMsgHue";
-            this.setMsgHue.Size = new System.Drawing.Size(55, 24);
-            this.setMsgHue.TabIndex = 60;
-            this.setMsgHue.Text = "Set";
-            this.setMsgHue.Click += new System.EventHandler(this.setMsgHue_Click);
-            // 
-            // setExHue
-            // 
-            this.setExHue.Location = new System.Drawing.Point(196, 15);
-            this.setExHue.Name = "setExHue";
-            this.setExHue.Size = new System.Drawing.Size(55, 25);
-            this.setExHue.TabIndex = 59;
-            this.setExHue.Text = "Set";
-            this.setExHue.Click += new System.EventHandler(this.setExHue_Click);
-            // 
-            // lblWarnHue
-            // 
-            this.lblWarnHue.Location = new System.Drawing.Point(10, 80);
-            this.lblWarnHue.Name = "lblWarnHue";
-            this.lblWarnHue.Size = new System.Drawing.Size(241, 22);
-            this.lblWarnHue.TabIndex = 58;
-            this.lblWarnHue.Text = "Warning Message Hue:";
-            // 
-            // lblMsgHue
-            // 
-            this.lblMsgHue.Location = new System.Drawing.Point(10, 48);
-            this.lblMsgHue.Name = "lblMsgHue";
-            this.lblMsgHue.Size = new System.Drawing.Size(241, 22);
-            this.lblMsgHue.TabIndex = 57;
-            this.lblMsgHue.Text = "Razor Message Hue:";
-            // 
-            // lblExHue
-            // 
-            this.lblExHue.Location = new System.Drawing.Point(10, 15);
-            this.lblExHue.Name = "lblExHue";
-            this.lblExHue.Size = new System.Drawing.Size(241, 23);
-            this.lblExHue.TabIndex = 56;
-            this.lblExHue.Text = "Search Exemption Hue:";
-            // 
-            // txtSpellFormat
-            // 
-            this.txtSpellFormat.Location = new System.Drawing.Point(104, 260);
-            this.txtSpellFormat.Name = "txtSpellFormat";
-            this.txtSpellFormat.Size = new System.Drawing.Size(177, 27);
-            this.txtSpellFormat.TabIndex = 55;
-            this.txtSpellFormat.TextChanged += new System.EventHandler(this.txtSpellFormat_TextChanged);
-            // 
-            // chkForceSpellHue
-            // 
-            this.chkForceSpellHue.Location = new System.Drawing.Point(10, 178);
-            this.chkForceSpellHue.Name = "chkForceSpellHue";
-            this.chkForceSpellHue.Size = new System.Drawing.Size(178, 24);
-            this.chkForceSpellHue.TabIndex = 53;
-            this.chkForceSpellHue.Text = "Override Spell Hues:";
-            this.chkForceSpellHue.CheckedChanged += new System.EventHandler(this.chkForceSpellHue_CheckedChanged);
-            // 
-            // chkForceSpeechHue
-            // 
-            this.chkForceSpeechHue.Location = new System.Drawing.Point(10, 112);
-            this.chkForceSpeechHue.Name = "chkForceSpeechHue";
-            this.chkForceSpeechHue.Size = new System.Drawing.Size(241, 24);
-            this.chkForceSpeechHue.TabIndex = 52;
-            this.chkForceSpeechHue.Text = "Override Speech Hue:";
-            this.chkForceSpeechHue.CheckedChanged += new System.EventHandler(this.chkForceSpeechHue_CheckedChanged);
-            // 
-            // label3
-            // 
-            this.label3.Location = new System.Drawing.Point(10, 260);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(119, 25);
-            this.label3.TabIndex = 54;
-            this.label3.Text = "Spell Format:";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // subOptionsTargetTab
-            // 
-            this.subOptionsTargetTab.BackColor = System.Drawing.SystemColors.Control;
-            this.subOptionsTargetTab.Controls.Add(this.nextPrevIgnoresFriends);
-            this.subOptionsTargetTab.Controls.Add(this.castOnClosest);
-            this.subOptionsTargetTab.Controls.Add(this.lblTargetFormat);
-            this.subOptionsTargetTab.Controls.Add(this.targetIndictorFormat);
-            this.subOptionsTargetTab.Controls.Add(this.autoFriend);
-            this.subOptionsTargetTab.Controls.Add(this.showtargtext);
-            this.subOptionsTargetTab.Controls.Add(this.showAttackTargetNewOnly);
-            this.subOptionsTargetTab.Controls.Add(this.showTextTargetIndicator);
-            this.subOptionsTargetTab.Controls.Add(this.showAttackTarget);
-            this.subOptionsTargetTab.Controls.Add(this.showTargetMessagesOverChar);
-            this.subOptionsTargetTab.Controls.Add(this.txtObjDelay);
-            this.subOptionsTargetTab.Controls.Add(this.objectDelay);
-            this.subOptionsTargetTab.Controls.Add(this.ltRange);
-            this.subOptionsTargetTab.Controls.Add(this.QueueActions);
-            this.subOptionsTargetTab.Controls.Add(this.rangeCheckLT);
-            this.subOptionsTargetTab.Controls.Add(this.actionStatusMsg);
-            this.subOptionsTargetTab.Controls.Add(this.label8);
-            this.subOptionsTargetTab.Controls.Add(this.label6);
-            this.subOptionsTargetTab.Controls.Add(this.smartLT);
-            this.subOptionsTargetTab.Controls.Add(this.queueTargets);
-            this.subOptionsTargetTab.Location = new System.Drawing.Point(4, 29);
-            this.subOptionsTargetTab.Name = "subOptionsTargetTab";
-            this.subOptionsTargetTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subOptionsTargetTab.Size = new System.Drawing.Size(587, 359);
-            this.subOptionsTargetTab.TabIndex = 1;
-            this.subOptionsTargetTab.Text = "Targeting & Queues  ";
-            // 
-            // nextPrevIgnoresFriends
-            // 
-            this.nextPrevIgnoresFriends.AutoSize = true;
-            this.nextPrevIgnoresFriends.Location = new System.Drawing.Point(303, 79);
-            this.nextPrevIgnoresFriends.Name = "nextPrevIgnoresFriends";
-            this.nextPrevIgnoresFriends.Size = new System.Drawing.Size(251, 24);
-            this.nextPrevIgnoresFriends.TabIndex = 95;
-            this.nextPrevIgnoresFriends.Text = "Next/Prev Target ignores \'Friends\'";
-            this.nextPrevIgnoresFriends.UseVisualStyleBackColor = true;
-            this.nextPrevIgnoresFriends.CheckedChanged += new System.EventHandler(this.nextPrevIgnoresFriends_CheckedChanged);
-            // 
-            // castOnClosest
-            // 
-            this.castOnClosest.AutoSize = true;
-            this.castOnClosest.Location = new System.Drawing.Point(303, 110);
-            this.castOnClosest.Name = "castOnClosest";
-            this.castOnClosest.Size = new System.Drawing.Size(213, 24);
-            this.castOnClosest.TabIndex = 95;
-            this.castOnClosest.Text = "Cast Spell on Target Closest";
-            this.castOnClosest.UseVisualStyleBackColor = true;
-            this.castOnClosest.CheckedChanged += new System.EventHandler(this.castOnClosest_CheckedChanged);
-            // 
-            // lblTargetFormat
-            // 
-            this.lblTargetFormat.AutoSize = true;
-            this.lblTargetFormat.Location = new System.Drawing.Point(40, 311);
-            this.lblTargetFormat.Name = "lblTargetFormat";
-            this.lblTargetFormat.Size = new System.Drawing.Size(59, 20);
-            this.lblTargetFormat.TabIndex = 94;
-            this.lblTargetFormat.Text = "Format:";
-            // 
-            // targetIndictorFormat
-            // 
-            this.targetIndictorFormat.Location = new System.Drawing.Point(103, 308);
-            this.targetIndictorFormat.Name = "targetIndictorFormat";
-            this.targetIndictorFormat.Size = new System.Drawing.Size(124, 27);
-            this.targetIndictorFormat.TabIndex = 93;
-            this.targetIndictorFormat.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.targetIndictorFormat.TextChanged += new System.EventHandler(this.targetIndictorFormat_TextChanged);
-            // 
-            // autoFriend
-            // 
-            this.autoFriend.Location = new System.Drawing.Point(303, 15);
-            this.autoFriend.Name = "autoFriend";
-            this.autoFriend.Size = new System.Drawing.Size(253, 25);
-            this.autoFriend.TabIndex = 92;
-            this.autoFriend.Text = "Treat party members as \'Friends\'";
-            this.autoFriend.CheckedChanged += new System.EventHandler(this.autoFriend_CheckedChanged);
-            // 
-            // showtargtext
-            // 
-            this.showtargtext.Location = new System.Drawing.Point(10, 212);
-            this.showtargtext.Name = "showtargtext";
-            this.showtargtext.Size = new System.Drawing.Size(248, 26);
-            this.showtargtext.TabIndex = 91;
-            this.showtargtext.Text = "Show target flag on single click";
-            this.showtargtext.CheckedChanged += new System.EventHandler(this.showtargtext_CheckedChanged);
-            // 
-            // showAttackTargetNewOnly
-            // 
-            this.showAttackTargetNewOnly.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.showAttackTargetNewOnly.Location = new System.Drawing.Point(227, 245);
-            this.showAttackTargetNewOnly.Name = "showAttackTargetNewOnly";
-            this.showAttackTargetNewOnly.Size = new System.Drawing.Size(142, 55);
-            this.showAttackTargetNewOnly.TabIndex = 90;
-            this.showAttackTargetNewOnly.Text = "New targets only";
-            this.showAttackTargetNewOnly.UseVisualStyleBackColor = true;
-            this.showAttackTargetNewOnly.CheckedChanged += new System.EventHandler(this.showAttackTargetNewOnly_CheckedChanged);
-            // 
-            // showTextTargetIndicator
-            // 
-            this.showTextTargetIndicator.Location = new System.Drawing.Point(10, 276);
-            this.showTextTargetIndicator.Name = "showTextTargetIndicator";
-            this.showTextTargetIndicator.Size = new System.Drawing.Size(271, 24);
-            this.showTextTargetIndicator.TabIndex = 89;
-            this.showTextTargetIndicator.Text = "Show text target indicator";
-            this.showTextTargetIndicator.UseVisualStyleBackColor = true;
-            this.showTextTargetIndicator.CheckedChanged += new System.EventHandler(this.showTextTargetIndicator_CheckedChanged);
-            // 
-            // showAttackTarget
-            // 
-            this.showAttackTarget.Location = new System.Drawing.Point(10, 245);
-            this.showAttackTarget.Name = "showAttackTarget";
-            this.showAttackTarget.Size = new System.Drawing.Size(271, 24);
-            this.showAttackTarget.TabIndex = 88;
-            this.showAttackTarget.Text = "Attack/target name overhead";
-            this.showAttackTarget.UseVisualStyleBackColor = true;
-            this.showAttackTarget.CheckedChanged += new System.EventHandler(this.showAttackTarget_CheckedChanged);
-            // 
-            // showTargetMessagesOverChar
-            // 
-            this.showTargetMessagesOverChar.AutoSize = true;
-            this.showTargetMessagesOverChar.Location = new System.Drawing.Point(303, 48);
-            this.showTargetMessagesOverChar.Name = "showTargetMessagesOverChar";
-            this.showTargetMessagesOverChar.Size = new System.Drawing.Size(281, 24);
-            this.showTargetMessagesOverChar.TabIndex = 74;
-            this.showTargetMessagesOverChar.Text = "Show Target Self/Last/Clear Overhead";
-            this.showTargetMessagesOverChar.UseVisualStyleBackColor = true;
-            this.showTargetMessagesOverChar.CheckedChanged += new System.EventHandler(this.showTargetMessagesOverChar_CheckedChanged);
-            // 
-            // txtObjDelay
-            // 
-            this.txtObjDelay.Location = new System.Drawing.Point(127, 111);
-            this.txtObjDelay.Name = "txtObjDelay";
-            this.txtObjDelay.Size = new System.Drawing.Size(37, 27);
-            this.txtObjDelay.TabIndex = 56;
-            this.txtObjDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txtObjDelay.TextChanged += new System.EventHandler(this.txtObjDelay_TextChanged);
-            // 
-            // objectDelay
-            // 
-            this.objectDelay.Location = new System.Drawing.Point(10, 110);
-            this.objectDelay.Name = "objectDelay";
-            this.objectDelay.Size = new System.Drawing.Size(122, 30);
-            this.objectDelay.TabIndex = 53;
-            this.objectDelay.Text = "Object Delay:";
-            this.objectDelay.CheckedChanged += new System.EventHandler(this.objectDelay_CheckedChanged);
-            // 
-            // ltRange
-            // 
-            this.ltRange.Location = new System.Drawing.Point(192, 176);
-            this.ltRange.Name = "ltRange";
-            this.ltRange.Size = new System.Drawing.Size(35, 27);
-            this.ltRange.TabIndex = 59;
-            this.ltRange.TextChanged += new System.EventHandler(this.ltRange_TextChanged);
-            // 
-            // QueueActions
-            // 
-            this.QueueActions.Location = new System.Drawing.Point(10, 80);
-            this.QueueActions.Name = "QueueActions";
-            this.QueueActions.Size = new System.Drawing.Size(236, 25);
-            this.QueueActions.TabIndex = 54;
-            this.QueueActions.Text = "Auto-Queue Object Delay actions ";
-            this.QueueActions.CheckedChanged += new System.EventHandler(this.QueueActions_CheckedChanged);
-            // 
-            // rangeCheckLT
-            // 
-            this.rangeCheckLT.Location = new System.Drawing.Point(10, 178);
-            this.rangeCheckLT.Name = "rangeCheckLT";
-            this.rangeCheckLT.Size = new System.Drawing.Size(189, 24);
-            this.rangeCheckLT.TabIndex = 58;
-            this.rangeCheckLT.Text = "Range check Last Target:";
-            this.rangeCheckLT.CheckedChanged += new System.EventHandler(this.rangeCheckLT_CheckedChanged);
-            // 
-            // actionStatusMsg
-            // 
-            this.actionStatusMsg.Location = new System.Drawing.Point(10, 48);
-            this.actionStatusMsg.Name = "actionStatusMsg";
-            this.actionStatusMsg.Size = new System.Drawing.Size(248, 24);
-            this.actionStatusMsg.TabIndex = 57;
-            this.actionStatusMsg.Text = "Show Action-Queue status messages";
-            this.actionStatusMsg.CheckedChanged += new System.EventHandler(this.actionStatusMsg_CheckedChanged);
-            // 
-            // label8
-            // 
-            this.label8.Location = new System.Drawing.Point(234, 180);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(35, 22);
-            this.label8.TabIndex = 60;
-            this.label8.Text = "tiles";
-            // 
-            // label6
-            // 
-            this.label6.Location = new System.Drawing.Point(171, 116);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(38, 23);
-            this.label6.TabIndex = 55;
-            this.label6.Text = "ms";
-            // 
-            // smartLT
-            // 
-            this.smartLT.Location = new System.Drawing.Point(10, 145);
-            this.smartLT.Name = "smartLT";
-            this.smartLT.Size = new System.Drawing.Size(248, 25);
-            this.smartLT.TabIndex = 61;
-            this.smartLT.Text = "Use smart last target";
-            this.smartLT.CheckedChanged += new System.EventHandler(this.smartLT_CheckedChanged);
-            // 
-            // queueTargets
-            // 
-            this.queueTargets.Location = new System.Drawing.Point(10, 15);
-            this.queueTargets.Name = "queueTargets";
-            this.queueTargets.Size = new System.Drawing.Size(266, 25);
-            this.queueTargets.TabIndex = 35;
-            this.queueTargets.Text = "Queue LastTarget and TargetSelf";
-            this.queueTargets.CheckedChanged += new System.EventHandler(this.queueTargets_CheckedChanged);
-            // 
-            // subOptionsMiscTab
-            // 
-            this.subOptionsMiscTab.BackColor = System.Drawing.SystemColors.Control;
-            this.subOptionsMiscTab.Controls.Add(this.lblStealthFormat);
-            this.subOptionsMiscTab.Controls.Add(this.stealthStepsFormat);
-            this.subOptionsMiscTab.Controls.Add(this.rememberPwds);
-            this.subOptionsMiscTab.Controls.Add(this.showStaticWalls);
-            this.subOptionsMiscTab.Controls.Add(this.showStaticWallLabels);
-            this.subOptionsMiscTab.Controls.Add(this.autoAcceptParty);
-            this.subOptionsMiscTab.Controls.Add(this.stealthOverhead);
-            this.subOptionsMiscTab.Controls.Add(this.forceSizeX);
-            this.subOptionsMiscTab.Controls.Add(this.forceSizeY);
-            this.subOptionsMiscTab.Controls.Add(this.blockHealPoison);
-            this.subOptionsMiscTab.Controls.Add(this.potionEquip);
-            this.subOptionsMiscTab.Controls.Add(this.spellUnequip);
-            this.subOptionsMiscTab.Controls.Add(this.autoOpenDoors);
-            this.subOptionsMiscTab.Controls.Add(this.chkStealth);
-            this.subOptionsMiscTab.Controls.Add(this.label18);
-            this.subOptionsMiscTab.Controls.Add(this.gameSize);
-            this.subOptionsMiscTab.Controls.Add(this.setMinLightLevel);
-            this.subOptionsMiscTab.Controls.Add(this.setMaxLightLevel);
-            this.subOptionsMiscTab.Controls.Add(this.realSeason);
-            this.subOptionsMiscTab.Controls.Add(this.seasonList);
-            this.subOptionsMiscTab.Controls.Add(this.lblSeason);
-            this.subOptionsMiscTab.Controls.Add(this.lightLevel);
-            this.subOptionsMiscTab.Controls.Add(this.lightLevelBar);
-            this.subOptionsMiscTab.Controls.Add(this.minMaxLightLevel);
-            this.subOptionsMiscTab.Controls.Add(this.blockPartyInvites);
-            this.subOptionsMiscTab.Controls.Add(this.blockTradeRequests);
-            this.subOptionsMiscTab.Controls.Add(this.blockOpenCorpsesTwice);
-            this.subOptionsMiscTab.Controls.Add(this.preAOSstatbar);
-            this.subOptionsMiscTab.Controls.Add(this.corpseRange);
-            this.subOptionsMiscTab.Controls.Add(this.autoStackRes);
-            this.subOptionsMiscTab.Controls.Add(this.label4);
-            this.subOptionsMiscTab.Controls.Add(this.openCorpses);
-            this.subOptionsMiscTab.Controls.Add(this.blockDis);
-            this.subOptionsMiscTab.Location = new System.Drawing.Point(4, 29);
-            this.subOptionsMiscTab.Name = "subOptionsMiscTab";
-            this.subOptionsMiscTab.Size = new System.Drawing.Size(587, 359);
-            this.subOptionsMiscTab.TabIndex = 2;
-            this.subOptionsMiscTab.Text = "Additional Options  ";
-            // 
-            // lblStealthFormat
-            // 
-            this.lblStealthFormat.AutoSize = true;
-            this.lblStealthFormat.Location = new System.Drawing.Point(327, 111);
-            this.lblStealthFormat.Name = "lblStealthFormat";
-            this.lblStealthFormat.Size = new System.Drawing.Size(59, 20);
-            this.lblStealthFormat.TabIndex = 123;
-            this.lblStealthFormat.Text = "Format:";
-            // 
-            // stealthStepsFormat
-            // 
-            this.stealthStepsFormat.Location = new System.Drawing.Point(390, 108);
-            this.stealthStepsFormat.Name = "stealthStepsFormat";
-            this.stealthStepsFormat.Size = new System.Drawing.Size(133, 27);
-            this.stealthStepsFormat.TabIndex = 122;
-            this.stealthStepsFormat.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.stealthStepsFormat.TextChanged += new System.EventHandler(this.stealthStepsFormat_TextChanged);
-            // 
-            // rememberPwds
-            // 
-            this.rememberPwds.Location = new System.Drawing.Point(303, 15);
-            this.rememberPwds.Name = "rememberPwds";
-            this.rememberPwds.Size = new System.Drawing.Size(173, 25);
-            this.rememberPwds.TabIndex = 121;
-            this.rememberPwds.Text = "Remember passwords ";
-            this.rememberPwds.CheckedChanged += new System.EventHandler(this.rememberPwds_CheckedChanged);
-            // 
-            // showStaticWalls
-            // 
-            this.showStaticWalls.AutoSize = true;
-            this.showStaticWalls.Location = new System.Drawing.Point(303, 308);
-            this.showStaticWalls.Name = "showStaticWalls";
-            this.showStaticWalls.Size = new System.Drawing.Size(192, 24);
-            this.showStaticWalls.TabIndex = 119;
-            this.showStaticWalls.Text = "Static magic fields/walls";
-            this.showStaticWalls.UseVisualStyleBackColor = true;
-            this.showStaticWalls.CheckedChanged += new System.EventHandler(this.showStaticWalls_CheckedChanged);
-            // 
-            // showStaticWallLabels
-            // 
-            this.showStaticWallLabels.AutoSize = true;
-            this.showStaticWallLabels.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.showStaticWallLabels.Location = new System.Drawing.Point(491, 309);
-            this.showStaticWallLabels.Name = "showStaticWallLabels";
-            this.showStaticWallLabels.Size = new System.Drawing.Size(70, 23);
-            this.showStaticWallLabels.TabIndex = 120;
-            this.showStaticWallLabels.Text = "Labels";
-            this.showStaticWallLabels.UseVisualStyleBackColor = true;
-            this.showStaticWallLabels.CheckedChanged += new System.EventHandler(this.showStaticWallLabels_CheckedChanged);
-            // 
-            // autoAcceptParty
-            // 
-            this.autoAcceptParty.Location = new System.Drawing.Point(303, 48);
-            this.autoAcceptParty.Name = "autoAcceptParty";
-            this.autoAcceptParty.Size = new System.Drawing.Size(271, 24);
-            this.autoAcceptParty.TabIndex = 118;
-            this.autoAcceptParty.Text = "Auto-accept party invites from friends";
-            this.autoAcceptParty.CheckedChanged += new System.EventHandler(this.autoAcceptParty_CheckedChanged);
-            // 
-            // stealthOverhead
-            // 
-            this.stealthOverhead.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.stealthOverhead.Location = new System.Drawing.Point(458, 80);
-            this.stealthOverhead.Name = "stealthOverhead";
-            this.stealthOverhead.Size = new System.Drawing.Size(116, 25);
-            this.stealthOverhead.TabIndex = 117;
-            this.stealthOverhead.Text = "Overhead";
-            this.stealthOverhead.UseVisualStyleBackColor = true;
-            this.stealthOverhead.CheckedChanged += new System.EventHandler(this.stealthOverhead_CheckedChanged);
-            // 
-            // forceSizeX
-            // 
-            this.forceSizeX.Location = new System.Drawing.Point(451, 271);
-            this.forceSizeX.Name = "forceSizeX";
-            this.forceSizeX.Size = new System.Drawing.Size(40, 27);
-            this.forceSizeX.TabIndex = 111;
-            this.forceSizeX.TextChanged += new System.EventHandler(this.forceSizeX_TextChanged);
-            // 
-            // forceSizeY
-            // 
-            this.forceSizeY.Location = new System.Drawing.Point(517, 272);
-            this.forceSizeY.Name = "forceSizeY";
-            this.forceSizeY.Size = new System.Drawing.Size(38, 27);
-            this.forceSizeY.TabIndex = 112;
-            this.forceSizeY.TextChanged += new System.EventHandler(this.forceSizeY_TextChanged);
-            // 
-            // blockHealPoison
-            // 
-            this.blockHealPoison.Location = new System.Drawing.Point(303, 241);
-            this.blockHealPoison.Name = "blockHealPoison";
-            this.blockHealPoison.Size = new System.Drawing.Size(235, 25);
-            this.blockHealPoison.TabIndex = 116;
-            this.blockHealPoison.Text = "Block heal if target is poisoned";
-            this.blockHealPoison.CheckedChanged += new System.EventHandler(this.blockHealPoison_CheckedChanged);
-            // 
-            // potionEquip
-            // 
-            this.potionEquip.Location = new System.Drawing.Point(303, 211);
-            this.potionEquip.Name = "potionEquip";
-            this.potionEquip.Size = new System.Drawing.Size(271, 25);
-            this.potionEquip.TabIndex = 115;
-            this.potionEquip.Text = "Auto Un/Re-equip hands for potions";
-            this.potionEquip.CheckedChanged += new System.EventHandler(this.potionEquip_CheckedChanged);
-            // 
-            // spellUnequip
-            // 
-            this.spellUnequip.Location = new System.Drawing.Point(303, 176);
-            this.spellUnequip.Name = "spellUnequip";
-            this.spellUnequip.Size = new System.Drawing.Size(249, 25);
-            this.spellUnequip.TabIndex = 108;
-            this.spellUnequip.Text = "Auto Unequip hands before casting";
-            this.spellUnequip.CheckedChanged += new System.EventHandler(this.spellUnequip_CheckedChanged);
-            // 
-            // autoOpenDoors
-            // 
-            this.autoOpenDoors.Location = new System.Drawing.Point(303, 144);
-            this.autoOpenDoors.Name = "autoOpenDoors";
-            this.autoOpenDoors.Size = new System.Drawing.Size(222, 25);
-            this.autoOpenDoors.TabIndex = 110;
-            this.autoOpenDoors.Text = "Automatically open doors";
-            this.autoOpenDoors.CheckedChanged += new System.EventHandler(this.autoOpenDoors_CheckedChanged);
-            // 
-            // chkStealth
-            // 
-            this.chkStealth.Location = new System.Drawing.Point(303, 80);
-            this.chkStealth.Name = "chkStealth";
-            this.chkStealth.Size = new System.Drawing.Size(222, 25);
-            this.chkStealth.TabIndex = 107;
-            this.chkStealth.Text = "Count stealth steps";
-            this.chkStealth.CheckedChanged += new System.EventHandler(this.chkStealth_CheckedChanged);
-            // 
-            // label18
-            // 
-            this.label18.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(498, 275);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(12, 23);
-            this.label18.TabIndex = 114;
-            this.label18.Text = "x";
-            this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // gameSize
-            // 
-            this.gameSize.Location = new System.Drawing.Point(303, 274);
-            this.gameSize.Name = "gameSize";
-            this.gameSize.Size = new System.Drawing.Size(138, 22);
-            this.gameSize.TabIndex = 113;
-            this.gameSize.Text = "Force Game Size:";
-            this.gameSize.CheckedChanged += new System.EventHandler(this.gameSize_CheckedChanged);
-            // 
-            // setMinLightLevel
-            // 
-            this.setMinLightLevel.Location = new System.Drawing.Point(136, 309);
-            this.setMinLightLevel.Name = "setMinLightLevel";
-            this.setMinLightLevel.Size = new System.Drawing.Size(68, 31);
-            this.setMinLightLevel.TabIndex = 105;
-            this.setMinLightLevel.Text = "Set Min";
-            this.setMinLightLevel.Click += new System.EventHandler(this.setMinLightLevel_Click);
-            // 
-            // setMaxLightLevel
-            // 
-            this.setMaxLightLevel.Location = new System.Drawing.Point(211, 309);
-            this.setMaxLightLevel.Name = "setMaxLightLevel";
-            this.setMaxLightLevel.Size = new System.Drawing.Size(68, 31);
-            this.setMaxLightLevel.TabIndex = 104;
-            this.setMaxLightLevel.Text = "Set Max";
-            this.setMaxLightLevel.Click += new System.EventHandler(this.setMaxLightLevel_Click);
-            // 
-            // realSeason
-            // 
-            this.realSeason.Font = new System.Drawing.Font("Segoe UI Semilight", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.realSeason.Location = new System.Drawing.Point(211, 246);
-            this.realSeason.Name = "realSeason";
-            this.realSeason.Size = new System.Drawing.Size(57, 25);
-            this.realSeason.TabIndex = 103;
-            this.realSeason.Text = "Real";
-            this.realSeason.CheckedChanged += new System.EventHandler(this.realSeason_CheckedChanged);
-            // 
-            // seasonList
-            // 
-            this.seasonList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.seasonList.FormattingEnabled = true;
-            this.seasonList.Items.AddRange(new object[] {
-            "Spring",
-            "Summer",
-            "Fall",
-            "Winter",
-            "Desolation",
-            "(Server Default)"});
-            this.seasonList.Location = new System.Drawing.Point(69, 244);
-            this.seasonList.Name = "seasonList";
-            this.seasonList.Size = new System.Drawing.Size(129, 28);
-            this.seasonList.TabIndex = 102;
-            this.seasonList.SelectedIndexChanged += new System.EventHandler(this.seasonList_SelectedIndexChanged);
-            // 
-            // lblSeason
-            // 
-            this.lblSeason.AutoSize = true;
-            this.lblSeason.Location = new System.Drawing.Point(7, 248);
-            this.lblSeason.Name = "lblSeason";
-            this.lblSeason.Size = new System.Drawing.Size(59, 20);
-            this.lblSeason.TabIndex = 101;
-            this.lblSeason.Text = "Season:";
-            // 
-            // lightLevel
-            // 
-            this.lightLevel.AutoSize = true;
-            this.lightLevel.Location = new System.Drawing.Point(7, 279);
-            this.lightLevel.Name = "lightLevel";
-            this.lightLevel.Size = new System.Drawing.Size(83, 20);
-            this.lightLevel.TabIndex = 100;
-            this.lightLevel.Text = "Light Level:";
-            // 
-            // lightLevelBar
-            // 
-            this.lightLevelBar.AutoSize = false;
-            this.lightLevelBar.Location = new System.Drawing.Point(92, 279);
-            this.lightLevelBar.Maximum = 31;
-            this.lightLevelBar.Name = "lightLevelBar";
-            this.lightLevelBar.Size = new System.Drawing.Size(188, 26);
-            this.lightLevelBar.TabIndex = 99;
-            this.lightLevelBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.lightLevelBar.Value = 15;
-            this.lightLevelBar.Scroll += new System.EventHandler(this.lightLevelBar_Scroll);
-            // 
-            // minMaxLightLevel
-            // 
-            this.minMaxLightLevel.Location = new System.Drawing.Point(10, 312);
-            this.minMaxLightLevel.Name = "minMaxLightLevel";
-            this.minMaxLightLevel.Size = new System.Drawing.Size(133, 26);
-            this.minMaxLightLevel.TabIndex = 106;
-            this.minMaxLightLevel.Text = "Enable Min/Max";
-            this.minMaxLightLevel.CheckedChanged += new System.EventHandler(this.minMaxLightLevel_CheckedChanged);
-            // 
-            // blockPartyInvites
-            // 
-            this.blockPartyInvites.Location = new System.Drawing.Point(10, 211);
-            this.blockPartyInvites.Name = "blockPartyInvites";
-            this.blockPartyInvites.Size = new System.Drawing.Size(215, 25);
-            this.blockPartyInvites.TabIndex = 98;
-            this.blockPartyInvites.Text = "Block party invites";
-            this.blockPartyInvites.CheckedChanged += new System.EventHandler(this.blockPartyInvites_CheckedChanged);
-            // 
-            // blockTradeRequests
-            // 
-            this.blockTradeRequests.Location = new System.Drawing.Point(10, 179);
-            this.blockTradeRequests.Name = "blockTradeRequests";
-            this.blockTradeRequests.Size = new System.Drawing.Size(215, 25);
-            this.blockTradeRequests.TabIndex = 97;
-            this.blockTradeRequests.Text = "Block trade requests";
-            this.blockTradeRequests.CheckedChanged += new System.EventHandler(this.blockTradeRequests_CheckedChanged);
-            // 
-            // blockOpenCorpsesTwice
-            // 
-            this.blockOpenCorpsesTwice.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blockOpenCorpsesTwice.Location = new System.Drawing.Point(10, 114);
-            this.blockOpenCorpsesTwice.Name = "blockOpenCorpsesTwice";
-            this.blockOpenCorpsesTwice.Size = new System.Drawing.Size(244, 25);
-            this.blockOpenCorpsesTwice.TabIndex = 96;
-            this.blockOpenCorpsesTwice.Text = "Block opening corpses twice";
-            this.blockOpenCorpsesTwice.CheckedChanged += new System.EventHandler(this.blockOpenCorpsesTwice_CheckedChanged);
-            // 
-            // preAOSstatbar
-            // 
-            this.preAOSstatbar.Location = new System.Drawing.Point(10, 15);
-            this.preAOSstatbar.Name = "preAOSstatbar";
-            this.preAOSstatbar.Size = new System.Drawing.Size(222, 25);
-            this.preAOSstatbar.TabIndex = 95;
-            this.preAOSstatbar.Text = "Use Pre-AOS status window";
-            this.preAOSstatbar.CheckedChanged += new System.EventHandler(this.preAOSstatbar_CheckedChanged);
-            // 
-            // corpseRange
-            // 
-            this.corpseRange.Location = new System.Drawing.Point(197, 79);
-            this.corpseRange.Name = "corpseRange";
-            this.corpseRange.Size = new System.Drawing.Size(28, 27);
-            this.corpseRange.TabIndex = 91;
-            this.corpseRange.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.corpseRange.TextChanged += new System.EventHandler(this.corpseRange_TextChanged);
-            // 
-            // autoStackRes
-            // 
-            this.autoStackRes.Location = new System.Drawing.Point(10, 46);
-            this.autoStackRes.Name = "autoStackRes";
-            this.autoStackRes.Size = new System.Drawing.Size(266, 25);
-            this.autoStackRes.TabIndex = 93;
-            this.autoStackRes.Text = "Auto-Stack Ore/Fish/Logs at Feet";
-            this.autoStackRes.CheckedChanged += new System.EventHandler(this.autoStackRes_CheckedChanged);
-            // 
-            // label4
-            // 
-            this.label4.Location = new System.Drawing.Point(234, 84);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(42, 20);
-            this.label4.TabIndex = 92;
-            this.label4.Text = "tiles";
-            // 
-            // openCorpses
-            // 
-            this.openCorpses.Location = new System.Drawing.Point(10, 81);
-            this.openCorpses.Name = "openCorpses";
-            this.openCorpses.Size = new System.Drawing.Size(193, 25);
-            this.openCorpses.TabIndex = 90;
-            this.openCorpses.Text = "Open new corpses within";
-            this.openCorpses.CheckedChanged += new System.EventHandler(this.openCorpses_CheckedChanged);
-            // 
-            // blockDis
-            // 
-            this.blockDis.Location = new System.Drawing.Point(10, 146);
-            this.blockDis.Name = "blockDis";
-            this.blockDis.Size = new System.Drawing.Size(215, 25);
-            this.blockDis.TabIndex = 94;
-            this.blockDis.Text = "Block dismount in war mode";
-            this.blockDis.CheckedChanged += new System.EventHandler(this.blockDis_CheckedChanged);
-            // 
-            // displayTab
-            // 
-            this.displayTab.Controls.Add(this.tabControl4);
-            this.displayTab.Location = new System.Drawing.Point(4, 54);
-            this.displayTab.Name = "displayTab";
-            this.displayTab.Size = new System.Drawing.Size(607, 404);
-            this.displayTab.TabIndex = 1;
-            this.displayTab.Text = "Display/Counters";
-            // 
-            // tabControl4
-            // 
-            this.tabControl4.Controls.Add(this.subDisplayTab);
-            this.tabControl4.Controls.Add(this.subCountersTab);
-            this.tabControl4.Location = new System.Drawing.Point(7, 4);
-            this.tabControl4.Name = "tabControl4";
-            this.tabControl4.SelectedIndex = 0;
-            this.tabControl4.Size = new System.Drawing.Size(595, 392);
-            this.tabControl4.TabIndex = 51;
-            // 
-            // subDisplayTab
-            // 
-            this.subDisplayTab.BackColor = System.Drawing.SystemColors.Control;
-            this.subDisplayTab.Controls.Add(this.groupBox11);
-            this.subDisplayTab.Controls.Add(this.trackDps);
-            this.subDisplayTab.Controls.Add(this.trackIncomingGold);
-            this.subDisplayTab.Controls.Add(this.showNotoHue);
-            this.subDisplayTab.Controls.Add(this.highlightSpellReags);
-            this.subDisplayTab.Controls.Add(this.groupBox3);
-            this.subDisplayTab.Location = new System.Drawing.Point(4, 29);
-            this.subDisplayTab.Name = "subDisplayTab";
-            this.subDisplayTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subDisplayTab.Size = new System.Drawing.Size(587, 359);
-            this.subDisplayTab.TabIndex = 0;
-            this.subDisplayTab.Text = "Display";
-            // 
-            // groupBox11
-            // 
-            this.groupBox11.Controls.Add(this.razorTitleBarKey);
-            this.groupBox11.Controls.Add(this.showInRazorTitleBar);
-            this.groupBox11.Controls.Add(this.razorTitleBar);
-            this.groupBox11.Location = new System.Drawing.Point(7, 259);
-            this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(572, 89);
-            this.groupBox11.TabIndex = 51;
-            this.groupBox11.TabStop = false;
-            this.groupBox11.Text = "Razor Title Bar";
-            // 
-            // razorTitleBarKey
-            // 
-            this.razorTitleBarKey.Location = new System.Drawing.Point(546, 21);
-            this.razorTitleBarKey.Name = "razorTitleBarKey";
-            this.razorTitleBarKey.Size = new System.Drawing.Size(19, 25);
-            this.razorTitleBarKey.TabIndex = 2;
-            this.razorTitleBarKey.Text = "?";
-            this.razorTitleBarKey.UseVisualStyleBackColor = true;
-            this.razorTitleBarKey.Click += new System.EventHandler(this.razorTitleBarKey_Click);
-            // 
-            // showInRazorTitleBar
-            // 
-            this.showInRazorTitleBar.AutoSize = true;
-            this.showInRazorTitleBar.Location = new System.Drawing.Point(7, 21);
-            this.showInRazorTitleBar.Name = "showInRazorTitleBar";
-            this.showInRazorTitleBar.Size = new System.Drawing.Size(184, 24);
-            this.showInRazorTitleBar.TabIndex = 1;
-            this.showInRazorTitleBar.Text = "Show in Razor title bar:";
-            this.showInRazorTitleBar.UseVisualStyleBackColor = true;
-            this.showInRazorTitleBar.CheckedChanged += new System.EventHandler(this.showInRazorTitleBar_CheckedChanged);
-            // 
-            // razorTitleBar
-            // 
-            this.razorTitleBar.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.razorTitleBar.Location = new System.Drawing.Point(7, 52);
-            this.razorTitleBar.Name = "razorTitleBar";
-            this.razorTitleBar.Size = new System.Drawing.Size(558, 25);
-            this.razorTitleBar.TabIndex = 0;
-            this.razorTitleBar.Text = "{name} ({profile} - {shard}) - Razor v{version}";
-            this.razorTitleBar.TextChanged += new System.EventHandler(this.razorTitleBar_TextChanged);
-            // 
-            // trackDps
-            // 
-            this.trackDps.AutoSize = true;
-            this.trackDps.Location = new System.Drawing.Point(318, 222);
-            this.trackDps.Name = "trackDps";
-            this.trackDps.Size = new System.Drawing.Size(184, 24);
-            this.trackDps.TabIndex = 53;
-            this.trackDps.Text = "Enable damage tracker";
-            this.trackDps.UseVisualStyleBackColor = true;
-            this.trackDps.CheckedChanged += new System.EventHandler(this.trackDps_CheckedChanged);
-            // 
-            // trackIncomingGold
-            // 
-            this.trackIncomingGold.AutoSize = true;
-            this.trackIncomingGold.Location = new System.Drawing.Point(318, 190);
-            this.trackIncomingGold.Name = "trackIncomingGold";
-            this.trackIncomingGold.Size = new System.Drawing.Size(278, 24);
-            this.trackIncomingGold.TabIndex = 52;
-            this.trackIncomingGold.Text = "Enable gold per sec/min/hour tracker";
-            this.trackIncomingGold.UseVisualStyleBackColor = true;
-            this.trackIncomingGold.CheckedChanged += new System.EventHandler(this.trackIncomingGold_CheckedChanged);
-            // 
-            // showNotoHue
-            // 
-            this.showNotoHue.Location = new System.Drawing.Point(7, 221);
-            this.showNotoHue.Name = "showNotoHue";
-            this.showNotoHue.Size = new System.Drawing.Size(258, 25);
-            this.showNotoHue.TabIndex = 51;
-            this.showNotoHue.Text = "Show noto hue on {char} in TitleBar";
-            this.showNotoHue.CheckedChanged += new System.EventHandler(this.showNotoHue_CheckedChanged);
-            // 
-            // highlightSpellReags
-            // 
-            this.highlightSpellReags.Location = new System.Drawing.Point(7, 189);
-            this.highlightSpellReags.Name = "highlightSpellReags";
-            this.highlightSpellReags.Size = new System.Drawing.Size(239, 25);
-            this.highlightSpellReags.TabIndex = 50;
-            this.highlightSpellReags.Text = "Highlight Spell Reagents on Cast";
-            this.highlightSpellReags.CheckedChanged += new System.EventHandler(this.highlightSpellReags_CheckedChanged);
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.titleBarParams);
-            this.groupBox3.Controls.Add(this.titleStr);
-            this.groupBox3.Controls.Add(this.showInBar);
-            this.groupBox3.Location = new System.Drawing.Point(7, 8);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(572, 173);
-            this.groupBox3.TabIndex = 4;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Title Bar Display";
-            // 
-            // titleBarParams
-            // 
-            this.titleBarParams.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.titleBarParams.FormattingEnabled = true;
-            this.titleBarParams.Items.AddRange(new object[] {
-            "{ar}",
-            "{bandage}",
-            "{char}",
-            "{crimtime}",
-            "{buffsdebuffs}",
-            "{damage}",
-            "-",
-            "{dps}",
-            "{maxdps}",
-            "{maxdamagedealt}",
-            "{maxdamagetaken}",
-            "{totaldamagedealt}",
-            "{totaldamagetaken}",
-            "-",
-            "{dex}",
-            "{followersmax}",
-            "{followers}",
-            "-",
-            "{gold}",
-            "{goldtotal}",
-            "{goldtotalmin}",
-            "{gpm}",
-            "{gps}",
-            "{gph}",
-            "-",
-            "{gate}",
-            "{hpmax}",
-            "{hp}",
-            "{int}",
-            "{largestatbar}",
-            "{manamax}",
-            "{mana}",
-            "{maxweight}",
-            "{mediumstatbar}",
-            "{shard}",
-            "{skill}",
-            "{stammax}",
-            "{stam}",
-            "{statbar}",
-            "{stealthsteps}",
-            "{str}",
-            "{uptime}",
-            "{weight}",
-            "-",
-            "{coldresist}",
-            "{energyresist}",
-            "{fireresist}",
-            "{luck}",
-            "{physresist}",
-            "{poisonresist}",
-            "{tithe}"});
-            this.titleBarParams.Location = new System.Drawing.Point(443, 24);
-            this.titleBarParams.Name = "titleBarParams";
-            this.titleBarParams.Size = new System.Drawing.Size(122, 28);
-            this.titleBarParams.TabIndex = 5;
-            this.titleBarParams.SelectedIndexChanged += new System.EventHandler(this.titleBarParams_SelectedIndexChanged);
-            // 
-            // titleStr
-            // 
-            this.titleStr.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.titleStr.Location = new System.Drawing.Point(7, 60);
-            this.titleStr.Multiline = true;
-            this.titleStr.Name = "titleStr";
-            this.titleStr.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.titleStr.Size = new System.Drawing.Size(558, 106);
-            this.titleStr.TabIndex = 4;
-            this.titleStr.TextChanged += new System.EventHandler(this.titleStr_TextChanged);
-            // 
-            // showInBar
-            // 
-            this.showInBar.Location = new System.Drawing.Point(13, 28);
-            this.showInBar.Name = "showInBar";
-            this.showInBar.Size = new System.Drawing.Size(164, 24);
-            this.showInBar.TabIndex = 3;
-            this.showInBar.Text = "Show in UO title bar:";
-            this.showInBar.CheckedChanged += new System.EventHandler(this.showInBar_CheckedChanged);
-            // 
-            // subCountersTab
-            // 
-            this.subCountersTab.BackColor = System.Drawing.SystemColors.Control;
-            this.subCountersTab.Controls.Add(this.warnNum);
-            this.subCountersTab.Controls.Add(this.warnCount);
-            this.subCountersTab.Controls.Add(this.excludePouches);
-            this.subCountersTab.Controls.Add(this.titlebarImages);
-            this.subCountersTab.Controls.Add(this.checkNewConts);
-            this.subCountersTab.Controls.Add(this.groupBox2);
-            this.subCountersTab.Location = new System.Drawing.Point(4, 29);
-            this.subCountersTab.Name = "subCountersTab";
-            this.subCountersTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subCountersTab.Size = new System.Drawing.Size(587, 359);
-            this.subCountersTab.TabIndex = 1;
-            this.subCountersTab.Text = "Counters";
-            // 
-            // warnNum
-            // 
-            this.warnNum.Location = new System.Drawing.Point(502, 124);
-            this.warnNum.Name = "warnNum";
-            this.warnNum.Size = new System.Drawing.Size(35, 27);
-            this.warnNum.TabIndex = 51;
-            this.warnNum.Text = "3";
-            this.warnNum.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.warnNum.TextChanged += new System.EventHandler(this.warnNum_TextChanged);
-            // 
-            // warnCount
-            // 
-            this.warnCount.Location = new System.Drawing.Point(349, 126);
-            this.warnCount.Name = "warnCount";
-            this.warnCount.Size = new System.Drawing.Size(224, 24);
-            this.warnCount.TabIndex = 50;
-            this.warnCount.Text = "Warn when below:";
-            this.warnCount.CheckedChanged += new System.EventHandler(this.warnCount_CheckedChanged);
-            // 
-            // excludePouches
-            // 
-            this.excludePouches.Location = new System.Drawing.Point(349, 60);
-            this.excludePouches.Name = "excludePouches";
-            this.excludePouches.Size = new System.Drawing.Size(224, 26);
-            this.excludePouches.TabIndex = 49;
-            this.excludePouches.Text = "Never auto-search pouches";
-            this.excludePouches.CheckedChanged += new System.EventHandler(this.excludePouches_CheckedChanged);
-            // 
-            // titlebarImages
-            // 
-            this.titlebarImages.Location = new System.Drawing.Point(349, 94);
-            this.titlebarImages.Name = "titlebarImages";
-            this.titlebarImages.Size = new System.Drawing.Size(210, 25);
-            this.titlebarImages.TabIndex = 48;
-            this.titlebarImages.Text = "Show Images with Counters";
-            this.titlebarImages.CheckedChanged += new System.EventHandler(this.titlebarImages_CheckedChanged);
-            // 
-            // checkNewConts
-            // 
-            this.checkNewConts.Location = new System.Drawing.Point(349, 30);
-            this.checkNewConts.Name = "checkNewConts";
-            this.checkNewConts.Size = new System.Drawing.Size(233, 25);
-            this.checkNewConts.TabIndex = 47;
-            this.checkNewConts.Text = "Auto search new containers";
-            this.checkNewConts.CheckedChanged += new System.EventHandler(this.checkNewConts_CheckedChanged);
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.counters);
-            this.groupBox2.Controls.Add(this.delCounter);
-            this.groupBox2.Controls.Add(this.addCounter);
-            this.groupBox2.Controls.Add(this.recount);
-            this.groupBox2.Location = new System.Drawing.Point(7, 8);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(331, 340);
-            this.groupBox2.TabIndex = 2;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Counters";
-            // 
-            // counters
-            // 
-            this.counters.CheckBoxes = true;
-            this.counters.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.cntName,
-            this.cntCount});
-            this.counters.GridLines = true;
-            this.counters.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.counters.LabelWrap = false;
-            this.counters.Location = new System.Drawing.Point(7, 22);
-            this.counters.MultiSelect = false;
-            this.counters.Name = "counters";
-            this.counters.Size = new System.Drawing.Size(317, 257);
-            this.counters.TabIndex = 11;
-            this.counters.UseCompatibleStateImageBehavior = false;
-            this.counters.View = System.Windows.Forms.View.Details;
-            this.counters.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.counters_ItemCheck);
-            // 
-            // cntName
-            // 
-            this.cntName.Text = "Name (Format)";
-            this.cntName.Width = 216;
-            // 
-            // cntCount
-            // 
-            this.cntCount.Text = "Count";
-            this.cntCount.Width = 51;
-            // 
-            // delCounter
-            // 
-            this.delCounter.Location = new System.Drawing.Point(126, 286);
-            this.delCounter.Name = "delCounter";
-            this.delCounter.Size = new System.Drawing.Size(83, 46);
-            this.delCounter.TabIndex = 4;
-            this.delCounter.Text = "Del/Edit";
-            this.delCounter.Click += new System.EventHandler(this.delCounter_Click);
-            // 
-            // addCounter
-            // 
-            this.addCounter.Location = new System.Drawing.Point(7, 286);
-            this.addCounter.Name = "addCounter";
-            this.addCounter.Size = new System.Drawing.Size(82, 46);
-            this.addCounter.TabIndex = 3;
-            this.addCounter.Text = "Add...";
-            this.addCounter.Click += new System.EventHandler(this.addCounter_Click);
-            // 
-            // recount
-            // 
-            this.recount.Location = new System.Drawing.Point(243, 286);
-            this.recount.Name = "recount";
-            this.recount.Size = new System.Drawing.Size(81, 46);
-            this.recount.TabIndex = 2;
-            this.recount.Text = "Recount";
-            this.recount.Click += new System.EventHandler(this.recount_Click);
-            // 
-            // dressTab
-            // 
-            this.dressTab.Controls.Add(this.groupBox6);
-            this.dressTab.Controls.Add(this.groupBox5);
-            this.dressTab.Location = new System.Drawing.Point(4, 54);
-            this.dressTab.Name = "dressTab";
-            this.dressTab.Size = new System.Drawing.Size(607, 404);
-            this.dressTab.TabIndex = 3;
-            this.dressTab.Text = "Arm/Dress";
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.clearDress);
-            this.groupBox6.Controls.Add(this.dressDelSel);
-            this.groupBox6.Controls.Add(this.undressBag);
-            this.groupBox6.Controls.Add(this.undressList);
-            this.groupBox6.Controls.Add(this.dressUseCur);
-            this.groupBox6.Controls.Add(this.targItem);
-            this.groupBox6.Controls.Add(this.dressItems);
-            this.groupBox6.Controls.Add(this.dressNow);
-            this.groupBox6.Location = new System.Drawing.Point(234, 4);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(363, 386);
-            this.groupBox6.TabIndex = 7;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Arm/Dress Items";
-            // 
-            // clearDress
-            // 
-            this.clearDress.Location = new System.Drawing.Point(244, 321);
-            this.clearDress.Name = "clearDress";
-            this.clearDress.Size = new System.Drawing.Size(112, 40);
-            this.clearDress.TabIndex = 13;
-            this.clearDress.Text = "Clear List";
-            this.clearDress.Click += new System.EventHandler(this.clearDress_Click);
-            // 
-            // dressDelSel
-            // 
-            this.dressDelSel.Location = new System.Drawing.Point(244, 212);
-            this.dressDelSel.Name = "dressDelSel";
-            this.dressDelSel.Size = new System.Drawing.Size(112, 40);
-            this.dressDelSel.TabIndex = 12;
-            this.dressDelSel.Text = "Remove";
-            this.dressDelSel.Click += new System.EventHandler(this.dressDelSel_Click);
-            // 
-            // undressBag
-            // 
-            this.undressBag.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.undressBag.Location = new System.Drawing.Point(244, 260);
-            this.undressBag.Name = "undressBag";
-            this.undressBag.Size = new System.Drawing.Size(112, 50);
-            this.undressBag.TabIndex = 11;
-            this.undressBag.Text = "Change Undress Bag";
-            this.undressBag.Click += new System.EventHandler(this.undressBag_Click);
-            // 
-            // undressList
-            // 
-            this.undressList.Location = new System.Drawing.Point(244, 70);
-            this.undressList.Name = "undressList";
-            this.undressList.Size = new System.Drawing.Size(112, 40);
-            this.undressList.TabIndex = 10;
-            this.undressList.Text = "Undress";
-            this.undressList.Click += new System.EventHandler(this.undressList_Click);
-            // 
-            // dressUseCur
-            // 
-            this.dressUseCur.Location = new System.Drawing.Point(244, 165);
-            this.dressUseCur.Name = "dressUseCur";
-            this.dressUseCur.Size = new System.Drawing.Size(112, 40);
-            this.dressUseCur.TabIndex = 9;
-            this.dressUseCur.Text = "Add Current";
-            this.dressUseCur.Click += new System.EventHandler(this.dressUseCur_Click);
-            // 
-            // targItem
-            // 
-            this.targItem.Location = new System.Drawing.Point(244, 118);
-            this.targItem.Name = "targItem";
-            this.targItem.Size = new System.Drawing.Size(112, 40);
-            this.targItem.TabIndex = 7;
-            this.targItem.Text = "Add (Target)";
-            this.targItem.Click += new System.EventHandler(this.targItem_Click);
-            // 
-            // dressItems
-            // 
-            this.dressItems.IntegralHeight = false;
-            this.dressItems.ItemHeight = 20;
-            this.dressItems.Location = new System.Drawing.Point(7, 22);
-            this.dressItems.Name = "dressItems";
-            this.dressItems.Size = new System.Drawing.Size(230, 357);
-            this.dressItems.TabIndex = 6;
-            this.dressItems.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dressItems_KeyDown);
-            this.dressItems.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dressItems_MouseDown);
-            // 
-            // dressNow
-            // 
-            this.dressNow.Location = new System.Drawing.Point(244, 22);
-            this.dressNow.Name = "dressNow";
-            this.dressNow.Size = new System.Drawing.Size(112, 40);
-            this.dressNow.TabIndex = 6;
-            this.dressNow.Text = "Dress";
-            this.dressNow.Click += new System.EventHandler(this.dressNow_Click);
-            // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.removeDress);
-            this.groupBox5.Controls.Add(this.addDress);
-            this.groupBox5.Controls.Add(this.dressList);
-            this.groupBox5.Controls.Add(this.undressConflicts);
-            this.groupBox5.Location = new System.Drawing.Point(9, 4);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(218, 386);
-            this.groupBox5.TabIndex = 6;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Arm/Dress Selection";
-            // 
-            // removeDress
-            // 
-            this.removeDress.Location = new System.Drawing.Point(141, 195);
-            this.removeDress.Name = "removeDress";
-            this.removeDress.Size = new System.Drawing.Size(70, 41);
-            this.removeDress.TabIndex = 5;
-            this.removeDress.Text = "Remove";
-            this.removeDress.Click += new System.EventHandler(this.removeDress_Click);
-            // 
-            // addDress
-            // 
-            this.addDress.Location = new System.Drawing.Point(7, 195);
-            this.addDress.Name = "addDress";
-            this.addDress.Size = new System.Drawing.Size(70, 41);
-            this.addDress.TabIndex = 4;
-            this.addDress.Text = "Add...";
-            this.addDress.Click += new System.EventHandler(this.addDress_Click);
-            // 
-            // dressList
-            // 
-            this.dressList.IntegralHeight = false;
-            this.dressList.ItemHeight = 20;
-            this.dressList.Location = new System.Drawing.Point(7, 22);
-            this.dressList.Name = "dressList";
-            this.dressList.Size = new System.Drawing.Size(204, 166);
-            this.dressList.TabIndex = 3;
-            this.dressList.SelectedIndexChanged += new System.EventHandler(this.dressList_SelectedIndexChanged);
-            // 
-            // undressConflicts
-            // 
-            this.undressConflicts.Location = new System.Drawing.Point(7, 244);
-            this.undressConflicts.Name = "undressConflicts";
-            this.undressConflicts.Size = new System.Drawing.Size(204, 47);
-            this.undressConflicts.TabIndex = 6;
-            this.undressConflicts.Text = "Automatically move conflicting items";
-            this.undressConflicts.CheckedChanged += new System.EventHandler(this.undressConflicts_CheckedChanged);
-            // 
-            // skillsTab
-            // 
-            this.skillsTab.Controls.Add(this.captureMibs);
-            this.skillsTab.Controls.Add(this.dispDeltaOverhead);
-            this.skillsTab.Controls.Add(this.logSkillChanges);
-            this.skillsTab.Controls.Add(this.dispDelta);
-            this.skillsTab.Controls.Add(this.skillCopyAll);
-            this.skillsTab.Controls.Add(this.skillCopySel);
-            this.skillsTab.Controls.Add(this.baseTotal);
-            this.skillsTab.Controls.Add(this.label1);
-            this.skillsTab.Controls.Add(this.locks);
-            this.skillsTab.Controls.Add(this.setlocks);
-            this.skillsTab.Controls.Add(this.resetDelta);
-            this.skillsTab.Controls.Add(this.skillList);
-            this.skillsTab.Location = new System.Drawing.Point(4, 54);
-            this.skillsTab.Name = "skillsTab";
-            this.skillsTab.Size = new System.Drawing.Size(607, 404);
-            this.skillsTab.TabIndex = 2;
-            this.skillsTab.Text = "Skills";
-            // 
-            // captureMibs
-            // 
-            this.captureMibs.Location = new System.Drawing.Point(415, 288);
-            this.captureMibs.Name = "captureMibs";
-            this.captureMibs.Size = new System.Drawing.Size(179, 23);
-            this.captureMibs.TabIndex = 70;
-            this.captureMibs.Text = "Capture MIBs to file";
-            this.captureMibs.UseVisualStyleBackColor = true;
-            this.captureMibs.CheckedChanged += new System.EventHandler(this.captureMibs_CheckedChanged);
-            // 
-            // dispDeltaOverhead
-            // 
-            this.dispDeltaOverhead.AutoSize = true;
-            this.dispDeltaOverhead.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dispDeltaOverhead.Location = new System.Drawing.Point(514, 259);
-            this.dispDeltaOverhead.Name = "dispDeltaOverhead";
-            this.dispDeltaOverhead.Size = new System.Drawing.Size(92, 23);
-            this.dispDeltaOverhead.TabIndex = 14;
-            this.dispDeltaOverhead.Text = "Overhead";
-            this.dispDeltaOverhead.UseVisualStyleBackColor = true;
-            this.dispDeltaOverhead.CheckedChanged += new System.EventHandler(this.dispDeltaOverhead_CheckedChanged);
-            // 
-            // logSkillChanges
-            // 
-            this.logSkillChanges.Location = new System.Drawing.Point(415, 196);
-            this.logSkillChanges.Name = "logSkillChanges";
-            this.logSkillChanges.Size = new System.Drawing.Size(182, 24);
-            this.logSkillChanges.TabIndex = 13;
-            this.logSkillChanges.Text = "Log skill changes";
-            this.logSkillChanges.UseVisualStyleBackColor = true;
-            this.logSkillChanges.CheckedChanged += new System.EventHandler(this.logSkillChanges_CheckedChanged);
-            // 
-            // dispDelta
-            // 
-            this.dispDelta.Location = new System.Drawing.Point(415, 228);
-            this.dispDelta.Name = "dispDelta";
-            this.dispDelta.Size = new System.Drawing.Size(182, 23);
-            this.dispDelta.TabIndex = 11;
-            this.dispDelta.Text = "Show skill/stat changes";
-            this.dispDelta.CheckedChanged += new System.EventHandler(this.dispDelta_CheckedChanged);
-            // 
-            // skillCopyAll
-            // 
-            this.skillCopyAll.Location = new System.Drawing.Point(415, 149);
-            this.skillCopyAll.Name = "skillCopyAll";
-            this.skillCopyAll.Size = new System.Drawing.Size(182, 40);
-            this.skillCopyAll.TabIndex = 9;
-            this.skillCopyAll.Text = "Copy All";
-            this.skillCopyAll.Click += new System.EventHandler(this.skillCopyAll_Click);
-            // 
-            // skillCopySel
-            // 
-            this.skillCopySel.Location = new System.Drawing.Point(415, 101);
-            this.skillCopySel.Name = "skillCopySel";
-            this.skillCopySel.Size = new System.Drawing.Size(182, 40);
-            this.skillCopySel.TabIndex = 8;
-            this.skillCopySel.Text = "Copy Selected";
-            this.skillCopySel.Click += new System.EventHandler(this.skillCopySel_Click);
-            // 
-            // baseTotal
-            // 
-            this.baseTotal.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.baseTotal.Location = new System.Drawing.Point(499, 362);
-            this.baseTotal.Name = "baseTotal";
-            this.baseTotal.ReadOnly = true;
-            this.baseTotal.Size = new System.Drawing.Size(98, 27);
-            this.baseTotal.TabIndex = 7;
-            this.baseTotal.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // label1
-            // 
-            this.label1.Location = new System.Drawing.Point(415, 361);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(88, 29);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "Base Total:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // locks
-            // 
-            this.locks.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.locks.Items.AddRange(new object[] {
-            "Up",
-            "Down",
-            "Locked"});
-            this.locks.Location = new System.Drawing.Point(546, 61);
-            this.locks.Name = "locks";
-            this.locks.Size = new System.Drawing.Size(51, 28);
-            this.locks.TabIndex = 5;
-            // 
-            // setlocks
-            // 
-            this.setlocks.Location = new System.Drawing.Point(415, 54);
-            this.setlocks.Name = "setlocks";
-            this.setlocks.Size = new System.Drawing.Size(124, 40);
-            this.setlocks.TabIndex = 4;
-            this.setlocks.Text = "Set all locks:";
-            this.setlocks.Click += new System.EventHandler(this.OnSetSkillLocks);
-            // 
-            // resetDelta
-            // 
-            this.resetDelta.Location = new System.Drawing.Point(415, 6);
-            this.resetDelta.Name = "resetDelta";
-            this.resetDelta.Size = new System.Drawing.Size(182, 40);
-            this.resetDelta.TabIndex = 3;
-            this.resetDelta.Text = "Reset  +/-";
-            this.resetDelta.Click += new System.EventHandler(this.OnResetSkillDelta);
-            // 
-            // skillList
-            // 
-            this.skillList.AutoArrange = false;
-            this.skillList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.skillHDRName,
-            this.skillHDRvalue,
-            this.skillHDRbase,
-            this.skillHDRdelta,
-            this.skillHDRcap,
-            this.skillHDRlock});
-            this.skillList.FullRowSelect = true;
-            this.skillList.Location = new System.Drawing.Point(9, 6);
-            this.skillList.Name = "skillList";
-            this.skillList.Size = new System.Drawing.Size(399, 384);
-            this.skillList.TabIndex = 1;
-            this.skillList.UseCompatibleStateImageBehavior = false;
-            this.skillList.View = System.Windows.Forms.View.Details;
-            this.skillList.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.OnSkillColClick);
-            this.skillList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.skillList_MouseDown);
-            // 
-            // skillHDRName
-            // 
-            this.skillHDRName.Text = "Skill Name";
-            this.skillHDRName.Width = 112;
-            // 
-            // skillHDRvalue
-            // 
-            this.skillHDRvalue.Text = "Value";
-            this.skillHDRvalue.Width = 46;
-            // 
-            // skillHDRbase
-            // 
-            this.skillHDRbase.Text = "Base";
-            this.skillHDRbase.Width = 43;
-            // 
-            // skillHDRdelta
-            // 
-            this.skillHDRdelta.Text = "+/-";
-            this.skillHDRdelta.Width = 40;
-            // 
-            // skillHDRcap
-            // 
-            this.skillHDRcap.Text = "Cap";
-            this.skillHDRcap.Width = 40;
-            // 
-            // skillHDRlock
-            // 
-            this.skillHDRlock.Text = "Lock";
-            this.skillHDRlock.Width = 40;
-            // 
-            // agentsTab
-            // 
-            this.agentsTab.Controls.Add(this.agentB6);
-            this.agentsTab.Controls.Add(this.agentB5);
-            this.agentsTab.Controls.Add(this.agentList);
-            this.agentsTab.Controls.Add(this.agentGroup);
-            this.agentsTab.Controls.Add(this.agentB4);
-            this.agentsTab.Controls.Add(this.agentB1);
-            this.agentsTab.Controls.Add(this.agentB2);
-            this.agentsTab.Controls.Add(this.agentB3);
-            this.agentsTab.Location = new System.Drawing.Point(4, 54);
-            this.agentsTab.Name = "agentsTab";
-            this.agentsTab.Size = new System.Drawing.Size(607, 404);
-            this.agentsTab.TabIndex = 6;
-            this.agentsTab.Text = "Agents";
-            // 
-            // agentB6
-            // 
-            this.agentB6.Location = new System.Drawing.Point(9, 289);
-            this.agentB6.Name = "agentB6";
-            this.agentB6.Size = new System.Drawing.Size(152, 40);
-            this.agentB6.TabIndex = 6;
-            this.agentB6.Click += new System.EventHandler(this.agentB6_Click);
-            // 
-            // agentB5
-            // 
-            this.agentB5.Location = new System.Drawing.Point(9, 241);
-            this.agentB5.Name = "agentB5";
-            this.agentB5.Size = new System.Drawing.Size(152, 40);
-            this.agentB5.TabIndex = 5;
-            this.agentB5.Click += new System.EventHandler(this.agentB5_Click);
-            // 
-            // agentList
-            // 
-            this.agentList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.agentList.Location = new System.Drawing.Point(9, 18);
-            this.agentList.Name = "agentList";
-            this.agentList.Size = new System.Drawing.Size(152, 28);
-            this.agentList.TabIndex = 2;
-            this.agentList.SelectedIndexChanged += new System.EventHandler(this.agentList_SelectedIndexChanged);
-            // 
-            // agentGroup
-            // 
-            this.agentGroup.Controls.Add(this.agentSubList);
-            this.agentGroup.Location = new System.Drawing.Point(168, 4);
-            this.agentGroup.Name = "agentGroup";
-            this.agentGroup.Size = new System.Drawing.Size(429, 386);
-            this.agentGroup.TabIndex = 1;
-            this.agentGroup.TabStop = false;
-            // 
-            // agentSubList
-            // 
-            this.agentSubList.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.agentSubList.IntegralHeight = false;
-            this.agentSubList.ItemHeight = 20;
-            this.agentSubList.Location = new System.Drawing.Point(7, 19);
-            this.agentSubList.Name = "agentSubList";
-            this.agentSubList.Size = new System.Drawing.Size(415, 360);
-            this.agentSubList.TabIndex = 0;
-            this.agentSubList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.agentSubList_MouseDown);
-            // 
-            // agentB4
-            // 
-            this.agentB4.Location = new System.Drawing.Point(9, 194);
-            this.agentB4.Name = "agentB4";
-            this.agentB4.Size = new System.Drawing.Size(152, 40);
-            this.agentB4.TabIndex = 4;
-            this.agentB4.Click += new System.EventHandler(this.agentB4_Click);
-            // 
-            // agentB1
-            // 
-            this.agentB1.Location = new System.Drawing.Point(9, 51);
-            this.agentB1.Name = "agentB1";
-            this.agentB1.Size = new System.Drawing.Size(152, 40);
-            this.agentB1.TabIndex = 1;
-            this.agentB1.Click += new System.EventHandler(this.agentB1_Click);
-            // 
-            // agentB2
-            // 
-            this.agentB2.Location = new System.Drawing.Point(9, 99);
-            this.agentB2.Name = "agentB2";
-            this.agentB2.Size = new System.Drawing.Size(152, 40);
-            this.agentB2.TabIndex = 2;
-            this.agentB2.Click += new System.EventHandler(this.agentB2_Click);
-            // 
-            // agentB3
-            // 
-            this.agentB3.Location = new System.Drawing.Point(9, 146);
-            this.agentB3.Name = "agentB3";
-            this.agentB3.Size = new System.Drawing.Size(152, 40);
-            this.agentB3.TabIndex = 3;
-            this.agentB3.Click += new System.EventHandler(this.agentB3_Click);
-            // 
-            // hotkeysTab
-            // 
-            this.hotkeysTab.Controls.Add(this.filterHotkeys);
-            this.hotkeysTab.Controls.Add(this.label22);
-            this.hotkeysTab.Controls.Add(this.hkStatus);
-            this.hotkeysTab.Controls.Add(this.hotkeyTree);
-            this.hotkeysTab.Controls.Add(this.dohotkey);
-            this.hotkeysTab.Controls.Add(this.groupBox8);
-            this.hotkeysTab.Location = new System.Drawing.Point(4, 54);
-            this.hotkeysTab.Name = "hotkeysTab";
-            this.hotkeysTab.Size = new System.Drawing.Size(607, 404);
-            this.hotkeysTab.TabIndex = 4;
-            this.hotkeysTab.Text = "Hot Keys";
-            // 
-            // filterHotkeys
-            // 
-            this.filterHotkeys.Location = new System.Drawing.Point(58, 10);
-            this.filterHotkeys.Name = "filterHotkeys";
-            this.filterHotkeys.Size = new System.Drawing.Size(328, 27);
-            this.filterHotkeys.TabIndex = 9;
-            this.filterHotkeys.TextChanged += new System.EventHandler(this.filterHotkeys_TextChanged);
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(9, 14);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(45, 20);
-            this.label22.TabIndex = 8;
-            this.label22.Text = "Filter:";
-            // 
-            // hkStatus
-            // 
-            this.hkStatus.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hkStatus.Location = new System.Drawing.Point(393, 258);
-            this.hkStatus.Name = "hkStatus";
-            this.hkStatus.Size = new System.Drawing.Size(204, 80);
-            this.hkStatus.TabIndex = 7;
-            this.hkStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // hotkeyTree
-            // 
-            this.hotkeyTree.HideSelection = false;
-            this.hotkeyTree.Location = new System.Drawing.Point(9, 46);
-            this.hotkeyTree.Name = "hotkeyTree";
-            this.hotkeyTree.Size = new System.Drawing.Size(377, 344);
-            this.hotkeyTree.Sorted = true;
-            this.hotkeyTree.TabIndex = 6;
-            this.hotkeyTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.hotkeyTree_AfterSelect);
-            // 
-            // dohotkey
-            // 
-            this.dohotkey.Location = new System.Drawing.Point(393, 175);
-            this.dohotkey.Name = "dohotkey";
-            this.dohotkey.Size = new System.Drawing.Size(204, 36);
-            this.dohotkey.TabIndex = 5;
-            this.dohotkey.Text = "Execute Selected Hot Key";
-            this.dohotkey.Click += new System.EventHandler(this.dohotkey_Click);
-            // 
-            // groupBox8
-            // 
-            this.groupBox8.Controls.Add(this.chkAlt);
-            this.groupBox8.Controls.Add(this.chkPass);
-            this.groupBox8.Controls.Add(this.label2);
-            this.groupBox8.Controls.Add(this.unsetHK);
-            this.groupBox8.Controls.Add(this.setHK);
-            this.groupBox8.Controls.Add(this.key);
-            this.groupBox8.Controls.Add(this.chkCtrl);
-            this.groupBox8.Controls.Add(this.chkShift);
-            this.groupBox8.Location = new System.Drawing.Point(393, 10);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(204, 155);
-            this.groupBox8.TabIndex = 4;
-            this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "Hot Key";
-            // 
-            // chkAlt
-            // 
-            this.chkAlt.Location = new System.Drawing.Point(68, 25);
-            this.chkAlt.Name = "chkAlt";
-            this.chkAlt.Size = new System.Drawing.Size(57, 20);
-            this.chkAlt.TabIndex = 2;
-            this.chkAlt.Text = "Alt";
-            // 
-            // chkPass
-            // 
-            this.chkPass.Location = new System.Drawing.Point(13, 86);
-            this.chkPass.Name = "chkPass";
-            this.chkPass.Size = new System.Drawing.Size(132, 20);
-            this.chkPass.TabIndex = 9;
-            this.chkPass.Text = "Pass to UO";
-            // 
-            // label2
-            // 
-            this.label2.Location = new System.Drawing.Point(9, 55);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(33, 25);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "Key:";
-            // 
-            // unsetHK
-            // 
-            this.unsetHK.Location = new System.Drawing.Point(9, 112);
-            this.unsetHK.Name = "unsetHK";
-            this.unsetHK.Size = new System.Drawing.Size(66, 33);
-            this.unsetHK.TabIndex = 6;
-            this.unsetHK.Text = "Unset";
-            this.unsetHK.Click += new System.EventHandler(this.unsetHK_Click);
-            // 
-            // setHK
-            // 
-            this.setHK.Location = new System.Drawing.Point(132, 112);
-            this.setHK.Name = "setHK";
-            this.setHK.Size = new System.Drawing.Size(65, 33);
-            this.setHK.TabIndex = 5;
-            this.setHK.Text = "Set";
-            this.setHK.Click += new System.EventHandler(this.setHK_Click);
-            // 
-            // key
-            // 
-            this.key.Location = new System.Drawing.Point(42, 50);
-            this.key.Name = "key";
-            this.key.ReadOnly = true;
-            this.key.Size = new System.Drawing.Size(155, 27);
-            this.key.TabIndex = 4;
-            this.key.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.key.KeyUp += new System.Windows.Forms.KeyEventHandler(this.key_KeyUp);
-            this.key.MouseDown += new System.Windows.Forms.MouseEventHandler(this.key_MouseDown);
-            this.key.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.key_MouseWheel);
-            // 
-            // chkCtrl
-            // 
-            this.chkCtrl.Location = new System.Drawing.Point(9, 25);
-            this.chkCtrl.Name = "chkCtrl";
-            this.chkCtrl.Size = new System.Drawing.Size(66, 20);
-            this.chkCtrl.TabIndex = 1;
-            this.chkCtrl.Text = "Ctrl";
-            // 
-            // chkShift
-            // 
-            this.chkShift.Location = new System.Drawing.Point(132, 25);
-            this.chkShift.Name = "chkShift";
-            this.chkShift.Size = new System.Drawing.Size(65, 20);
-            this.chkShift.TabIndex = 3;
-            this.chkShift.Text = "Shift";
-            // 
-            // macrosTab
-            // 
-            this.macrosTab.Controls.Add(this.tabControl2);
-            this.macrosTab.Location = new System.Drawing.Point(4, 54);
-            this.macrosTab.Name = "macrosTab";
-            this.macrosTab.Size = new System.Drawing.Size(607, 404);
-            this.macrosTab.TabIndex = 7;
-            this.macrosTab.Text = "Macros";
-            // 
-            // tabControl2
-            // 
-            this.tabControl2.Controls.Add(this.subMacrosTab);
-            this.tabControl2.Controls.Add(this.subMacrosOptionsTab);
-            this.tabControl2.Location = new System.Drawing.Point(7, 4);
-            this.tabControl2.Name = "tabControl2";
-            this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(595, 392);
-            this.tabControl2.TabIndex = 13;
-            // 
-            // subMacrosTab
-            // 
-            this.subMacrosTab.BackColor = System.Drawing.SystemColors.Control;
-            this.subMacrosTab.Controls.Add(this.macroActGroup);
-            this.subMacrosTab.Controls.Add(this.filterMacros);
-            this.subMacrosTab.Controls.Add(this.filterLabel);
-            this.subMacrosTab.Controls.Add(this.macroTree);
-            this.subMacrosTab.Controls.Add(this.delMacro);
-            this.subMacrosTab.Controls.Add(this.newMacro);
-            this.subMacrosTab.Location = new System.Drawing.Point(4, 29);
-            this.subMacrosTab.Name = "subMacrosTab";
-            this.subMacrosTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subMacrosTab.Size = new System.Drawing.Size(587, 359);
-            this.subMacrosTab.TabIndex = 0;
-            this.subMacrosTab.Text = "Macros";
-            // 
-            // macroActGroup
-            // 
-            this.macroActGroup.Controls.Add(this.playMacro);
-            this.macroActGroup.Controls.Add(this.waitDisp);
-            this.macroActGroup.Controls.Add(this.loopMacro);
-            this.macroActGroup.Controls.Add(this.recMacro);
-            this.macroActGroup.Controls.Add(this.actionList);
-            this.macroActGroup.Location = new System.Drawing.Point(233, 4);
-            this.macroActGroup.Name = "macroActGroup";
-            this.macroActGroup.Size = new System.Drawing.Size(346, 340);
-            this.macroActGroup.TabIndex = 18;
-            this.macroActGroup.TabStop = false;
-            this.macroActGroup.Text = "Actions";
-            this.macroActGroup.Visible = false;
-            // 
-            // playMacro
-            // 
-            this.playMacro.Location = new System.Drawing.Point(268, 21);
-            this.playMacro.Name = "playMacro";
-            this.playMacro.Size = new System.Drawing.Size(70, 41);
-            this.playMacro.TabIndex = 6;
-            this.playMacro.Text = "Play";
-            this.playMacro.Click += new System.EventHandler(this.playMacro_Click);
-            // 
-            // waitDisp
-            // 
-            this.waitDisp.Location = new System.Drawing.Point(268, 136);
-            this.waitDisp.Name = "waitDisp";
-            this.waitDisp.Size = new System.Drawing.Size(70, 112);
-            this.waitDisp.TabIndex = 5;
-            this.waitDisp.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // loopMacro
-            // 
-            this.loopMacro.Location = new System.Drawing.Point(272, 302);
-            this.loopMacro.Name = "loopMacro";
-            this.loopMacro.Size = new System.Drawing.Size(66, 30);
-            this.loopMacro.TabIndex = 4;
-            this.loopMacro.Text = "Loop";
-            this.loopMacro.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.loopMacro.CheckedChanged += new System.EventHandler(this.loopMacro_CheckedChanged);
-            // 
-            // recMacro
-            // 
-            this.recMacro.Location = new System.Drawing.Point(268, 70);
-            this.recMacro.Name = "recMacro";
-            this.recMacro.Size = new System.Drawing.Size(70, 41);
-            this.recMacro.TabIndex = 3;
-            this.recMacro.Text = "Record";
-            this.recMacro.Click += new System.EventHandler(this.recMacro_Click);
-            // 
-            // actionList
-            // 
-            this.actionList.BackColor = System.Drawing.SystemColors.Window;
-            this.actionList.HorizontalScrollbar = true;
-            this.actionList.IntegralHeight = false;
-            this.actionList.ItemHeight = 20;
-            this.actionList.Location = new System.Drawing.Point(7, 21);
-            this.actionList.Name = "actionList";
-            this.actionList.Size = new System.Drawing.Size(254, 311);
-            this.actionList.TabIndex = 0;
-            this.actionList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.actionList_KeyDown);
-            this.actionList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.actionList_MouseDown);
-            // 
-            // filterMacros
-            // 
-            this.filterMacros.Location = new System.Drawing.Point(55, 9);
-            this.filterMacros.Name = "filterMacros";
-            this.filterMacros.Size = new System.Drawing.Size(171, 27);
-            this.filterMacros.TabIndex = 17;
-            this.filterMacros.TextChanged += new System.EventHandler(this.filterMacros_TextChanged);
-            // 
-            // filterLabel
-            // 
-            this.filterLabel.AutoSize = true;
-            this.filterLabel.Location = new System.Drawing.Point(6, 12);
-            this.filterLabel.Name = "filterLabel";
-            this.filterLabel.Size = new System.Drawing.Size(45, 20);
-            this.filterLabel.TabIndex = 16;
-            this.filterLabel.Text = "Filter:";
-            // 
-            // macroTree
-            // 
-            this.macroTree.FullRowSelect = true;
-            this.macroTree.HideSelection = false;
-            this.macroTree.Location = new System.Drawing.Point(7, 45);
-            this.macroTree.Name = "macroTree";
-            this.macroTree.Size = new System.Drawing.Size(219, 254);
-            this.macroTree.Sorted = true;
-            this.macroTree.TabIndex = 15;
-            this.macroTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.macroTree_AfterSelect);
-            this.macroTree.MouseDown += new System.Windows.Forms.MouseEventHandler(this.macroTree_MouseDown);
-            // 
-            // delMacro
-            // 
-            this.delMacro.Location = new System.Drawing.Point(140, 306);
-            this.delMacro.Name = "delMacro";
-            this.delMacro.Size = new System.Drawing.Size(86, 38);
-            this.delMacro.TabIndex = 14;
-            this.delMacro.Text = "Remove";
-            this.delMacro.Click += new System.EventHandler(this.delMacro_Click);
-            // 
-            // newMacro
-            // 
-            this.newMacro.Location = new System.Drawing.Point(9, 306);
-            this.newMacro.Name = "newMacro";
-            this.newMacro.Size = new System.Drawing.Size(87, 38);
-            this.newMacro.TabIndex = 13;
-            this.newMacro.Text = "New...";
-            this.newMacro.Click += new System.EventHandler(this.newMacro_Click);
-            // 
-            // subMacrosOptionsTab
-            // 
-            this.subMacrosOptionsTab.BackColor = System.Drawing.SystemColors.Control;
-            this.subMacrosOptionsTab.Controls.Add(this.macroActionDelay);
-            this.subMacrosOptionsTab.Controls.Add(this.rangeCheckDoubleClick);
-            this.subMacrosOptionsTab.Controls.Add(this.rangeCheckTargetByType);
-            this.subMacrosOptionsTab.Controls.Add(this.nextMacroAction);
-            this.subMacrosOptionsTab.Controls.Add(this.stepThroughMacro);
-            this.subMacrosOptionsTab.Controls.Add(this.targetByTypeDifferent);
-            this.subMacrosOptionsTab.Controls.Add(this.absoluteTargetGroup);
-            this.subMacrosOptionsTab.Location = new System.Drawing.Point(4, 29);
-            this.subMacrosOptionsTab.Name = "subMacrosOptionsTab";
-            this.subMacrosOptionsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.subMacrosOptionsTab.Size = new System.Drawing.Size(587, 359);
-            this.subMacrosOptionsTab.TabIndex = 1;
-            this.subMacrosOptionsTab.Text = "Options";
-            // 
-            // macroActionDelay
-            // 
-            this.macroActionDelay.AutoSize = true;
-            this.macroActionDelay.Location = new System.Drawing.Point(317, 198);
-            this.macroActionDelay.Name = "macroActionDelay";
-            this.macroActionDelay.Size = new System.Drawing.Size(260, 24);
-            this.macroActionDelay.TabIndex = 16;
-            this.macroActionDelay.Text = "Default macro action delay (50ms)";
-            this.macroActionDelay.UseVisualStyleBackColor = true;
-            this.macroActionDelay.CheckedChanged += new System.EventHandler(this.macroActionDelay_CheckedChanged);
-            // 
-            // rangeCheckDoubleClick
-            // 
-            this.rangeCheckDoubleClick.AutoSize = true;
-            this.rangeCheckDoubleClick.Location = new System.Drawing.Point(317, 98);
-            this.rangeCheckDoubleClick.Name = "rangeCheckDoubleClick";
-            this.rangeCheckDoubleClick.Size = new System.Drawing.Size(256, 24);
-            this.rangeCheckDoubleClick.TabIndex = 15;
-            this.rangeCheckDoubleClick.Text = "Range check on \'DoubleClickType\'";
-            this.rangeCheckDoubleClick.UseVisualStyleBackColor = true;
-            this.rangeCheckDoubleClick.CheckedChanged += new System.EventHandler(this.rangeCheckDoubleClick_CheckedChanged);
-            // 
-            // rangeCheckTargetByType
-            // 
-            this.rangeCheckTargetByType.AutoSize = true;
-            this.rangeCheckTargetByType.Location = new System.Drawing.Point(317, 66);
-            this.rangeCheckTargetByType.Name = "rangeCheckTargetByType";
-            this.rangeCheckTargetByType.Size = new System.Drawing.Size(233, 24);
-            this.rangeCheckTargetByType.TabIndex = 14;
-            this.rangeCheckTargetByType.Text = "Range check on \'TargetByType\'";
-            this.rangeCheckTargetByType.UseVisualStyleBackColor = true;
-            this.rangeCheckTargetByType.CheckedChanged += new System.EventHandler(this.rangeCheckTargetByType_CheckedChanged);
-            // 
-            // nextMacroAction
-            // 
-            this.nextMacroAction.Enabled = false;
-            this.nextMacroAction.Location = new System.Drawing.Point(481, 144);
-            this.nextMacroAction.Name = "nextMacroAction";
-            this.nextMacroAction.Size = new System.Drawing.Size(70, 28);
-            this.nextMacroAction.TabIndex = 13;
-            this.nextMacroAction.Text = "Next";
-            this.nextMacroAction.UseVisualStyleBackColor = true;
-            this.nextMacroAction.Click += new System.EventHandler(this.nextMacroAction_Click);
-            // 
-            // stepThroughMacro
-            // 
-            this.stepThroughMacro.AutoSize = true;
-            this.stepThroughMacro.Location = new System.Drawing.Point(317, 148);
-            this.stepThroughMacro.Name = "stepThroughMacro";
-            this.stepThroughMacro.Size = new System.Drawing.Size(166, 24);
-            this.stepThroughMacro.TabIndex = 12;
-            this.stepThroughMacro.Text = "Step Through Macro";
-            this.stepThroughMacro.UseVisualStyleBackColor = true;
-            this.stepThroughMacro.CheckedChanged += new System.EventHandler(this.stepThroughMacro_CheckedChanged);
-            // 
-            // targetByTypeDifferent
-            // 
-            this.targetByTypeDifferent.AutoSize = true;
-            this.targetByTypeDifferent.Location = new System.Drawing.Point(317, 35);
-            this.targetByTypeDifferent.Name = "targetByTypeDifferent";
-            this.targetByTypeDifferent.Size = new System.Drawing.Size(226, 24);
-            this.targetByTypeDifferent.TabIndex = 11;
-            this.targetByTypeDifferent.Text = "Force different \'TargetByType\'";
-            this.targetByTypeDifferent.UseVisualStyleBackColor = true;
-            this.targetByTypeDifferent.CheckedChanged += new System.EventHandler(this.targetByTypeDifferent_CheckedChanged);
-            // 
-            // absoluteTargetGroup
-            // 
-            this.absoluteTargetGroup.Controls.Add(this.macroVariableList);
-            this.absoluteTargetGroup.Controls.Add(this.retargetMacroVariable);
-            this.absoluteTargetGroup.Controls.Add(this.insertMacroVariable);
-            this.absoluteTargetGroup.Controls.Add(this.removeMacroVariable);
-            this.absoluteTargetGroup.Controls.Add(this.addMacroVariable);
-            this.absoluteTargetGroup.Controls.Add(this.macroVariables);
-            this.absoluteTargetGroup.Location = new System.Drawing.Point(7, 8);
-            this.absoluteTargetGroup.Name = "absoluteTargetGroup";
-            this.absoluteTargetGroup.Size = new System.Drawing.Size(280, 336);
-            this.absoluteTargetGroup.TabIndex = 6;
-            this.absoluteTargetGroup.TabStop = false;
-            this.absoluteTargetGroup.Text = "Macro Variables:";
-            // 
-            // macroVariableList
-            // 
-            this.macroVariableList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.macroVariableList.FormattingEnabled = true;
-            this.macroVariableList.Items.AddRange(new object[] {
-            "Absolute Targets",
-            "DoubleClick Targets"});
-            this.macroVariableList.Location = new System.Drawing.Point(7, 28);
-            this.macroVariableList.Name = "macroVariableList";
-            this.macroVariableList.Size = new System.Drawing.Size(178, 28);
-            this.macroVariableList.TabIndex = 6;
-            this.macroVariableList.SelectedIndexChanged += new System.EventHandler(this.macroVariableList_SelectedIndexChanged);
-            // 
-            // retargetMacroVariable
-            // 
-            this.retargetMacroVariable.Location = new System.Drawing.Point(192, 105);
-            this.retargetMacroVariable.Name = "retargetMacroVariable";
-            this.retargetMacroVariable.Size = new System.Drawing.Size(79, 31);
-            this.retargetMacroVariable.TabIndex = 5;
-            this.retargetMacroVariable.Text = "Retarget";
-            this.retargetMacroVariable.UseVisualStyleBackColor = true;
-            this.retargetMacroVariable.Click += new System.EventHandler(this.retargetMacroVariable_Click);
-            // 
-            // insertMacroVariable
-            // 
-            this.insertMacroVariable.Location = new System.Drawing.Point(192, 66);
-            this.insertMacroVariable.Name = "insertMacroVariable";
-            this.insertMacroVariable.Size = new System.Drawing.Size(79, 32);
-            this.insertMacroVariable.TabIndex = 4;
-            this.insertMacroVariable.Text = "Insert";
-            this.insertMacroVariable.UseVisualStyleBackColor = true;
-            this.insertMacroVariable.Click += new System.EventHandler(this.insertMacroVariable_Click);
-            // 
-            // removeMacroVariable
-            // 
-            this.removeMacroVariable.Location = new System.Drawing.Point(192, 144);
-            this.removeMacroVariable.Name = "removeMacroVariable";
-            this.removeMacroVariable.Size = new System.Drawing.Size(79, 31);
-            this.removeMacroVariable.TabIndex = 3;
-            this.removeMacroVariable.Text = "Remove";
-            this.removeMacroVariable.UseVisualStyleBackColor = true;
-            this.removeMacroVariable.Click += new System.EventHandler(this.removeMacroVariable_Click);
-            // 
-            // addMacroVariable
-            // 
-            this.addMacroVariable.Location = new System.Drawing.Point(192, 28);
-            this.addMacroVariable.Name = "addMacroVariable";
-            this.addMacroVariable.Size = new System.Drawing.Size(79, 31);
-            this.addMacroVariable.TabIndex = 2;
-            this.addMacroVariable.Text = "Add";
-            this.addMacroVariable.UseVisualStyleBackColor = true;
-            this.addMacroVariable.Click += new System.EventHandler(this.addMacroVariable_Click);
-            // 
-            // macroVariables
-            // 
-            this.macroVariables.FormattingEnabled = true;
-            this.macroVariables.ItemHeight = 20;
-            this.macroVariables.Location = new System.Drawing.Point(7, 66);
-            this.macroVariables.Name = "macroVariables";
-            this.macroVariables.Size = new System.Drawing.Size(178, 224);
-            this.macroVariables.TabIndex = 1;
-            // 
-            // screenshotTab
-            // 
-            this.screenshotTab.Controls.Add(this.imgurUploads);
-            this.screenshotTab.Controls.Add(this.screenShotClipboard);
-            this.screenshotTab.Controls.Add(this.screenShotNotification);
-            this.screenshotTab.Controls.Add(this.screenShotOpenBrowser);
-            this.screenshotTab.Controls.Add(this.imgFmt);
-            this.screenshotTab.Controls.Add(this.label12);
-            this.screenshotTab.Controls.Add(this.capNow);
-            this.screenshotTab.Controls.Add(this.screenPath);
-            this.screenshotTab.Controls.Add(this.radioUO);
-            this.screenshotTab.Controls.Add(this.radioFull);
-            this.screenshotTab.Controls.Add(this.screenAutoCap);
-            this.screenshotTab.Controls.Add(this.setScnPath);
-            this.screenshotTab.Controls.Add(this.screensList);
-            this.screenshotTab.Controls.Add(this.screenPrev);
-            this.screenshotTab.Controls.Add(this.dispTime);
-            this.screenshotTab.Location = new System.Drawing.Point(4, 54);
-            this.screenshotTab.Name = "screenshotTab";
-            this.screenshotTab.Size = new System.Drawing.Size(607, 404);
-            this.screenshotTab.TabIndex = 8;
-            this.screenshotTab.Text = "Screen Shots";
-            // 
-            // imgurUploads
-            // 
-            this.imgurUploads.FormattingEnabled = true;
-            this.imgurUploads.ItemHeight = 20;
-            this.imgurUploads.Location = new System.Drawing.Point(310, 254);
-            this.imgurUploads.Name = "imgurUploads";
-            this.imgurUploads.Size = new System.Drawing.Size(287, 124);
-            this.imgurUploads.TabIndex = 15;
-            this.imgurUploads.MouseDown += new System.Windows.Forms.MouseEventHandler(this.imgurUploads_MouseDown);
-            // 
-            // screenShotClipboard
-            // 
-            this.screenShotClipboard.Location = new System.Drawing.Point(14, 330);
-            this.screenShotClipboard.Name = "screenShotClipboard";
-            this.screenShotClipboard.Size = new System.Drawing.Size(279, 25);
-            this.screenShotClipboard.TabIndex = 14;
-            this.screenShotClipboard.Text = "Copy link to clipboard after upload";
-            this.screenShotClipboard.CheckedChanged += new System.EventHandler(this.screenShotClipboard_CheckedChanged);
-            // 
-            // screenShotNotification
-            // 
-            this.screenShotNotification.Location = new System.Drawing.Point(14, 298);
-            this.screenShotNotification.Name = "screenShotNotification";
-            this.screenShotNotification.Size = new System.Drawing.Size(252, 24);
-            this.screenShotNotification.TabIndex = 13;
-            this.screenShotNotification.Text = "Show upload notification";
-            this.screenShotNotification.CheckedChanged += new System.EventHandler(this.screenShotNotification_CheckedChanged);
-            // 
-            // screenShotOpenBrowser
-            // 
-            this.screenShotOpenBrowser.Location = new System.Drawing.Point(14, 362);
-            this.screenShotOpenBrowser.Name = "screenShotOpenBrowser";
-            this.screenShotOpenBrowser.Size = new System.Drawing.Size(252, 26);
-            this.screenShotOpenBrowser.TabIndex = 12;
-            this.screenShotOpenBrowser.Text = "Open link in browser when shared";
-            this.screenShotOpenBrowser.CheckedChanged += new System.EventHandler(this.screenShotOpenBrowser_CheckedChanged);
-            // 
-            // imgFmt
-            // 
-            this.imgFmt.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.imgFmt.Items.AddRange(new object[] {
-            "jpg",
-            "png",
-            "bmp",
-            "gif",
-            "tif",
-            "wmf",
-            "exif",
-            "emf"});
-            this.imgFmt.Location = new System.Drawing.Point(119, 168);
-            this.imgFmt.Name = "imgFmt";
-            this.imgFmt.Size = new System.Drawing.Size(114, 28);
-            this.imgFmt.TabIndex = 11;
-            this.imgFmt.SelectedIndexChanged += new System.EventHandler(this.imgFmt_SelectedIndexChanged);
-            // 
-            // label12
-            // 
-            this.label12.Location = new System.Drawing.Point(6, 168);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(107, 24);
-            this.label12.TabIndex = 10;
-            this.label12.Text = "Image Format:";
-            this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // capNow
-            // 
-            this.capNow.Location = new System.Drawing.Point(433, 11);
-            this.capNow.Name = "capNow";
-            this.capNow.Size = new System.Drawing.Size(164, 28);
-            this.capNow.TabIndex = 8;
-            this.capNow.Text = "Take Screen Shot Now";
-            this.capNow.Click += new System.EventHandler(this.capNow_Click);
-            // 
-            // screenPath
-            // 
-            this.screenPath.Location = new System.Drawing.Point(9, 10);
-            this.screenPath.Name = "screenPath";
-            this.screenPath.Size = new System.Drawing.Size(369, 27);
-            this.screenPath.TabIndex = 7;
-            this.screenPath.TextChanged += new System.EventHandler(this.screenPath_TextChanged);
-            // 
-            // radioUO
-            // 
-            this.radioUO.Location = new System.Drawing.Point(14, 196);
-            this.radioUO.Name = "radioUO";
-            this.radioUO.Size = new System.Drawing.Size(87, 33);
-            this.radioUO.TabIndex = 6;
-            this.radioUO.Text = "UO Only";
-            this.radioUO.CheckedChanged += new System.EventHandler(this.radioUO_CheckedChanged);
-            // 
-            // radioFull
-            // 
-            this.radioFull.Location = new System.Drawing.Point(119, 196);
-            this.radioFull.Name = "radioFull";
-            this.radioFull.Size = new System.Drawing.Size(103, 33);
-            this.radioFull.TabIndex = 5;
-            this.radioFull.Text = "Full Screen";
-            this.radioFull.CheckedChanged += new System.EventHandler(this.radioFull_CheckedChanged);
-            // 
-            // screenAutoCap
-            // 
-            this.screenAutoCap.Location = new System.Drawing.Point(14, 265);
-            this.screenAutoCap.Name = "screenAutoCap";
-            this.screenAutoCap.Size = new System.Drawing.Size(210, 25);
-            this.screenAutoCap.TabIndex = 4;
-            this.screenAutoCap.Text = "Auto Death Screen Capture";
-            this.screenAutoCap.CheckedChanged += new System.EventHandler(this.screenAutoCap_CheckedChanged);
-            // 
-            // setScnPath
-            // 
-            this.setScnPath.Location = new System.Drawing.Point(385, 11);
-            this.setScnPath.Name = "setScnPath";
-            this.setScnPath.Size = new System.Drawing.Size(41, 28);
-            this.setScnPath.TabIndex = 3;
-            this.setScnPath.Text = "...";
-            this.setScnPath.Click += new System.EventHandler(this.setScnPath_Click);
-            // 
-            // screensList
-            // 
-            this.screensList.IntegralHeight = false;
-            this.screensList.ItemHeight = 20;
-            this.screensList.Location = new System.Drawing.Point(9, 45);
-            this.screensList.Name = "screensList";
-            this.screensList.Size = new System.Drawing.Size(294, 115);
-            this.screensList.Sorted = true;
-            this.screensList.TabIndex = 1;
-            this.screensList.SelectedIndexChanged += new System.EventHandler(this.screensList_SelectedIndexChanged);
-            this.screensList.MouseDown += new System.Windows.Forms.MouseEventHandler(this.screensList_MouseDown);
-            // 
-            // screenPrev
-            // 
-            this.screenPrev.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.screenPrev.Location = new System.Drawing.Point(310, 45);
-            this.screenPrev.Name = "screenPrev";
-            this.screenPrev.Size = new System.Drawing.Size(287, 191);
-            this.screenPrev.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.screenPrev.TabIndex = 0;
-            this.screenPrev.TabStop = false;
-            this.screenPrev.Click += new System.EventHandler(this.screenPrev_Click);
-            // 
-            // dispTime
-            // 
-            this.dispTime.Location = new System.Drawing.Point(14, 232);
-            this.dispTime.Name = "dispTime";
-            this.dispTime.Size = new System.Drawing.Size(240, 26);
-            this.dispTime.TabIndex = 9;
-            this.dispTime.Text = "Include Timestamp on images";
-            this.dispTime.CheckedChanged += new System.EventHandler(this.dispTime_CheckedChanged);
-            // 
-            // advancedTab
-            // 
-            this.advancedTab.BackColor = System.Drawing.SystemColors.Control;
-            this.advancedTab.Controls.Add(this.enableUOAAPI);
-            this.advancedTab.Controls.Add(this.disableSmartCPU);
-            this.advancedTab.Controls.Add(this.negotiate);
-            this.advancedTab.Controls.Add(this.openRazorDataDir);
-            this.advancedTab.Controls.Add(this.msglvl);
-            this.advancedTab.Controls.Add(this.label17);
-            this.advancedTab.Controls.Add(this.logPackets);
-            this.advancedTab.Controls.Add(this.statusBox);
-            this.advancedTab.Controls.Add(this.features);
-            this.advancedTab.Location = new System.Drawing.Point(4, 54);
-            this.advancedTab.Name = "advancedTab";
-            this.advancedTab.Size = new System.Drawing.Size(607, 404);
-            this.advancedTab.TabIndex = 12;
-            this.advancedTab.Text = "Advanced";
-            // 
-            // enableUOAAPI
-            // 
-            this.enableUOAAPI.Checked = true;
-            this.enableUOAAPI.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.enableUOAAPI.Location = new System.Drawing.Point(281, 128);
-            this.enableUOAAPI.Name = "enableUOAAPI";
-            this.enableUOAAPI.Size = new System.Drawing.Size(170, 28);
-            this.enableUOAAPI.TabIndex = 75;
-            this.enableUOAAPI.Text = "Enable UOA API";
-            this.enableUOAAPI.CheckedChanged += new System.EventHandler(this.enableUOAAPI_CheckedChanged);
-            // 
-            // disableSmartCPU
-            // 
-            this.disableSmartCPU.Location = new System.Drawing.Point(457, 195);
-            this.disableSmartCPU.Name = "disableSmartCPU";
-            this.disableSmartCPU.Size = new System.Drawing.Size(139, 27);
-            this.disableSmartCPU.TabIndex = 74;
-            this.disableSmartCPU.Text = "Disable SmartCPU";
-            this.disableSmartCPU.UseVisualStyleBackColor = true;
-            this.disableSmartCPU.Click += new System.EventHandler(this.disableSmartCPU_Click);
-            // 
-            // negotiate
-            // 
-            this.negotiate.Location = new System.Drawing.Point(281, 95);
-            this.negotiate.Name = "negotiate";
-            this.negotiate.Size = new System.Drawing.Size(230, 25);
-            this.negotiate.TabIndex = 72;
-            this.negotiate.Text = "Negotiate features with server";
-            this.negotiate.CheckedChanged += new System.EventHandler(this.negotiate_CheckedChanged);
-            // 
-            // openRazorDataDir
-            // 
-            this.openRazorDataDir.Location = new System.Drawing.Point(281, 10);
-            this.openRazorDataDir.Name = "openRazorDataDir";
-            this.openRazorDataDir.Size = new System.Drawing.Size(316, 41);
-            this.openRazorDataDir.TabIndex = 70;
-            this.openRazorDataDir.Text = "Open Data Directory";
-            this.openRazorDataDir.UseVisualStyleBackColor = true;
-            this.openRazorDataDir.Click += new System.EventHandler(this.openRazorDataDir_Click);
-            // 
-            // msglvl
-            // 
-            this.msglvl.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.msglvl.Items.AddRange(new object[] {
-            "Show All",
-            "Warnings & Errors",
-            "Errors Only",
-            "None"});
-            this.msglvl.Location = new System.Drawing.Point(400, 159);
-            this.msglvl.Name = "msglvl";
-            this.msglvl.Size = new System.Drawing.Size(196, 28);
-            this.msglvl.TabIndex = 69;
-            this.msglvl.SelectedIndexChanged += new System.EventHandler(this.msglvl_SelectedIndexChanged);
-            // 
-            // label17
-            // 
-            this.label17.Location = new System.Drawing.Point(278, 160);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(115, 22);
-            this.label17.TabIndex = 68;
-            this.label17.Text = "Razor messages:";
-            this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // logPackets
-            // 
-            this.logPackets.Location = new System.Drawing.Point(281, 59);
-            this.logPackets.Name = "logPackets";
-            this.logPackets.Size = new System.Drawing.Size(170, 29);
-            this.logPackets.TabIndex = 67;
-            this.logPackets.Text = "Enable packet logging";
-            this.logPackets.CheckedChanged += new System.EventHandler(this.logPackets_CheckedChanged);
-            // 
-            // statusBox
-            // 
-            this.statusBox.BackColor = System.Drawing.SystemColors.Control;
-            this.statusBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.statusBox.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.statusBox.HideSelection = false;
-            this.statusBox.Location = new System.Drawing.Point(12, 10);
-            this.statusBox.Multiline = true;
-            this.statusBox.Name = "statusBox";
-            this.statusBox.ReadOnly = true;
-            this.statusBox.Size = new System.Drawing.Size(262, 319);
-            this.statusBox.TabIndex = 66;
-            // 
-            // features
-            // 
-            this.features.Cursor = System.Windows.Forms.Cursors.No;
-            this.features.Location = new System.Drawing.Point(281, 230);
-            this.features.Multiline = true;
-            this.features.Name = "features";
-            this.features.ReadOnly = true;
-            this.features.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.features.Size = new System.Drawing.Size(316, 99);
-            this.features.TabIndex = 65;
-            this.features.Visible = false;
-            // 
-            // aboutTab
-            // 
-            this.aboutTab.Controls.Add(this.linkGitHub);
-            this.aboutTab.Controls.Add(this.lblCredits3);
-            this.aboutTab.Controls.Add(this.linkHelp);
-            this.aboutTab.Controls.Add(this.lblCredits2);
-            this.aboutTab.Controls.Add(this.label20);
-            this.aboutTab.Controls.Add(this.linkLabel1);
-            this.aboutTab.Controls.Add(this.lblCredits1);
-            this.aboutTab.Controls.Add(this.aboutSubInfo);
-            this.aboutTab.Controls.Add(this.linkMain);
-            this.aboutTab.Controls.Add(this.label21);
-            this.aboutTab.Controls.Add(this.aboutVer);
-            this.aboutTab.Location = new System.Drawing.Point(4, 54);
-            this.aboutTab.Name = "aboutTab";
-            this.aboutTab.Size = new System.Drawing.Size(607, 404);
-            this.aboutTab.TabIndex = 9;
-            this.aboutTab.Text = "About";
-            // 
-            // linkGitHub
-            // 
-            this.linkGitHub.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkGitHub.Location = new System.Drawing.Point(7, 204);
-            this.linkGitHub.Name = "linkGitHub";
-            this.linkGitHub.Size = new System.Drawing.Size(590, 25);
-            this.linkGitHub.TabIndex = 25;
-            this.linkGitHub.TabStop = true;
-            this.linkGitHub.Text = "https://github.com/markdwags/Razor";
-            this.linkGitHub.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.linkGitHub.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkGitHub_LinkClicked);
-            // 
-            // lblCredits3
-            // 
-            this.lblCredits3.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCredits3.Location = new System.Drawing.Point(9, 324);
-            this.lblCredits3.Name = "lblCredits3";
-            this.lblCredits3.Size = new System.Drawing.Size(587, 25);
-            this.lblCredits3.TabIndex = 24;
-            this.lblCredits3.Text = "Cross-platform implementation by DarkLotus";
-            this.lblCredits3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // linkHelp
-            // 
-            this.linkHelp.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkHelp.Location = new System.Drawing.Point(506, 12);
-            this.linkHelp.Name = "linkHelp";
-            this.linkHelp.Size = new System.Drawing.Size(91, 26);
-            this.linkHelp.TabIndex = 23;
-            this.linkHelp.TabStop = true;
-            this.linkHelp.Text = "Need Help?";
-            this.linkHelp.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.linkHelp.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkHelp_LinkClicked);
-            // 
-            // lblCredits2
-            // 
-            this.lblCredits2.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCredits2.Location = new System.Drawing.Point(10, 299);
-            this.lblCredits2.Name = "lblCredits2";
-            this.lblCredits2.Size = new System.Drawing.Size(587, 25);
-            this.lblCredits2.TabIndex = 22;
-            this.lblCredits2.Text = "Major design changes including ClassicUO integration by Jaedan";
-            this.lblCredits2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(108, 158);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(441, 23);
-            this.label20.TabIndex = 21;
-            this.label20.Text = "For feedback, support and the latest releases please visit:\r\n";
-            // 
-            // linkLabel1
-            // 
-            this.linkLabel1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkLabel1.Location = new System.Drawing.Point(7, 118);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(590, 24);
-            this.linkLabel1.TabIndex = 20;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "http://www.uorenaissance.com";
-            this.linkLabel1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
-            // 
-            // lblCredits1
-            // 
-            this.lblCredits1.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCredits1.Location = new System.Drawing.Point(7, 274);
-            this.lblCredits1.Name = "lblCredits1";
-            this.lblCredits1.Size = new System.Drawing.Size(590, 25);
-            this.lblCredits1.TabIndex = 19;
-            this.lblCredits1.Text = "Razor was designed by Zippy, modified and maintained by Quick";
-            this.lblCredits1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // aboutSubInfo
-            // 
-            this.aboutSubInfo.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.aboutSubInfo.Location = new System.Drawing.Point(7, 94);
-            this.aboutSubInfo.Name = "aboutSubInfo";
-            this.aboutSubInfo.Size = new System.Drawing.Size(590, 24);
-            this.aboutSubInfo.TabIndex = 17;
-            this.aboutSubInfo.Text = "UO Renaissance Community Edition";
-            this.aboutSubInfo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // linkMain
-            // 
-            this.linkMain.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkMain.Location = new System.Drawing.Point(7, 179);
-            this.linkMain.Name = "linkMain";
-            this.linkMain.Size = new System.Drawing.Size(590, 25);
-            this.linkMain.TabIndex = 16;
-            this.linkMain.TabStop = true;
-            this.linkMain.Text = "http://www.uor-razor.com";
-            this.linkMain.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.linkMain.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(61, 122);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(0, 20);
-            this.label21.TabIndex = 15;
-            this.label21.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // aboutVer
-            // 
-            this.aboutVer.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.aboutVer.Location = new System.Drawing.Point(7, 50);
-            this.aboutVer.Name = "aboutVer";
-            this.aboutVer.Size = new System.Drawing.Size(590, 44);
-            this.aboutVer.TabIndex = 14;
-            this.aboutVer.Text = "Razor v{0}";
-            this.aboutVer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // MainForm
-            // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(7, 20);
-            this.ClientSize = new System.Drawing.Size(610, 456);
-            this.Controls.Add(this.tabs);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.Name = "MainForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "Razor v{0}";
-            this.Activated += new System.EventHandler(this.MainForm_Activated);
-            this.Closing += new System.ComponentModel.CancelEventHandler(this.MainForm_Closing);
-            this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
-            this.Load += new System.EventHandler(this.MainForm_StartLoad);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
-            this.Move += new System.EventHandler(this.MainForm_Move);
-            this.Resize += new System.EventHandler(this.MainForm_Resize);
-            this.tabs.ResumeLayout(false);
-            this.generalTab.ResumeLayout(false);
-            this.subGeneralTab.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.groupBox15.ResumeLayout(false);
-            this.groupBox16.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.opacity)).EndInit();
-            this.groupBox4.ResumeLayout(false);
-            this.subFiltersTab.ResumeLayout(false);
-            this.subFiltersTab.PerformLayout();
-            this.moreOptTab.ResumeLayout(false);
-            this.optionsTabCtrl.ResumeLayout(false);
-            this.subOptionsSpeechTab.ResumeLayout(false);
-            this.subOptionsSpeechTab.PerformLayout();
-            this.subOptionsTargetTab.ResumeLayout(false);
-            this.subOptionsTargetTab.PerformLayout();
-            this.subOptionsMiscTab.ResumeLayout(false);
-            this.subOptionsMiscTab.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.lightLevelBar)).EndInit();
-            this.displayTab.ResumeLayout(false);
-            this.tabControl4.ResumeLayout(false);
-            this.subDisplayTab.ResumeLayout(false);
-            this.subDisplayTab.PerformLayout();
-            this.groupBox11.ResumeLayout(false);
-            this.groupBox11.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            this.subCountersTab.ResumeLayout(false);
-            this.subCountersTab.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.dressTab.ResumeLayout(false);
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox5.ResumeLayout(false);
-            this.skillsTab.ResumeLayout(false);
-            this.skillsTab.PerformLayout();
-            this.agentsTab.ResumeLayout(false);
-            this.agentGroup.ResumeLayout(false);
-            this.hotkeysTab.ResumeLayout(false);
-            this.hotkeysTab.PerformLayout();
-            this.groupBox8.ResumeLayout(false);
-            this.groupBox8.PerformLayout();
-            this.macrosTab.ResumeLayout(false);
-            this.tabControl2.ResumeLayout(false);
-            this.subMacrosTab.ResumeLayout(false);
-            this.subMacrosTab.PerformLayout();
-            this.macroActGroup.ResumeLayout(false);
-            this.subMacrosOptionsTab.ResumeLayout(false);
-            this.subMacrosOptionsTab.PerformLayout();
-            this.absoluteTargetGroup.ResumeLayout(false);
-            this.screenshotTab.ResumeLayout(false);
-            this.screenshotTab.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.screenPrev)).EndInit();
-            this.advancedTab.ResumeLayout(false);
-            this.advancedTab.PerformLayout();
-            this.aboutTab.ResumeLayout(false);
-            this.aboutTab.PerformLayout();
-            this.ResumeLayout(false);
-
-        }
-
-        #endregion
-
         protected override void WndProc(ref Message msg)
         {
             if (msg.Msg == Client.WM_UONETEVENT)
-                msg.Result = (IntPtr)(Client.Instance.OnMessage(this, (uint)msg.WParam.ToInt32(), msg.LParam.ToInt32()) ? 1 : 0);
+                msg.Result =
+                    (IntPtr) (Client.Instance.OnMessage(this, (uint) msg.WParam.ToInt32(), msg.LParam.ToInt32())
+                        ? 1
+                        : 0);
             else if (msg.Msg == Client.WM_COPYDATA)
-                msg.Result = (IntPtr)(Client.Instance.OnCopyData(msg.WParam, msg.LParam) ? 1 : 0);
-            else if (Config.GetBool("EnableUOAAPI") &&  msg.Msg >= (int)UOAssist.UOAMessage.First && msg.Msg <= (int)UOAssist.UOAMessage.Last)
-                msg.Result = (IntPtr)UOAssist.OnUOAMessage(this, msg.Msg, msg.WParam.ToInt32(), msg.LParam.ToInt32());
+                msg.Result = (IntPtr) (Client.Instance.OnCopyData(msg.WParam, msg.LParam) ? 1 : 0);
+            else if (Config.GetBool("EnableUOAAPI") && msg.Msg >= (int) UOAssist.UOAMessage.First &&
+                     msg.Msg <= (int) UOAssist.UOAMessage.Last)
+                msg.Result = (IntPtr) UOAssist.OnUOAMessage(this, msg.Msg, msg.WParam.ToInt32(), msg.LParam.ToInt32());
             else
                 base.WndProc(ref msg);
         }
 
         private void DisableCloseButton()
         {
-            Platform.DisableCloseButton( this.Handle );
+            Platform.DisableCloseButton(this.Handle);
             m_CanClose = false;
         }
 
@@ -3875,6 +74,12 @@ namespace Assistant
             Hide();
             new StatsTimer(this).Start();
             Language.LoadControlNames(this);
+
+            FriendsManager.SetControls(friendsGroup, friendsList);
+            DressList.SetControls(dressList, dressItems);
+            TargetFilterManager.SetControls(targetFilter);
+            SoundMusicManager.SetControls(soundFilterList, playableMusicList);
+            ScriptManager.SetControls(scriptEditor, scriptList);
 
             bool st = Config.GetBool("Systray");
             taskbar.Checked = this.ShowInTaskbar = !st;
@@ -3906,6 +111,7 @@ namespace Assistant
             Show();
             BringToFront();
             tabs_IndexChanged(this, null); // load first tab
+            ScriptManager.InitScriptEditor();
 
             m_ProfileConfirmLoad = false;
             Config.SetupProfilesList(profiles, Config.CurrentProfile.Name);
@@ -3917,7 +123,6 @@ namespace Assistant
             m_Tip.SetToolTip(titleStr, Language.GetString(LocString.TitleBarTip));
 
             SplashScreen.End();
-
         }
 
         private bool m_Initializing = false;
@@ -3926,187 +131,261 @@ namespace Assistant
         {
             m_Initializing = true;
 
-            this.opacity.AutoSize = false;
-            //this.opacity.Size = new System.Drawing.Size(156, 16);
-
-            opacity.Value = Config.GetInt("Opacity");
-            this.Opacity = ((float) opacity.Value) / 100.0;
-            opacityLabel.Text = Language.Format(LocString.OpacityA1, opacity.Value);
-
-            this.TopMost = alwaysTop.Checked = Config.GetBool("AlwaysOnTop");
-            this.Location = new System.Drawing.Point(Config.GetInt("WindowX"), Config.GetInt("WindowY"));
-            this.TopLevel = true;
-
-            if (!IsOnScreen(this))
+            opacity.SafeAction(s =>
             {
-                this.Location = new System.Drawing.Point(400, 400);
-            }
+                s.Value = Config.GetInt("Opacity");
+                s.AutoSize = false;
+            });
 
-            spellUnequip.Checked = Config.GetBool("SpellUnequip");
-            ltRange.Enabled = rangeCheckLT.Checked = Config.GetBool("RangeCheckLT");
-            ltRange.Text = Config.GetInt("LTRange").ToString();
-
-            counters.BeginUpdate();
-            if (Config.GetBool("SortCounters"))
+            this.SafeAction(s =>
             {
-                counters.Sorting = SortOrder.None;
-                counters.ListViewItemSorter = CounterLVIComparer.Instance;
-                counters.Sort();
-            }
-            else
+                s.Opacity = ((float) opacity.Value) / 100.0;
+                s.TopMost = s.alwaysTop.Checked = Config.GetBool("AlwaysOnTop");
+                s.Location = new System.Drawing.Point(Config.GetInt("WindowX"), Config.GetInt("WindowY"));
+                s.TopLevel = true;
+                if (!IsOnScreen(s))
+                {
+                    s.Location = new System.Drawing.Point(400, 400);
+                }
+            });
+
+            opacityLabel.SafeAction(s => { s.Text = Language.Format(LocString.OpacityA1, opacity.Value); });
+
+            spellUnequip.SafeAction(s => { });
+
+            spellUnequip.SafeAction(s => { s.Checked = Config.GetBool("SpellUnequip"); });
+
+            ltRange.SafeAction(s =>
             {
-                counters.ListViewItemSorter = null;
-                counters.Sorting = SortOrder.Ascending;
-            }
+                s.Enabled = rangeCheckLT.Checked = Config.GetBool("RangeCheckLT");
+                s.Text = Config.GetInt("LTRange").ToString();
+            });
 
-            counters.EndUpdate();
-            counters.Refresh();
-
-            incomingMob.Checked = Config.GetBool("ShowMobNames");
-            incomingCorpse.Checked = Config.GetBool("ShowCorpseNames");
-            checkNewConts.Checked = Config.GetBool("AutoSearch");
-            excludePouches.Checked = Config.GetBool("NoSearchPouches");
-            excludePouches.Enabled = checkNewConts.Checked;
-            warnNum.Enabled = warnCount.Checked = Config.GetBool("CounterWarn");
-            warnNum.Text = Config.GetInt("CounterWarnAmount").ToString();
-            QueueActions.Checked = Config.GetBool("QueueActions");
-            queueTargets.Checked = Config.GetBool("QueueTargets");
-            chkForceSpeechHue.Checked = setSpeechHue.Enabled = Config.GetBool("ForceSpeechHue");
-            chkForceSpellHue.Checked = setBeneHue.Enabled =
-                setNeuHue.Enabled = setHarmHue.Enabled = Config.GetBool("ForceSpellHue");
-            if (Config.GetInt("LTHilight") != 0)
+            counters.SafeAction(s =>
             {
-                InitPreviewHue(lthilight, "LTHilight");
-                //Client.SetCustomNotoHue( Config.GetInt( "LTHilight" ) );
-                lthilight.Checked = setLTHilight.Enabled = true;
-            }
-            else
+                s.BeginUpdate();
+
+                if (Config.GetBool("SortCounters"))
+                {
+                    s.Sorting = SortOrder.None;
+                    s.ListViewItemSorter = CounterLVIComparer.Instance;
+                    s.Sort();
+                }
+                else
+                {
+                    s.ListViewItemSorter = null;
+                    s.Sorting = SortOrder.Ascending;
+                }
+
+                s.EndUpdate();
+                s.Refresh();
+            });
+
+            incomingMob.SafeAction(s => { s.Checked = Config.GetBool("ShowMobNames"); });
+
+            incomingCorpse.SafeAction(s => { s.Checked = Config.GetBool("ShowCorpseNames"); });
+
+            checkNewConts.SafeAction(s => { s.Checked = Config.GetBool("AutoSearch"); });
+
+
+            excludePouches.SafeAction(s =>
             {
-                //Client.SetCustomNotoHue( 0 );
-                lthilight.Checked = setLTHilight.Enabled = false;
-            }
+                s.Checked = Config.GetBool("NoSearchPouches");
+                s.Enabled = checkNewConts.Checked;
+            });
 
-            txtSpellFormat.Text = Config.GetString("SpellFormat");
-            txtObjDelay.Text = Config.GetInt("ObjectDelay").ToString();
-            chkStealth.Checked = Config.GetBool("CountStealthSteps");
-
-            screenAutoCap.Checked = Config.GetBool("AutoCap");
-            radioUO.Checked = !(radioFull.Checked = Config.GetBool("CapFullScreen"));
-            screenPath.Text = Config.GetString("CapPath");
-            dispTime.Checked = Config.GetBool("CapTimeStamp");
-            blockDis.Checked = Config.GetBool("BlockDismount");
-            autoOpenDoors.Checked = Config.GetBool("AutoOpenDoors");
-
-            objectDelay.Checked = Config.GetBool("ObjectDelayEnabled");
-            txtObjDelay.Enabled = Config.GetBool("ObjectDelayEnabled");
-
-            msglvl.SelectedIndex = Config.GetInt("MessageLevel");
-
-            try
+            warnNum.SafeAction(s =>
             {
-                imgFmt.SelectedItem = Config.GetString("ImageFormat");
-            }
-            catch
+                warnNum.Enabled = warnCount.Checked = Config.GetBool("CounterWarn");
+                warnNum.Text = Config.GetInt("CounterWarnAmount").ToString();
+            });
+
+            QueueActions.SafeAction(s => { s.Checked = Config.GetBool("QueueActions"); });
+
+            queueTargets.SafeAction(s => { s.Checked = Config.GetBool("QueueTargets"); });
+
+            chkForceSpeechHue.SafeAction(s => { s.Checked = setSpeechHue.Enabled = Config.GetBool("ForceSpeechHue"); });
+
+            chkForceSpellHue.SafeAction(s =>
             {
-                imgFmt.SelectedIndex = 0;
-                Config.SetProperty("ImageFormat", "jpg");
-            }
+                chkForceSpellHue.Checked = setBeneHue.Enabled =
+                    setNeuHue.Enabled = setHarmHue.Enabled = Config.GetBool("ForceSpellHue");
+            });
 
-            InitPreviewHue(lblExHue, "ExemptColor");
-            InitPreviewHue(lblMsgHue, "SysColor");
-            InitPreviewHue(lblWarnHue, "WarningColor");
-            InitPreviewHue(chkForceSpeechHue, "SpeechHue");
-            InitPreviewHue(lblBeneHue, "BeneficialSpellHue");
-            InitPreviewHue(lblHarmHue, "HarmfulSpellHue");
-            InitPreviewHue(lblNeuHue, "NeutralSpellHue");
-
-            undressConflicts.Checked = Config.GetBool("UndressConflicts");
-            taskbar.Checked = !(systray.Checked = Config.GetBool("Systray"));
-            titlebarImages.Checked = Config.GetBool("TitlebarImages");
-            highlightSpellReags.Checked = Config.GetBool("HighlightReagents");
-
-            dispDelta.Checked = Config.GetBool("DisplaySkillChanges");
-            titleStr.Enabled = showInBar.Checked = Config.GetBool("TitleBarDisplay");
-            titleStr.Text = Config.GetString("TitleBarText");
-
-            showNotoHue.Checked = Config.GetBool("ShowNotoHue");
-
-            corpseRange.Enabled = openCorpses.Checked = Config.GetBool("AutoOpenCorpses");
-            corpseRange.Text = Config.GetInt("CorpseRange").ToString();
-
-            actionStatusMsg.Checked = Config.GetBool("ActionStatusMsg");
-            autoStackRes.Checked = Config.GetBool("AutoStack");
-
-            rememberPwds.Checked = Config.GetBool("RememberPwds");
-            filterSnoop.Checked = Config.GetBool("FilterSnoopMsg");
-
-            preAOSstatbar.Checked = Config.GetBool("OldStatBar");
-            showtargtext.Checked = Config.GetBool("LastTargTextFlags");
-            smartLT.Checked = Config.GetBool("SmartLastTarget");
-
-            autoFriend.Checked = Config.GetBool("AutoFriend");
-
-            try
+            lthilight.SafeAction(s =>
             {
-                clientPrio.SelectedItem = Config.GetString("ClientPrio");
-            }
-            catch
+                if (Config.GetInt("LTHilight") != 0)
+                {
+                    InitPreviewHue(s, "LTHilight");
+                    s.Checked = setLTHilight.Enabled = true;
+                }
+                else
+                {
+                    s.Checked = setLTHilight.Enabled = false;
+                }
+            });
+
+            txtSpellFormat.SafeAction(s => { s.Text = Config.GetString("SpellFormat"); });
+
+            txtObjDelay.SafeAction(s => { s.Text = Config.GetInt("ObjectDelay").ToString(); });
+
+            chkStealth.SafeAction(s => { s.Checked = Config.GetBool("CountStealthSteps"); });
+
+            radioUO.SafeAction(s => { s.Checked = !(radioFull.Checked = Config.GetBool("CapFullScreen")); });
+
+            screenPath.SafeAction(s => { s.Text = Config.GetString("CapPath"); });
+
+            dispTime.SafeAction(s => { s.Checked = Config.GetBool("CapTimeStamp"); });
+
+            blockDis.SafeAction(s => { s.Checked = Config.GetBool("BlockDismount"); });
+
+            autoOpenDoors.SafeAction(s => { s.Checked = Config.GetBool("AutoOpenDoors"); });
+
+            objectDelay.SafeAction(s => { s.Checked = Config.GetBool("ObjectDelayEnabled"); });
+
+            txtObjDelay.SafeAction(s => { s.Enabled = Config.GetBool("ObjectDelayEnabled"); });
+
+            msglvl.SafeAction(s => { s.SelectedIndex = Config.GetInt("MessageLevel"); });
+
+            imgFmt.SafeAction(s =>
             {
-                clientPrio.SelectedItem = "Normal";
-            }
+                try
+                {
+                    s.SelectedItem = Config.GetString("ImageFormat");
+                }
+                catch
+                {
+                    s.SelectedIndex = 0;
+                    Config.SetProperty("ImageFormat", "jpg");
+                }
+            });
 
-            forceSizeX.Text = Config.GetInt("ForceSizeX").ToString();
-            forceSizeY.Text = Config.GetInt("ForceSizeY").ToString();
+            lblExHue.SafeAction(s => { InitPreviewHue(s, "ExemptColor"); });
 
-            gameSize.Checked = Config.GetBool("ForceSizeEnabled");
+            lblMsgHue.SafeAction(s => { InitPreviewHue(s, "SysColor"); });
 
-            potionEquip.Checked = Config.GetBool("PotionEquip");
-            blockHealPoison.Checked = Config.GetBool("BlockHealPoison");
+            lblWarnHue.SafeAction(s => { InitPreviewHue(s, "WarningColor"); });
 
-            negotiate.Checked = Config.GetBool("Negotiate");
+            chkForceSpeechHue.SafeAction(s => { InitPreviewHue(s, "SpeechHue"); });
 
-            logPackets.Checked = Config.GetBool("LogPacketsByDefault");
+            lblBeneHue.SafeAction(s => { InitPreviewHue(s, "BeneficialSpellHue"); });
 
-            healthFmt.Enabled = showHealthOH.Checked = Config.GetBool("ShowHealth");
-            healthFmt.Text = Config.GetString("HealthFmt");
-            chkPartyOverhead.Checked = Config.GetBool("ShowPartyStats");
+            lblHarmHue.SafeAction(s => { InitPreviewHue(s, "HarmfulSpellHue"); });
 
-            dressList.SelectedIndex = -1;
-            hotkeyTree.SelectedNode = null;
+            lblNeuHue.SafeAction(s => { InitPreviewHue(s, "NeutralSpellHue"); });
 
-            targetByTypeDifferent.Checked = Config.GetBool("DiffTargetByType");
-            stepThroughMacro.Checked = Config.GetBool("StepThroughMacro");
+            undressConflicts.SafeAction(s => { s.Checked = Config.GetBool("UndressConflicts"); });
 
-            //hotKeyStop.Checked = Config.GetBool("HotKeyStop");
+            taskbar.SafeAction(s => { s.Checked = !(systray.Checked = Config.GetBool("Systray")); });
 
-            /*showPartyMemberPositions.Checked = Config.GetBool("ShowPartyMemberPositions");
-           trackPlayerPosition.Checked = Config.GetBool("TrackPlayerPosition");
-           showPlayerPosition.Checked = Config.GetBool("ShowPlayerPosition");
-           tiltMap.Checked = Config.GetBool("TiltMap");*/
+            titlebarImages.SafeAction(s => { s.Checked = Config.GetBool("TitlebarImages"); });
 
-            showTargetMessagesOverChar.Checked = Config.GetBool("ShowTargetSelfLastClearOverhead");
-            showOverheadMessages.Checked = Config.GetBool("ShowOverheadMessages");
+            highlightSpellReags.SafeAction(s => { s.Checked = Config.GetBool("HighlightReagents"); });
 
-            logSkillChanges.Checked = Config.GetBool("LogSkillChanges");
+            dispDelta.SafeAction(s => { s.Checked = Config.GetBool("DisplaySkillChanges"); });
 
-            lightLevelBar.Value = lightLevelBar.Maximum - Config.GetInt("LightLevel");
+            titleStr.SafeAction(s =>
+            {
+                s.Enabled = showInBar.Checked = Config.GetBool("TitleBarDisplay");
+                s.Text = Config.GetString("TitleBarText");
+            });
+
+            showNotoHue.SafeAction(s => { s.Checked = Config.GetBool("ShowNotoHue"); });
+
+            corpseRange.SafeAction(s =>
+            {
+                s.Enabled = openCorpses.Checked = Config.GetBool("AutoOpenCorpses");
+                s.Text = Config.GetInt("CorpseRange").ToString();
+            });
+
+            actionStatusMsg.SafeAction(s => { s.Checked = Config.GetBool("ActionStatusMsg"); });
+
+            autoStackRes.SafeAction(s => { s.Checked = Config.GetBool("AutoStack"); });
+
+            rememberPwds.SafeAction(s => { s.Checked = Config.GetBool("RememberPwds"); });
+
+            filterSnoop.SafeAction(s => { s.Checked = Config.GetBool("FilterSnoopMsg"); });
+
+            preAOSstatbar.SafeAction(s => { s.Checked = Config.GetBool("OldStatBar"); });
+
+            showtargtext.SafeAction(s => { s.Checked = Config.GetBool("LastTargTextFlags"); });
+
+            smartLT.SafeAction(s => { s.Checked = Config.GetBool("SmartLastTarget"); });
+
+            autoFriend.SafeAction(s => { s.Checked = Config.GetBool("AutoFriend"); });
+
+            clientPrio.SafeAction(s =>
+            {
+                try
+                {
+                    s.SelectedItem = Config.GetString("ClientPrio");
+                }
+                catch
+                {
+                    s.SelectedItem = "Normal";
+                }
+            });
+
+            forceSizeX.SafeAction(s => { s.Text = Config.GetInt("ForceSizeX").ToString(); });
+
+            forceSizeY.SafeAction(s => { s.Text = Config.GetInt("ForceSizeY").ToString(); });
+
+            gameSize.SafeAction(s => { s.Checked = Config.GetBool("ForceSizeEnabled"); });
+
+            potionEquip.SafeAction(s => { s.Checked = Config.GetBool("PotionEquip"); });
+
+            blockHealPoison.SafeAction(s => { s.Checked = Config.GetBool("BlockHealPoison"); });
+
+            negotiate.SafeAction(s => { s.Checked = Config.GetBool("Negotiate"); });
+
+            logPackets.SafeAction(s => { s.Checked = Config.GetBool("LogPacketsByDefault"); });
+
+            healthFmt.SafeAction(s =>
+            {
+                s.Enabled = showHealthOH.Checked = Config.GetBool("ShowHealth");
+                s.Text = Config.GetString("HealthFmt");
+            });
+
+            chkPartyOverhead.SafeAction(s => { s.Checked = Config.GetBool("ShowPartyStats"); });
+
+            dressList.SafeAction(s => { s.SelectedIndex = -1; });
+
+            hotkeyTree.SafeAction(s => { s.SelectedNode = null; });
+
+            targetByTypeDifferent.SafeAction(s => { s.Checked = Config.GetBool("DiffTargetByType"); });
+
+            stepThroughMacro.SafeAction(s => { s.Checked = Config.GetBool("StepThroughMacro"); });
+
+            showTargetMessagesOverChar.SafeAction(s =>
+            {
+                s.Checked = Config.GetBool("ShowTargetSelfLastClearOverhead");
+            });
+
+            showOverheadMessages.SafeAction(s => { s.Checked = Config.GetBool("ShowOverheadMessages"); });
+
+            logSkillChanges.SafeAction(s => { s.Checked = Config.GetBool("LogSkillChanges"); });
+
+            lightLevelBar.SafeAction(s => { s.Value = s.Maximum - Config.GetInt("LightLevel"); });
+
             double percent = Math.Round((lightLevelBar.Value / (double) lightLevelBar.Maximum) * 100.0);
-            lightLevel.Text = $"Light: {percent}%";
 
-            captureMibs.Checked = Config.GetBool("CaptureMibs");
+            lightLevel.SafeAction(s => { s.Text = $"Light: {percent}%"; });
 
-            stealthOverhead.Checked = Config.GetBool("StealthOverhead");
+            captureMibs.SafeAction(s => { s.Checked = Config.GetBool("CaptureMibs"); });
 
-            blockOpenCorpsesTwice.Checked = Config.GetBool("BlockOpenCorpsesTwice");
+            stealthOverhead.SafeAction(s => { s.Checked = Config.GetBool("StealthOverhead"); });
 
-            screenShotOpenBrowser.Checked = Config.GetBool("ScreenshotUploadOpenBrowser");
-            screenShotClipboard.Checked = Config.GetBool("ScreenshotUploadClipboard");
-            screenShotNotification.Checked = Config.GetBool("ScreenshotUploadNotifications");
+            blockOpenCorpsesTwice.SafeAction(s => { s.Checked = Config.GetBool("BlockOpenCorpsesTwice"); });
 
-            showContainerLabels.Checked = Config.GetBool("ShowContainerLabels");
+            screenShotOpenBrowser.SafeAction(s => { s.Checked = Config.GetBool("ScreenshotUploadOpenBrowser"); });
 
-            realSeason.Checked = Config.GetBool("RealSeason");
-            seasonList.SelectedIndex = Config.GetInt("Season");
+            screenShotClipboard.SafeAction(s => { s.Checked = Config.GetBool("ScreenshotUploadClipboard"); });
+
+            screenShotNotification.SafeAction(s => { s.Checked = Config.GetBool("ScreenshotUploadNotifications"); });
+
+            showContainerLabels.SafeAction(s => { s.Checked = Config.GetBool("ShowContainerLabels"); });
+
+            seasonList.SafeAction(s => { s.SelectedIndex = Config.GetInt("Season"); });
 
             if (screenShotNotification.Checked)
             {
@@ -4119,58 +398,121 @@ namespace Assistant
                 systray.Checked = m_NotifyIcon.Visible = st;
             }
 
-            showAttackTarget.Checked = Config.GetBool("ShowAttackTargetOverhead");
-            showBuffDebuffOverhead.Checked = Config.GetBool("ShowBuffDebuffOverhead");
+            showAttackTarget.SafeAction(s => { s.Checked = Config.GetBool("ShowAttackTargetOverhead"); });
 
-            buffDebuffFormat.Text = Config.GetString("BuffDebuffFormat");
+            showBuffDebuffOverhead.SafeAction(s => { s.Checked = Config.GetBool("ShowBuffDebuffOverhead"); });
 
-            rangeCheckTargetByType.Checked = Config.GetBool("RangeCheckTargetByType");
-            rangeCheckDoubleClick.Checked = Config.GetBool("RangeCheckDoubleClick");
+            rangeCheckTargetByType.SafeAction(s => { s.Checked = Config.GetBool("RangeCheckTargetByType"); });
 
-            blockTradeRequests.Checked = Config.GetBool("BlockTradeRequests");
-            blockPartyInvites.Checked = Config.GetBool("BlockPartyInvites");
+            rangeCheckDoubleClick.SafeAction(s => { s.Checked = Config.GetBool("RangeCheckDoubleClick"); });
 
-            autoAcceptParty.Checked = Config.GetBool("AutoAcceptParty");
+            blockTradeRequests.SafeAction(s => { s.Checked = Config.GetBool("BlockTradeRequests"); });
 
-            minMaxLightLevel.Checked = Config.GetBool("MinMaxLightLevelEnabled");
+            blockPartyInvites.SafeAction(s => { s.Checked = Config.GetBool("BlockPartyInvites"); });
 
-            showTextTargetIndicator.Checked = Config.GetBool("ShowTextTargetIndicator");
-            showAttackTargetNewOnly.Checked = Config.GetBool("ShowAttackTargetNewOnly");
+            autoAcceptParty.SafeAction(s => { s.Checked = Config.GetBool("AutoAcceptParty"); });
 
-            macroVariableList.SelectedIndex = 0;
+            minMaxLightLevel.SafeAction(s => { s.Checked = Config.GetBool("MinMaxLightLevelEnabled"); });
 
-            filterDragonGraphics.Checked = Config.GetBool("FilterDragonGraphics");
-            filterDrakeGraphics.Checked = Config.GetBool("FilterDrakeGraphics");
+            showTextTargetIndicator.SafeAction(s => { s.Checked = Config.GetBool("ShowTextTargetIndicator"); });
+
+            showAttackTargetNewOnly.SafeAction(s => { s.Checked = Config.GetBool("ShowAttackTargetNewOnly"); });
+
+            macroVariableTypeList.SafeAction(s => { s.SelectedIndex = 0; });
+
+            filterDragonGraphics.SafeAction(s => { s.Checked = Config.GetBool("FilterDragonGraphics"); });
+
+            filterDrakeGraphics.SafeAction(s => { s.Checked = Config.GetBool("FilterDrakeGraphics"); });
+
             LoadAnimationLists();
 
-            showDamageDealt.Checked = Config.GetBool("ShowDamageDealt");
-            damageDealtOverhead.Checked = Config.GetBool("ShowDamageDealtOverhead");
-            showDamageTaken.Checked = Config.GetBool("ShowDamageTaken");
-            damageDealtOverhead.Checked = Config.GetBool("ShowDamageTakenOverhead");
+            showDamageDealt.SafeAction(s => { s.Checked = Config.GetBool("ShowDamageDealt"); });
 
-            razorTitleBar.Text = Config.GetString("RazorTitleBarText");
-            showInRazorTitleBar.Checked = Config.GetBool("ShowInRazorTitleBar");
+            damageDealtOverhead.SafeAction(s => { s.Checked = Config.GetBool("ShowDamageDealtOverhead"); });
 
-            enableUOAAPI.Checked = Config.GetBool("EnableUOAAPI");
+            showDamageTaken.SafeAction(s => { s.Checked = Config.GetBool("ShowDamageTaken"); });
 
-            lastBackup.Text = $"Last Backup: {Config.GetAppSetting<string>("BackupTime")}";
+            damageDealtOverhead.SafeAction(s => { s.Checked = Config.GetBool("ShowDamageTakenOverhead"); });
 
-            targetIndictorFormat.Text = Config.GetString("TargetIndicatorFormat");
+            razorTitleBar.SafeAction(s => { s.Text = Config.GetString("RazorTitleBarText"); });
 
-            nextPrevIgnoresFriends.Checked = Config.GetBool("NextPrevTargetIgnoresFriends");
+            showInRazorTitleBar.SafeAction(s => { s.Checked = Config.GetBool("ShowInRazorTitleBar"); });
 
-            castOnClosest.Checked = Config.GetBool("CastOnClosest");
+            enableUOAAPI.SafeAction(s => { s.Checked = Config.GetBool("EnableUOAAPI"); });
 
-            stealthStepsFormat.Text = Config.GetString("StealthStepsFormat");
+            lastBackup.SafeAction(s => { s.Text = $"Last Backup: {Config.GetAppSetting<string>("BackupTime")}"; });
 
-            showStaticWalls.Checked = Config.GetBool("ShowStaticWalls");
-            showStaticWallLabels.Checked = Config.GetBool("ShowStaticWallLabels");
+            targetIndictorFormat.SafeAction(s => { s.Text = Config.GetString("TargetIndicatorFormat"); });
 
-            showFriendOverhead.Checked = Config.GetBool("ShowFriendOverhead");
+            nextPrevIgnoresFriends.SafeAction(s => { s.Checked = Config.GetBool("NextPrevTargetIgnoresFriends"); });
 
-            dispDeltaOverhead.Checked = Config.GetBool("DisplaySkillChangesOverhead");
+            stealthStepsFormat.SafeAction(s => { s.Text = Config.GetString("StealthStepsFormat"); });
 
-            macroActionDelay.Checked = Config.GetBool("MacroActionDelay");
+            showStaticWalls.SafeAction(s => { s.Checked = Config.GetBool("ShowStaticWalls"); });
+
+            showStaticWallLabels.SafeAction(s => { s.Checked = Config.GetBool("ShowStaticWallLabels"); });
+
+            showFriendOverhead.SafeAction(s => { s.Checked = Config.GetBool("ShowFriendOverhead"); });
+
+            dispDeltaOverhead.SafeAction(s => { s.Checked = Config.GetBool("DisplaySkillChangesOverhead"); });
+
+            macroActionDelay.SafeAction(s => { s.Checked = Config.GetBool("MacroActionDelay"); });
+
+            autoOpenDoorWhenHidden.SafeAction(s => { s.Checked = Config.GetBool("AutoOpenDoorWhenHidden"); });
+
+            disableMacroPlayFinish.SafeAction(s => { s.Checked = Config.GetBool("DisableMacroPlayFinish"); });
+
+
+            showBandageTimer.SafeAction(s => { s.Checked = Config.GetBool("ShowBandageTimer"); });
+            bandageTimerLocation.SafeAction(s => { s.SelectedIndex = Config.GetInt("ShowBandageTimerLocation"); });
+            onlyShowBandageTimerSeconds.SafeAction(s => { s.Checked = Config.GetBool("OnlyShowBandageTimerEvery"); });
+            bandageTimerSeconds.SafeAction(s => { s.Text = Config.GetInt("OnlyShowBandageTimerSeconds").ToString(); });
+            bandageTimerFormat.SafeAction(s => { s.Text = Config.GetString("ShowBandageTimerFormat"); });
+            lblBandageCountFormat.SafeAction(s => { InitPreviewHue(s, "ShowBandageTimerHue"); });
+
+            friendOverheadFormat.SafeAction(s => { s.Text = Config.GetString("FriendOverheadFormat"); });
+
+            friendFormat.SafeAction(s => { InitPreviewHue(s, "FriendOverheadFormatHue"); });
+
+            lblTargetFormat.SafeAction(s => { InitPreviewHue(s, "TargetIndicatorHue"); });
+
+            filterSystemMessages.SafeAction(s => { s.Checked = Config.GetBool("FilterSystemMessages"); });
+            filterRazorMessages.SafeAction(s => { s.Checked = Config.GetBool("FilterRazorMessages"); });
+            filterDelaySeconds.SafeAction(s => { s.Text = Config.GetDouble("FilterDelay").ToString(); });
+            filterOverheadMessages.SafeAction(s => { s.Checked = Config.GetBool("FilterOverheadMessages"); });
+
+            onlyNextPrevBeneficial.SafeAction(s => { s.Checked = Config.GetBool("OnlyNextPrevBeneficial"); });
+            friendBeneficialOnly.SafeAction(s => { s.Checked = Config.GetBool("FriendlyBeneficialOnly"); });
+            nonFriendlyHarmfulOnly.SafeAction(s => { s.Checked = Config.GetBool("NonFriendlyHarmfulOnly"); });
+
+            showBandageStart.SafeAction(s => { s.Checked = Config.GetBool("ShowBandageStart"); });
+            showBandageEnd.SafeAction(s => { s.Checked = Config.GetBool("ShowBandageEnd"); });
+            bandageStartMessage.SafeAction(s => { s.Text = Config.GetString("BandageStartMessage"); });
+            bandageEndMessage.SafeAction(s => { s.Text = Config.GetString("BandageEndMessage"); });
+
+            captureOthersDeathDelay.SafeAction(
+                s => { s.Text = Config.GetDouble("CaptureOthersDeathDelay").ToString(); });
+            captureOwnDeathDelay.SafeAction(s => { s.Text = Config.GetDouble("CaptureOwnDeathDelay").ToString(); });
+            captureOthersDeath.SafeAction(s => { s.Checked = Config.GetBool("CaptureOthersDeath"); });
+            captureOwnDeath.SafeAction(s => { s.Checked = Config.GetBool("CaptureOwnDeath"); });
+
+            targetFilterEnabled.SafeAction(s => { s.Checked = Config.GetBool("TargetFilterEnabled"); });
+
+            filterDaemonGraphics.SafeAction(s => { s.Checked = Config.GetBool("FilterDaemonGraphics"); });
+
+            soundFilterEnabled.SafeAction(s => { s.Checked = Config.GetBool("SoundFilterEnabled"); });
+            showFilteredSound.SafeAction(s => { s.Checked = Config.GetBool("ShowFilteredSound"); });
+            showPlayingSoundInfo.SafeAction(s => { s.Checked = Config.GetBool("ShowPlayingSoundInfo"); });
+            showPlayingMusic.SafeAction(s => { s.Checked = Config.GetBool("ShowMusicInfo"); });
+
+            autoSaveScript.SafeAction(s => { s.Checked = Config.GetBool("AutoSaveScript"); });
+            autoSaveScriptPlay.SafeAction(s => { s.Checked = Config.GetBool("AutoSaveScriptPlay"); });
+
+            highlightFriend.SafeAction(s => { s.Checked = Config.GetBool("HighlightFriend"); });
+
+            scriptDClickTypeRange.SafeAction(s => { s.Checked = Config.GetBool("ScriptDClickTypeRange"); });
+            scriptTargetTypeRange.SafeAction(s => { s.Checked = Config.GetBool("ScriptTargetTypeRange"); });
+            scriptFindTypeRange.SafeAction(s => { s.Checked = Config.GetBool("ScriptFindTypeRange"); });
 
             // Disable SmartCPU in case it was enabled before the feature was removed
             Client.Instance.SetSmartCPU(false);
@@ -4193,7 +535,7 @@ namespace Assistant
         {
             int hue = 0;
 
-            using (StreamReader r = new StreamReader(Path.Combine(Config.GetInstallDirectory(),"animdata.json")))
+            using (StreamReader r = new StreamReader(Path.Combine(Config.GetInstallDirectory(), "animdata.json")))
             {
                 string json = r.ReadToEnd();
                 List<AnimData> items = JsonConvert.DeserializeObject<List<AnimData>>(json);
@@ -4214,6 +556,7 @@ namespace Assistant
                             _animationData.Add(animData);
                             dragonAnimationList.Items.Add(animData.name);
                             drakeAnimationList.Items.Add(animData.name);
+                            daemonAnimationList.Items.Add(animData.name);
                         }
                     }
                     catch //Unable to verify animation, lets add it anyway
@@ -4221,9 +564,8 @@ namespace Assistant
                         _animationData.Add(animData);
                         dragonAnimationList.Items.Add(animData.name);
                         drakeAnimationList.Items.Add(animData.name);
+                        daemonAnimationList.Items.Add(animData.name);
                     }
-
-
                 }
             }
 
@@ -4250,6 +592,18 @@ namespace Assistant
 
                 animIndex++;
             }
+
+            animIndex = 0;
+            foreach (AnimData animData in _animationData)
+            {
+                if (animData.body.Equals(Config.GetInt("DaemonGraphic").ToString()))
+                {
+                    daemonAnimationList.SelectedIndex = animIndex;
+                    break;
+                }
+
+                animIndex++;
+            }
         }
 
         private void tabs_IndexChanged(object sender, System.EventArgs e)
@@ -4259,7 +613,7 @@ namespace Assistant
 
             if (tabs.SelectedTab == generalTab)
             {
-                Filters.Filter.Draw(filters);
+                Filter.Draw(filters);
                 langSel.BeginUpdate();
                 langSel.Items.Clear();
                 langSel.Items.AddRange(Language.GetPackNames());
@@ -4280,7 +634,7 @@ namespace Assistant
             {
                 int sel = dressList.SelectedIndex;
                 dressItems.Items.Clear();
-                DressList.Redraw(dressList);
+                DressList.Redraw();
                 if (sel >= 0 && sel < dressList.Items.Count)
                     dressList.SelectedIndex = sel;
             }
@@ -4321,6 +675,33 @@ namespace Assistant
                     MacroManager.Current.DisplayTo(actionList);
 
                 macroActGroup.Visible = macroTree.SelectedNode != null;
+            }
+            else if (tabs.SelectedTab == scriptsTab)
+            {
+                RedrawScripts();
+
+                if (scriptList.SelectedIndex < 0)
+                    ScriptManager.RedrawScripts();
+            }
+            else if (tabs.SelectedTab == moreOptTab)
+            {
+                FriendsManager.RedrawGroup();
+            }
+        }
+
+        private void subGeneralTab_IndexChanged(object sender, EventArgs e)
+        {
+            if (subGeneralTab == null)
+                return;
+
+            if (subGeneralTab.SelectedTab == subTargetFilterTab)
+            {
+                TargetFilterManager.RedrawList();
+            }
+
+            if (subGeneralTab.SelectedTab == subSoundMusicTab)
+            {
+                SoundMusicManager.RedrawList();
             }
         }
 
@@ -4462,13 +843,13 @@ namespace Assistant
 
             if (Config.GetBool("LogSkillChanges"))
             {
-                string skillLog = Path.Combine( Config.GetInstallDirectory(), "SkillLog" );
-                skillLog = Path.Combine( skillLog, $"{World.Player.Name}_{World.Player.Serial}_SkillLog.csv" );
+                string skillLog = Path.Combine(Config.GetInstallDirectory(), "SkillLog");
+                skillLog = Path.Combine(skillLog, $"{World.Player.Name}_{World.Player.Serial}_SkillLog.csv");
 
 
-                if (!Directory.Exists(Path.GetDirectoryName( skillLog )) )
+                if (!Directory.Exists(Path.GetDirectoryName(skillLog)))
                 {
-                    Directory.CreateDirectory( Path.GetDirectoryName( skillLog ) );
+                    Directory.CreateDirectory(Path.GetDirectoryName(skillLog));
                 }
 
                 if (!File.Exists(skillLog))
@@ -5068,8 +1449,12 @@ namespace Assistant
                     return;
                 DressList list = new DressList(str);
                 DressList.Add(list);
-                dressList.Items.Add(list);
-                dressList.SelectedItem = list;
+
+                dressList.SafeAction(s =>
+                {
+                    s.Items.Add(list);
+                    s.SelectedItem = list;
+                });
             }
         }
 
@@ -5081,9 +1466,15 @@ namespace Assistant
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 dress.Items.Clear();
-                dressList.Items.Remove(dress);
-                dressList.SelectedIndex = -1;
-                dressItems.Items.Clear();
+
+                dressList.SafeAction(s =>
+                {
+                    s.Items.Remove(dress);
+                    s.SelectedIndex = -1;
+                });
+
+                dressItems.SafeAction(s => s.Items.Clear());
+
                 DressList.Remove(dress);
             }
         }
@@ -5123,10 +1514,13 @@ namespace Assistant
                 list.Items.Add(serial);
                 Item item = World.FindItem(serial);
 
-                if (item == null)
-                    dressItems.Items.Add(Language.Format(LocString.OutOfRangeA1, serial));
-                else
-                    dressItems.Items.Add(item.ToString());
+                dressItems.SafeAction(s =>
+                {
+                    if (item == null)
+                        s.Items.Add(Language.Format(LocString.OutOfRangeA1, serial));
+                    else
+                        s.Items.Add(item.ToString());
+                });
             }
         }
 
@@ -5146,7 +1540,7 @@ namespace Assistant
                 try
                 {
                     list.Items.RemoveAt(sel);
-                    dressItems.Items.RemoveAt(sel);
+                    dressItems.SafeAction(s => s.Items.RemoveAt(sel));
                 }
                 catch
                 {
@@ -5164,7 +1558,7 @@ namespace Assistant
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 list.Items.Clear();
-                dressItems.Items.Clear();
+                dressItems.SafeAction(s => s.Items.Clear());
             }
         }
 
@@ -5258,8 +1652,11 @@ namespace Assistant
                     list.Items.Add(item.Serial);
             }
 
-            dressList.SelectedItem = null;
-            dressList.SelectedItem = list;
+            dressList.SafeAction(s =>
+            {
+                s.SelectedItem = null;
+                s.SelectedItem = list;
+            });
         }
 
         private void hotkeyTree_AfterSelect(object sender, System.Windows.Forms.TreeViewEventArgs e)
@@ -5479,6 +1876,9 @@ namespace Assistant
             {
                 if (MacroManager.AcceptActions)
                     MacroManager.Action(new HotKeyAction(hk));
+
+                ScriptManager.AddToScript($"hotkey '{hk.DispName}'");
+
                 hk.Callback();
             }
         }
@@ -5905,7 +2305,6 @@ namespace Assistant
                         {
                             File.CreateText(path).Close();
                         }
-
                     }
 
                     // If they didn't create from clipboard, create empty macro
@@ -5942,6 +2341,14 @@ namespace Assistant
                 return null;
             else
                 return (Macro) macroTree.SelectedNode.Tag;
+        }
+
+        public ScriptManager.RazorScript GetScriptSel()
+        {
+            if (scriptList.SelectedItem == null || !(scriptList.SelectedItem is ScriptManager.RazorScript))
+                return null;
+            else
+                return (ScriptManager.RazorScript) scriptList.SelectedItem;
         }
 
         public void playMacro_Click(object sender, System.EventArgs e)
@@ -6022,6 +2429,12 @@ namespace Assistant
             recMacro.Enabled = false;
         }
 
+        public void PlayScript()
+        {
+            playScript.Text = "Stop";
+            recordScript.Enabled = false;
+        }
+
         public void OnMacroStop()
         {
             recMacro.Text = "Record";
@@ -6052,6 +2465,8 @@ namespace Assistant
                         new MenuItem("Copy to Clipboard", new EventHandler(Macro_CopyToClipboard)),
                         new MenuItem("Rename Macro", new EventHandler(Macro_Rename)),
                         new MenuItem("Open Externally", new EventHandler(Open_Externally)),
+                        new MenuItem("-"),
+                        new MenuItem("Convert to Script", new EventHandler(ConvertMacroToScript)),
                         new MenuItem("-"),
                         new MenuItem("Refresh Macro List", new EventHandler(Macro_RefreshList))
                     });
@@ -6227,8 +2642,6 @@ namespace Assistant
                     return;
                 }
 
-                TreeNode node = GetMacroDirNode();
-
                 string newMacro = $"{Path.GetDirectoryName(sel.Filename)}/{name}.macro";
 
 
@@ -6242,7 +2655,11 @@ namespace Assistant
 
                 try
                 {
-                    File.Move(sel.Filename, newMacro);
+                    Engine.MainWindow.SafeAction(s =>
+                    {
+                        File.Move(sel.Filename, newMacro);
+                        MacroManager.Remove(sel);
+                    });
                 }
                 catch
                 {
@@ -6277,6 +2694,48 @@ namespace Assistant
             {
                 MessageBox.Show(this, Language.GetString(LocString.UnableToOpenMacro),
                     Language.GetString(LocString.ReadError),
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ConvertMacroToScript(object sender, EventArgs args)
+        {
+            Macro sel = GetMacroSel();
+            if (sel == null)
+                return;
+
+            try
+            {
+                string name = $"{sel.GetName()}-{Guid.NewGuid().ToString().Substring(0, 4)}";
+                string path = Path.Combine(ScriptManager.ScriptPath, $"{name}.razor");
+
+                List<string> scriptLines = new List<string>();
+
+                foreach (MacroAction selAction in sel.Actions)
+                {
+                    scriptLines.Add(selAction.ToScript());
+                }
+
+                File.WriteAllLines(path, scriptLines.ToArray());
+
+                ScriptManager.RazorScript script = new ScriptManager.RazorScript
+                {
+                    Lines = File.ReadAllLines(path),
+                    Name = name,
+                    Path = path
+                };
+
+                ScriptManager.AddHotkey(script.Name);
+
+                ScriptManager.RedrawScripts();
+
+                tabs.SelectedTab = scriptsTab;
+
+                scriptList.SelectedIndex = scriptList.FindString(name);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, $"Unable to convert macro to script: {ex.Message}", "Macro Conversion",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -6316,8 +2775,16 @@ namespace Assistant
 
             RebuildMacroCache();
 
-            MacroManager.DisplayMacroVariables(macroVariableList.SelectedIndex, macroVariables);
+            MacroManager.DisplayMacroVariables(macroVariables);
         }
+
+        private void RedrawScripts()
+        {
+            ScriptManager.LoadScripts();
+            ScriptManager.DisplayScriptVariables(scriptVariables);
+        }
+
+        public Macro LastSelectedMacro { get; set; }
 
         private void macroTree_AfterSelect(object sender, System.Windows.Forms.TreeViewEventArgs e)
         {
@@ -6327,6 +2794,36 @@ namespace Assistant
             Macro m = e.Node.Tag as Macro;
             macroActGroup.Visible = m != null;
             MacroManager.Select(m, actionList, playMacro, recMacro, loopMacro);
+
+            LastSelectedMacro = m;
+
+            if (m == null)
+                return;
+
+            Engine.MainWindow.SafeAction(s =>
+            {
+                if (hotkeyTree.TopNode == null)
+                {
+                    HotKey.RebuildList(hotkeyTree);
+                    RebuildHotKeyCache();
+                }
+
+                TreeNode resultNode = SearchTreeView(m.GetName(), hotkeyTree.Nodes);
+
+                if (resultNode != null)
+                {
+                    KeyData hk = (KeyData) resultNode.Tag;
+
+                    if (hk != null && !string.IsNullOrEmpty(hk.KeyString()))
+                    {
+                        macroActGroup.Text = $"Actions ({hk.KeyString()})";
+                    }
+                    else
+                    {
+                        macroActGroup.Text = $"Actions (Not Set)";
+                    }
+                }
+            });
         }
 
         private void delMacro_Click(object sender, System.EventArgs e)
@@ -6426,18 +2923,29 @@ namespace Assistant
                 }
 
                 menu.MenuItems.Add("-");
+
                 menu.MenuItems.Add(Language.GetString(LocString.Constructs), new MenuItem[]
                 {
                     new MenuItem(Language.GetString(LocString.InsWait), new EventHandler(onMacroInsPause)),
                     new MenuItem(Language.GetString(LocString.InsLT), new EventHandler(onMacroInsertSetLT)),
                     new MenuItem(Language.GetString(LocString.InsComment), new EventHandler(onMacroInsertComment)),
+                    new MenuItem(Language.GetString(LocString.InsertOverheadMessage),
+                        new EventHandler(onMacroInsertOverheadMessage)),
+                    new MenuItem(Language.GetString(LocString.InsertWaitForTarget),
+                        new EventHandler(onMacroInsertWaitForTarget)),
                     new MenuItem("-"),
                     new MenuItem(Language.GetString(LocString.InsIF), new EventHandler(onMacroInsertIf)),
                     new MenuItem(Language.GetString(LocString.InsELSE), new EventHandler(onMacroInsertElse)),
                     new MenuItem(Language.GetString(LocString.InsENDIF), new EventHandler(onMacroInsertEndIf)),
                     new MenuItem("-"),
                     new MenuItem(Language.GetString(LocString.InsFOR), new EventHandler(onMacroInsertFor)),
-                    new MenuItem(Language.GetString(LocString.InsENDFOR), new EventHandler(onMacroInsertEndFor))
+                    new MenuItem(Language.GetString(LocString.InsENDFOR), new EventHandler(onMacroInsertEndFor)),
+                    new MenuItem("-"),
+                    new MenuItem(Language.GetString(LocString.InsertWhile), new EventHandler(onMacroInsertWhile)),
+                    new MenuItem(Language.GetString(LocString.InsertEndWhile), new EventHandler(onMacroInsertEndWhile)),
+                    new MenuItem("-"),
+                    new MenuItem(Language.GetString(LocString.InsertDo), new EventHandler(onMacroInsertDo)),
+                    new MenuItem(Language.GetString(LocString.InsertDoWhile), new EventHandler(onMacroInsertDoWhile)),
                 });
 
                 menu.Show(actionList, new Point(e.X, e.Y));
@@ -6474,6 +2982,14 @@ namespace Assistant
                         {
                             aMenus[0].PerformClick();
                         }
+                        else if (a.GetType().Name.Equals("DoWhileAction"))
+                        {
+                            aMenus[0].PerformClick();
+                        }
+                        else if (a.GetType().Name.Equals("WhileAction"))
+                        {
+                            aMenus[0].PerformClick();
+                        }
                         else if (a.GetType().Name.Equals("MacroComment"))
                         {
                             aMenus[0].PerformClick();
@@ -6483,6 +2999,10 @@ namespace Assistant
                             aMenus[0].PerformClick();
                         }
                         else if (a.GetType().Name.Equals("GumpResponseAction"))
+                        {
+                            aMenus[0].PerformClick();
+                        }
+                        else if (a.GetType().Name.Equals("OverheadMessageAction"))
                         {
                             aMenus[0].PerformClick();
                         }
@@ -6529,6 +3049,54 @@ namespace Assistant
                 m.Actions.Insert(a + 1, new MacroComment(InputBox.GetString()));
                 RedrawActionList(m);
             }
+        }
+
+        private void onMacroInsertOverheadMessage(object sender, System.EventArgs e)
+        {
+            Macro m = GetMacroSel();
+            if (m == null)
+                return;
+
+            int a = actionList.SelectedIndex;
+            if (a >= m.Actions.Count) // -1 is valid, will insert @ top
+                return;
+
+            if (InputBox.Show(Language.GetString(LocString.InsertOverheadMessage)))
+            {
+                m.Actions.Insert(a + 1,
+                    new OverheadMessageAction((ushort) Config.GetInt("SysColor"), InputBox.GetString()));
+                RedrawActionList(m);
+            }
+        }
+
+        private void onMacroInsertWaitForTarget(object sender, System.EventArgs e)
+        {
+            Macro m = GetMacroSel();
+            if (m == null)
+                return;
+
+            int a = actionList.SelectedIndex;
+            if (a >= m.Actions.Count) // -1 is valid, will insert @ top
+                return;
+
+            m.Actions.Insert(a + 1, new WaitForTargetAction());
+            RedrawActionList(m);
+        }
+
+        private void onMacroInsertSetMacroVariable(object sender, System.EventArgs e)
+        {
+            Macro m = GetMacroSel();
+            if (m == null)
+                return;
+
+            int a = actionList.SelectedIndex;
+            if (a >= m.Actions.Count) // -1 is valid, will insert @ top
+                return;
+
+            MenuItem mnu = (MenuItem) sender;
+
+            m.Actions.Insert(a + 1, new SetMacroVariableTargetAction(mnu.Text));
+            RedrawActionList(m);
         }
 
         private void onMacroInsertIf(object sender, System.EventArgs e)
@@ -6605,6 +3173,64 @@ namespace Assistant
 
             m.Actions.Insert(a + 1, new EndForAction());
             RedrawActionList(m);
+        }
+
+        private void onMacroInsertWhile(object sender, System.EventArgs e)
+        {
+            Macro m = GetMacroSel();
+            if (m == null)
+                return;
+
+            int a = actionList.SelectedIndex;
+            if (a >= m.Actions.Count) // -1 is valid, will insert @ top
+                return;
+
+            MacroInsertWhile ins = new MacroInsertWhile(m, a);
+            if (ins.ShowDialog(this) == DialogResult.OK)
+                RedrawActionList(m);
+        }
+
+        private void onMacroInsertEndWhile(object sender, System.EventArgs e)
+        {
+            Macro m = GetMacroSel();
+            if (m == null)
+                return;
+
+            int a = actionList.SelectedIndex;
+            if (a >= m.Actions.Count) // -1 is valid, will insert @ top
+                return;
+
+            m.Actions.Insert(a + 1, new EndWhileAction());
+            RedrawActionList(m);
+        }
+
+        private void onMacroInsertDo(object sender, System.EventArgs e)
+        {
+            Macro m = GetMacroSel();
+            if (m == null)
+                return;
+
+            int a = actionList.SelectedIndex;
+            if (a >= m.Actions.Count) // -1 is valid, will insert @ top
+                return;
+
+            m.Actions.Insert(a + 1, new StartDoWhileAction());
+            RedrawActionList(m);
+        }
+
+        private void onMacroInsertDoWhile(object sender, System.EventArgs e)
+        {
+            Macro m = GetMacroSel();
+            if (m == null)
+                return;
+
+            int a = actionList.SelectedIndex;
+            if (a >= m.Actions.Count) // -1 is valid, will insert @ top
+                return;
+
+            MacroInsertDoWhile ins = new MacroInsertDoWhile(m, a);
+            if (ins.ShowDialog(this) == DialogResult.OK)
+                RedrawActionList(m);
         }
 
         private void OnMacroActionMoveUp(object sender, System.EventArgs e)
@@ -6857,11 +3483,6 @@ namespace Assistant
             agentList.SelectedItem = SearchExemptionAgent.Instance;
         }
 
-        private void screenAutoCap_CheckedChanged(object sender, System.EventArgs e)
-        {
-            Config.SetProperty("AutoCap", screenAutoCap.Checked);
-        }
-
         private void setScnPath_Click(object sender, System.EventArgs e)
         {
             FolderBrowserDialog folder = new FolderBrowserDialog();
@@ -6904,10 +3525,10 @@ namespace Assistant
             imgurUploads.Items.Clear();
             m_ImgurUploads.Clear();
 
-            if (!File.Exists($"{Config.GetInstallDirectory()}\\ImgurUploads.csv"))
+            if (!File.Exists(Path.Combine(Config.GetInstallDirectory(), "ImgurUploads.csv")))
                 return;
 
-            string[] lines = File.ReadAllLines($"{Config.GetInstallDirectory()}\\ImgurUploads.csv");
+            string[] lines = File.ReadAllLines(Path.Combine(Config.GetInstallDirectory(), "ImgurUploads.csv"));
 
             foreach (string line in lines)
             {
@@ -7144,7 +3765,7 @@ namespace Assistant
         {
             try
             {
-                string path = $"{Config.GetInstallDirectory()}\\ImgurUploads.csv";
+                string path = Path.Combine(Config.GetInstallDirectory(), "ImgurUploads.csv");
                 using (StreamWriter sw = File.AppendText(path))
                 {
                     sw.WriteLine($"{url},{deleteHash},{DateTime.Now}");
@@ -7152,8 +3773,9 @@ namespace Assistant
 
                 ReloadImgurUploadList();
             }
-            catch (Exception ex)
+            catch
             {
+                //ignore
             }
         }
 
@@ -7161,12 +3783,12 @@ namespace Assistant
         {
             try
             {
-                if (File.Exists($"{Config.GetInstallDirectory()}\\ImgurUploads.csv"))
-                {
-                    File.Delete($"{Config.GetInstallDirectory()}\\ImgurUploads.csv");
-                }
+                string path = Path.Combine(Config.GetInstallDirectory(), "ImgurUploads.csv");
 
-                string path = $"{Config.GetInstallDirectory()}\\ImgurUploads.csv";
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
 
                 using (StreamWriter sw = File.AppendText(path))
                 {
@@ -7178,7 +3800,7 @@ namespace Assistant
 
                 ReloadImgurUploadList();
             }
-            catch (Exception ex)
+            catch
             {
             }
         }
@@ -7268,12 +3890,6 @@ namespace Assistant
             }
         }
 
-        private void donate_Click(object sender, System.EventArgs e)
-        {
-            LaunchBrowser(
-                "https://www.paypal.com/xclick/business=zippy%40runuo.com&item_name=Razor&no_shipping=1&no_note=1&tax=0&currency_code=USD");
-        }
-
         private void undressConflicts_CheckedChanged(object sender, System.EventArgs e)
         {
             Config.SetProperty("UndressConflicts", undressConflicts.Checked);
@@ -7285,9 +3901,9 @@ namespace Assistant
             {
                 systray.Checked = false;
                 Config.SetProperty("Systray", false);
-                if (!this.ShowInTaskbar)
+                /*if (!this.ShowInTaskbar)
                     MessageBox.Show(this, Language.GetString(LocString.NextRestart), "Notice", MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                        MessageBoxIcon.Information);*/
             }
         }
 
@@ -7297,9 +3913,9 @@ namespace Assistant
             {
                 taskbar.Checked = false;
                 Config.SetProperty("Systray", true);
-                if (this.ShowInTaskbar)
+                /*if (this.ShowInTaskbar)
                     MessageBox.Show(this, Language.GetString(LocString.NextRestart), "Notice", MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                        MessageBoxIcon.Information);*/
             }
         }
 
@@ -7344,13 +3960,15 @@ namespace Assistant
                 if (World.Player != null)
                     if (Config.GetBool("ShowInRazorTitleBar") && !string.IsNullOrEmpty(razorTitleBar.Text))
                     {
-                        m_NotifyIcon.Text = razorTitleBar.Text.Replace("{name}", World.Player.Name)
-                            .Replace("{shard}", World.ShardName)
-                            .Replace("{version}", Engine.Version);
+                        string title = razorTitleBar.Text.Replace("{name}", World.Player.Name).Replace("{shard}", World.ShardName)
+                            .Replace("{version}", Engine.Version).Replace("{profile}", Config.CurrentProfile.Name)
+                            .Replace("{account}", World.AccountName);
+
+                        m_NotifyIcon.Text = title.Length > 63 ? title.Substring(0, 63) : title;
                     }
                     else
                     {
-                        m_NotifyIcon.Text = String.Format("Razor - {0} ({1})", World.Player.Name, World.ShardName);
+                        m_NotifyIcon.Text = $"Razor - {World.Player.Name} ({World.ShardName})";
                     }
                 else
                     m_NotifyIcon.Text = "Razor";
@@ -7367,11 +3985,20 @@ namespace Assistant
             // In CUO, this can cause an error.
             try
             {
+                Platform.SetForegroundWindow(Handle);
                 Platform.BringToFront(Handle);
             }
             catch
             {
                 BringToFront();
+            }
+
+            try
+            {
+                this.Show();
+            }
+            catch
+            {
             }
 
             if (Config.GetBool("AlwaysOnTop"))
@@ -7403,6 +4030,8 @@ namespace Assistant
 
         private void OnClose(object sender, System.EventArgs e)
         {
+            m_NotifyIcon.Visible = false;
+            m_NotifyIcon.Dispose();
             m_CanClose = true;
             this.Close();
         }
@@ -7472,12 +4101,12 @@ namespace Assistant
 
         private void tabs_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            HotKey.KeyDown(e.KeyData);
+            //HotKey.KeyDown(e.KeyData);
         }
 
         private void MainForm_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            HotKey.KeyDown(e.KeyData);
+            //HotKey.KeyDown(e.KeyData);
         }
 
         private void spellUnequip_CheckedChanged(object sender, System.EventArgs e)
@@ -7600,6 +4229,7 @@ namespace Assistant
             if (file != null)
                 System.Diagnostics.Process.Start(Path.Combine(Config.GetString("CapPath"), file));
         }
+
         private Timer m_ResizeTimer = Timer.DelayedCallback(TimeSpan.FromSeconds(1.0), new TimerCallback(ForceSize));
 
         private static void ForceSize()
@@ -7867,11 +4497,13 @@ namespace Assistant
             if (World.Player != null)
             {
                 if (MapWindow == null)
-                    MapWindow = new Assistant.MapUO.MapWindow();
-                //SetParent( MapWindow.Handle, Client.FindUOWindow() );
-                //MapWindow.Owner = (Form)Form.FromHandle( Client.FindUOWindow() );
-                MapWindow.Show();
-                MapWindow.BringToFront();
+                    MapWindow = new MapUO.MapWindow();
+
+                MapWindow.SafeAction(s =>
+                {
+                    s.Show();
+                    s.BringToFront();
+                });
             }
         }
 
@@ -8018,7 +4650,8 @@ namespace Assistant
             try
             {
                 string backupTime = $"{DateTime.Now:yyyyMMdd-HHmmss}";
-                string backupDir = Path.Combine( Config.GetAppSetting<string>( "BackupPath" ), backupTime ); ;
+                string backupDir = Path.Combine(Config.GetAppSetting<string>("BackupPath"), backupTime);
+                ;
 
                 if (string.IsNullOrEmpty(backupDir))
                     return;
@@ -8029,36 +4662,55 @@ namespace Assistant
                 }
 
                 // Backup the macros
-                Directory.CreateDirectory(Path.Combine(backupDir,"Macros"));
+                Directory.CreateDirectory(Path.Combine(backupDir, "Macros"));
 
                 // Create folders
-                var macrosDirectory = Path.Combine( Config.GetUserDirectory(), "Macros" );
-                foreach (string dirPath in Directory.GetDirectories( macrosDirectory, "*",
+                var macrosDirectory = Path.Combine(Config.GetUserDirectory(), "Macros");
+                foreach (string dirPath in Directory.GetDirectories(macrosDirectory, "*",
                     SearchOption.AllDirectories))
                 {
-                    Directory.CreateDirectory(dirPath.Replace( macrosDirectory,
-                        Path.Combine( backupDir, "Macros" ) ) );
+                    Directory.CreateDirectory(dirPath.Replace(macrosDirectory,
+                        Path.Combine(backupDir, "Macros")));
                 }
 
                 // Copy macros
-                foreach (string newPath in Directory.GetFiles( macrosDirectory, "*.*",
+                foreach (string newPath in Directory.GetFiles(macrosDirectory, "*.*",
                     SearchOption.AllDirectories))
                 {
                     File.Copy(newPath,
-                        newPath.Replace( macrosDirectory,
-                            Path.Combine( backupDir, "Macros" ) ), true);
+                        newPath.Replace(macrosDirectory,
+                            Path.Combine(backupDir, "Macros")), true);
+                }
+
+                Directory.CreateDirectory(Path.Combine(backupDir, "Scripts"));
+
+                // Create folders
+                foreach (string dirPath in Directory.GetDirectories(ScriptManager.ScriptPath, "*",
+                    SearchOption.AllDirectories))
+                {
+                    Directory.CreateDirectory(dirPath.Replace(ScriptManager.ScriptPath,
+                        Path.Combine(backupDir, "Scripts")));
+                }
+
+                // Copy macros
+                foreach (string newPath in Directory.GetFiles(ScriptManager.ScriptPath, "*.*",
+                    SearchOption.AllDirectories))
+                {
+                    File.Copy(newPath,
+                        newPath.Replace(ScriptManager.ScriptPath,
+                            Path.Combine(backupDir, "Scripts")), true);
                 }
 
                 // Backup the profiles
-                Directory.CreateDirectory( Path.Combine( backupDir, "Profiles" ) );
-                var profilesDirectory = Path.Combine( Config.GetUserDirectory(), "Profiles" );
+                Directory.CreateDirectory(Path.Combine(backupDir, "Profiles"));
+                var profilesDirectory = Path.Combine(Config.GetUserDirectory(), "Profiles");
 
-                foreach ( string newPath in Directory.GetFiles( profilesDirectory, "*.*",
+                foreach (string newPath in Directory.GetFiles(profilesDirectory, "*.*",
                     SearchOption.AllDirectories))
                 {
                     File.Copy(newPath,
-                        newPath.Replace( profilesDirectory,
-                            Path.Combine( backupDir, "Profiles" )), true);
+                        newPath.Replace(profilesDirectory,
+                            Path.Combine(backupDir, "Profiles")), true);
                 }
 
                 MessageBox.Show(this, $"Backup created: {backupDir}", "Razor Backup", MessageBoxButtons.OK,
@@ -8082,7 +4734,7 @@ namespace Assistant
             }
         }
 
-        private void OnAbsoluteTargetListAddTarget(bool ground, Serial serial, Point3D pt, ushort gfx)
+        private void OnMacroVariableAddTarget(bool ground, Serial serial, Point3D pt, ushort gfx)
         {
             TargetInfo t = new TargetInfo
             {
@@ -8094,60 +4746,33 @@ namespace Assistant
                 Z = pt.Z
             };
 
-            if (InputBox.Show(this, Language.GetString(LocString.NewAbsoluteTargetVar),
+            if (InputBox.Show(this, Language.GetString(LocString.NewMacroVariable),
                 Language.GetString(LocString.EnterAName)))
             {
                 string name = InputBox.GetString();
 
-                foreach (AbsoluteTargetVariables.AbsoluteTargetVariable at in AbsoluteTargetVariables.AbsoluteTargetList
+                foreach (MacroVariables.MacroVariable mV in MacroVariables.MacroVariableList
                 )
                 {
-                    if (at.Name.ToLower().Equals(name.ToLower()))
+                    if (mV.Name.ToLower().Equals(name.ToLower()))
                     {
-                        MessageBox.Show(this, "Pick a unique Absolute Target name and try again",
-                            "New Absolute Target Variable", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(this, "Pick a unique Macro Variable name and try again",
+                            "New Macro Variable", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
                 }
 
-                AbsoluteTargetVariables.AbsoluteTargetList.Add(
-                    new AbsoluteTargetVariables.AbsoluteTargetVariable(name, t));
+                MacroVariables.MacroVariableList.Add(
+                    new MacroVariables.MacroVariable(name, t));
 
                 // Save and reload the macros and vars
-                MacroManager.DisplayMacroVariables(0, macroVariables);
+                MacroManager.DisplayMacroVariables(macroVariables);
             }
 
             Engine.MainWindow.ShowMe();
         }
 
-        private void OnDoubleClickAddTarget(bool ground, Serial serial, Point3D pt, ushort gfx)
-        {
-            if (InputBox.Show(this, Language.GetString(LocString.NewAbsoluteTargetVar),
-                Language.GetString(LocString.EnterAName)))
-            {
-                string name = InputBox.GetString();
-
-                foreach (DoubleClickVariables.DoubleClickVariable dbt in DoubleClickVariables.DoubleClickTargetList)
-                {
-                    if (dbt.Name.ToLower().Equals(name.ToLower()))
-                    {
-                        MessageBox.Show(this, "Pick a unique DoubleClick variable name and try again",
-                            "New DoubleClick Variable", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                }
-
-                DoubleClickVariables.DoubleClickTargetList.Add(
-                    new DoubleClickVariables.DoubleClickVariable(name, serial, gfx));
-
-                // Save and reload the macros and vars
-                MacroManager.DisplayMacroVariables(1, macroVariables);
-            }
-
-            Engine.MainWindow.ShowMe();
-        }
-
-        private void OnAbsoluteTargetListReTarget(bool ground, Serial serial, Point3D pt, ushort gfx)
+        private void OnMacroVariableReTarget(bool ground, Serial serial, Point3D pt, ushort gfx)
         {
             TargetInfo t = new TargetInfo
             {
@@ -8159,21 +4784,10 @@ namespace Assistant
                 Z = pt.Z
             };
 
-            AbsoluteTargetVariables.AbsoluteTargetList[macroVariables.SelectedIndex].TargetInfo = t;
+            MacroVariables.MacroVariableList[macroVariables.SelectedIndex].TargetInfo = t;
 
             // Save and reload the macros and vars
-            MacroManager.DisplayAbsoluteTargetsTo(macroVariables);
-
-            Engine.MainWindow.ShowMe();
-        }
-
-        private void OnDoubleClickVariableReTarget(bool ground, Serial serial, Point3D pt, ushort gfx)
-        {
-            DoubleClickVariables.DoubleClickTargetList[macroVariables.SelectedIndex].Serial = serial;
-            DoubleClickVariables.DoubleClickTargetList[macroVariables.SelectedIndex].Gfx = gfx;
-
-            // Save and reload the macros and vars
-            MacroManager.DisplayDoubleClickTo(macroVariables);
+            MacroManager.DisplayMacroVariables(macroVariables);
 
             Engine.MainWindow.ShowMe();
         }
@@ -8288,12 +4902,13 @@ namespace Assistant
         {
             if (_overMessagesForm != null)
             {
-                _overMessagesForm.Show();
+                _overMessagesForm.SafeAction(s => s.Show());
             }
             else
             {
                 _overMessagesForm = new OverheadMessages();
-                _overMessagesForm.Show();
+
+                _overMessagesForm.SafeAction(s => s.Show());
             }
         }
 
@@ -8348,18 +4963,6 @@ namespace Assistant
         private void showBuffDebuffOverhead_CheckedChanged(object sender, EventArgs e)
         {
             Config.SetProperty("ShowBuffDebuffOverhead", showBuffDebuffOverhead.Checked);
-        }
-
-        private void buffDebuffFormat_TextChanged(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(buffDebuffFormat.Text))
-            {
-                Config.SetProperty("BuffDebuffFormat", "[{action}{name}]");
-            }
-            else
-            {
-                Config.SetProperty("BuffDebuffFormat", buffDebuffFormat.Text);
-            }
         }
 
         private void blockOpenCorpsesTwice_CheckedChanged(object sender, EventArgs e)
@@ -8492,24 +5095,6 @@ namespace Assistant
             }
         }
 
-        private void realSeason_CheckedChanged(object sender, EventArgs e)
-        {
-            Config.SetProperty("RealSeason", realSeason.Checked);
-
-            if (realSeason.Checked)
-            {
-                seasonList.Enabled = false;
-
-                if (World.Player != null)
-                    seasonList.SelectedIndex = World.Player.WhichSeason();
-            }
-            else
-            {
-                seasonList.Enabled = true;
-                seasonList.SelectedIndex = Config.GetInt("Season");
-            }
-        }
-
         private void seasonList_SelectedIndexChanged(object sender, EventArgs e)
         {
             //Season Flag:
@@ -8608,15 +5193,15 @@ namespace Assistant
             if (MacroManager.Playing || MacroManager.Recording || World.Player == null)
                 return;
 
-            switch (macroVariableList.SelectedIndex)
-            {
-                case 0:
-                    Targeting.OneTimeTarget(OnAbsoluteTargetListAddTarget);
-                    break;
-                case 1:
-                    Targeting.OneTimeTarget(OnDoubleClickAddTarget);
-                    break;
-            }
+            //switch (macroVariableTypeList.SelectedIndex)
+            //{
+            //    case 0:
+            Targeting.OneTimeTarget(OnMacroVariableAddTarget);
+            //        break;
+            //    case 1:
+            //        Targeting.OneTimeTarget(OnDoubleClickAddTarget);
+            //        break;
+            //}
 
 
             World.Player.SendMessage(MsgLevel.Force, LocString.SelTargAct);
@@ -8639,17 +5224,18 @@ namespace Assistant
                 return;
             }
 
-            switch (macroVariableList.SelectedIndex)
+            string[] macroVariableName = {MacroVariables.MacroVariableList[macroVariables.SelectedIndex].Name};
+
+            switch (macroVariableTypeList.SelectedIndex)
             {
                 case 0:
-                    string[] absTarName =
-                        {AbsoluteTargetVariables.AbsoluteTargetList[macroVariables.SelectedIndex].Name};
-                    m.Actions.Insert(a + 1, new AbsoluteTargetVariableAction(absTarName));
+                    m.Actions.Insert(a + 1, new AbsoluteTargetVariableAction(macroVariableName));
                     break;
                 case 1:
-                    string[] targetName =
-                        {DoubleClickVariables.DoubleClickTargetList[macroVariables.SelectedIndex].Name};
-                    m.Actions.Insert(a + 1, new DoubleClickVariableAction(targetName));
+                    m.Actions.Insert(a + 1, new DoubleClickVariableAction(macroVariableName));
+                    break;
+                case 2:
+                    m.Actions.Insert(a + 1, new SetMacroVariableTargetAction(macroVariableName));
                     break;
             }
 
@@ -8664,15 +5250,7 @@ namespace Assistant
             if (macroVariables.SelectedIndex < 0)
                 return;
 
-            switch (macroVariableList.SelectedIndex)
-            {
-                case 0:
-                    Targeting.OneTimeTarget(OnAbsoluteTargetListReTarget);
-                    break;
-                case 1:
-                    Targeting.OneTimeTarget(OnDoubleClickVariableReTarget);
-                    break;
-            }
+            Targeting.OneTimeTarget(OnMacroVariableReTarget);
 
             World.Player.SendMessage(MsgLevel.Force, LocString.SelTargAct);
         }
@@ -8685,24 +5263,16 @@ namespace Assistant
             if (macroVariables.SelectedIndex < 0)
                 return;
 
-            switch (macroVariableList.SelectedIndex)
-            {
-                case 0:
-                    AbsoluteTargetVariables.AbsoluteTargetList.RemoveAt(macroVariables.SelectedIndex);
-                    break;
-                case 1:
-                    DoubleClickVariables.DoubleClickTargetList.RemoveAt(macroVariables.SelectedIndex);
-                    break;
-            }
+            MacroVariables.MacroVariableList.RemoveAt(macroVariables.SelectedIndex);
 
             // Save and reload the macros and vars
             MacroManager.Save();
-            MacroManager.DisplayMacroVariables(macroVariableList.SelectedIndex, macroVariables);
+            MacroManager.DisplayMacroVariables(macroVariables);
         }
 
-        private void macroVariableList_SelectedIndexChanged(object sender, EventArgs e)
+        private void macroVariableTypeList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            MacroManager.DisplayMacroVariables(macroVariableList.SelectedIndex, macroVariables);
+            //MacroManager.DisplayMacroVariables(macroVariables);
         }
 
         private void filterDragonGraphics_CheckedChanged(object sender, EventArgs e)
@@ -8720,7 +5290,7 @@ namespace Assistant
                 Config.SetProperty("DragonGraphic",
                     Convert.ToInt32(_animationData[dragonAnimationList.SelectedIndex].body));
             }
-            catch (Exception ex)
+            catch
             {
                 MessageBox.Show(this, "Unable to find animation in file", "Animation Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
@@ -8737,7 +5307,7 @@ namespace Assistant
                 Config.SetProperty("DrakeGraphic",
                     Convert.ToInt32(_animationData[drakeAnimationList.SelectedIndex].body));
             }
-            catch (Exception ex)
+            catch
             {
                 MessageBox.Show(this, "Unable to find animation in file", "Animation Error", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
@@ -8886,9 +5456,8 @@ namespace Assistant
             {
                 Process.Start(Config.GetAppSetting<string>("BackupPath"));
             }
-            catch (Exception ex)
+            catch
             {
-
             }
         }
 
@@ -8938,47 +5507,61 @@ namespace Assistant
         /// </summary>
         public void DisableCUOFeatures()
         {
-            forceSizeX.Enabled = false;
-            forceSizeX.Text = "0";
+            forceSizeX.SafeAction(s =>
+            {
+                s.Enabled = false;
+                s.Text = "0";
+            });
 
-            forceSizeY.Enabled = false;
-            forceSizeY.Text = "0";
+            forceSizeY.SafeAction(s =>
+            {
+                s.Enabled = false;
+                s.Text = "0";
+            });
 
-            gameSize.Enabled = false;
-            gameSize.Checked = false;
+            gameSize.SafeAction(s =>
+            {
+                s.Enabled = false;
+                s.Checked = false;
+            });
 
-            seasonList.Enabled = false;
-            realSeason.Enabled = false;
-            realSeason.Checked = false;
+            rememberPwds.SafeAction(s =>
+            {
+                s.Enabled = false;
+                s.Checked = false;
+            });
 
-            rememberPwds.Enabled = false;
-            rememberPwds.Checked = false;
+            highlightSpellReags.SafeAction(s =>
+            {
+                s.Enabled = false;
+                s.Checked = false;
+            });
 
-            highlightSpellReags.Enabled = false;
-            highlightSpellReags.Checked = false;
+            showNotoHue.SafeAction(s =>
+            {
+                s.Enabled = false;
+                s.Checked = false;
+            });
 
-            showNotoHue.Enabled = false;
-            showNotoHue.Checked = false;
+            titlebarImages.SafeAction(s =>
+            {
+                s.Enabled = false;
+                s.Checked = false;
+            });
 
-            titlebarImages.Enabled = false;
-            titlebarImages.Checked = false;
+            showWelcome.SafeAction(s =>
+            {
+                s.Enabled = false;
+                s.Checked = false;
+            });
 
-            showWelcome.Enabled = false;
-            showWelcome.Checked = false;
+            showHealthOH.SafeAction(s =>
+            {
+                s.Enabled = false;
+                s.Checked = false;
+            });
 
-            alwaysTop.Enabled = false;
-            alwaysTop.Checked = false;
-
-            incomingMob.Enabled = false;
-            incomingMob.Checked = false;
-
-            //filterDragonGraphics.Enabled = false;
-            //filterDragonGraphics.Checked = false;
-            //dragonAnimationList.Enabled = false;
-
-            //filterDrakeGraphics.Enabled = false;
-            //filterDrakeGraphics.Checked = false;
-            //drakeAnimationList.Enabled = false;
+            healthFmt.SafeAction(s => { s.Enabled = false; });
         }
 
         private void macroActionDelay_CheckedChanged(object sender, EventArgs e)
@@ -8990,6 +5573,1234 @@ namespace Assistant
 
             MessageBox.Show(this, Language.GetString(LocString.NextRestart), "Notice", MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
+        }
+
+        private void autoDoorWhenHidden_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("AutoOpenDoorWhenHidden", autoOpenDoorWhenHidden.Checked);
+        }
+
+        private void disableMacroPlayFinish_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("DisableMacroPlayFinish", disableMacroPlayFinish.Checked);
+        }
+
+        private void showBandageTimer_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("ShowBandageTimer", showBandageTimer.Checked);
+        }
+
+        private void bandageTimerLocation_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("ShowBandageTimerLocation", bandageTimerLocation.SelectedIndex);
+        }
+
+        private void onlyShowBandageTimerSeconds_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("OnlyShowBandageTimerEvery", onlyShowBandageTimerSeconds.Checked);
+        }
+
+        private void bandageTimerSeconds_TextChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("OnlyShowBandageTimerSeconds", Utility.ToInt32(bandageTimerSeconds.Text.Trim(), 1));
+        }
+
+        private void bandageTimerFormat_TextChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("ShowBandageTimerFormat", bandageTimerFormat.Text);
+
+            if (string.IsNullOrEmpty(friendOverheadFormat.Text))
+            {
+                Config.SetProperty("ShowBandageTimerFormat", "Bandage: {count}s");
+                bandageTimerFormat.Text = "Bandage: {count}s";
+            }
+
+            Config.SetProperty("ShowBandageTimerFormat", bandageTimerFormat.Text);
+        }
+
+        private void setBandageHue_Click(object sender, EventArgs e)
+        {
+            lblBandageCountFormat.SafeAction(s => { SetHue(s, "ShowBandageTimerHue"); });
+        }
+
+        private void friendRemoveSelected_Click(object sender, EventArgs e)
+        {
+            if (friendsGroup.SelectedIndex < 0 || friendsList.SelectedIndex < 0)
+                return;
+
+            FriendsManager.RemoveFriend((FriendsManager.FriendGroup) friendsGroup.SelectedItem,
+                friendsList.SelectedIndex);
+        }
+
+        private void friendsGroupAdd_Click(object sender, EventArgs e)
+        {
+            if (InputBox.Show(this, "Add Friend Group", "Enter the name of this new Friend Group"))
+            {
+                string name = InputBox.GetString();
+
+                if (!string.IsNullOrEmpty(name) && !FriendsManager.FriendsGroupExists(name))
+                {
+                    FriendsManager.AddFriendGroup(name);
+                }
+                else
+                {
+                    MessageBox.Show(this, "Invalid name, or friends group already exists", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void friendsGroupRemove_Click(object sender, EventArgs e)
+        {
+            if (friendsGroup.SelectedIndex < 0)
+                return;
+
+            if (MessageBox.Show(this, Language.GetString(LocString.Confirm), Language.GetString(LocString.ClearList),
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                if (FriendsManager.DeleteFriendGroup((FriendsManager.FriendGroup) friendsGroup.SelectedItem))
+                {
+                    FriendsManager.RedrawGroup();
+
+                    if (friendsGroup.Items.Count > 0)
+                    {
+                        friendsGroup.SafeAction(s => s.SelectedIndex = 0);
+                    }
+                    else
+                    {
+                        friendsList.SafeAction(s => s.Items.Clear());
+                    }
+                }
+            }
+        }
+
+        private void friendsGroup_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (friendsGroup.SelectedIndex < 0)
+                return;
+
+            var friendGroup = (FriendsManager.FriendGroup) friendsGroup.SelectedItem;
+
+            friendsListEnabled.SafeAction(s => s.Checked = friendsGroup.Enabled);
+
+            FriendsManager.RedrawList(friendGroup);
+        }
+
+        private void friendClearList_Click(object sender, EventArgs e)
+        {
+            if (friendsGroup.SelectedIndex < 0)
+                return;
+
+            if (MessageBox.Show(this, Language.GetString(LocString.Confirm), Language.GetString(LocString.ClearList),
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                FriendsManager.FriendGroup friendGroup = (FriendsManager.FriendGroup) friendsGroup.SelectedItem;
+                friendGroup.Friends.Clear();
+
+                FriendsManager.RedrawList(friendGroup);
+            }
+        }
+
+        private void friendsListEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (friendsGroup.SelectedIndex < 0)
+                return;
+
+            FriendsManager.EnableFriendsGroup((FriendsManager.FriendGroup) friendsGroup.SelectedItem,
+                friendsListEnabled.Checked);
+        }
+
+        private void friendOverheadFormat_TextChanged(object sender, EventArgs e)
+        {
+            //FriendOverheadFormat
+            if (string.IsNullOrEmpty(friendOverheadFormat.Text))
+            {
+                Config.SetProperty("FriendOverheadFormat", "[Friend]");
+                targetIndictorFormat.SafeAction(s => s.Text = "[Friend]");
+            }
+
+            Config.SetProperty("FriendOverheadFormat", friendOverheadFormat.Text);
+        }
+
+        private void setFriendsFormatHue_Click(object sender, EventArgs e)
+        {
+            friendFormat.SafeAction(s => { SetHue(s, "FriendOverheadFormatHue"); });
+        }
+
+        private void friendAddTarget_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (World.Player == null)
+                return;
+
+            if (friendsGroup.SelectedIndex < 0)
+                return;
+
+            if ((e.Button & MouseButtons.Right) != 0)
+            {
+                ContextMenu menu = new ContextMenu();
+                menu.MenuItems.Add(Language.GetString(LocString.AddAllMobileFriends),
+                    new EventHandler(onAddAllMobilesAsFriends));
+                menu.MenuItems.Add(Language.GetString(LocString.AddAllHumanoidsAsFriends),
+                    new EventHandler(onAddAllHumanoidsAsFriends));
+
+                menu.Show(friendAddTarget, new Point(e.X, e.Y));
+            }
+            else
+            {
+                FriendsManager.OnTargetAddFriend((FriendsManager.FriendGroup) friendsGroup.SelectedItem);
+            }
+        }
+
+        private void onAddAllMobilesAsFriends(object sender, System.EventArgs e)
+        {
+            if (friendsGroup.SelectedIndex < 0)
+                return;
+
+            if (World.Player == null)
+                return;
+
+            FriendsManager.FriendGroup friendGroup = (FriendsManager.FriendGroup) friendsGroup.SelectedItem;
+            friendGroup.AddAllMobileAsFriends();
+        }
+
+        private void onAddAllHumanoidsAsFriends(object sender, System.EventArgs e)
+        {
+            if (friendsGroup.SelectedIndex < 0)
+                return;
+
+            if (World.Player == null)
+                return;
+
+            FriendsManager.FriendGroup friendGroup = (FriendsManager.FriendGroup) friendsGroup.SelectedItem;
+            friendGroup.AddAllHumanoidsAsFriends();
+        }
+
+        private void friendsList_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (friendsList.SelectedIndex < 0 || friendsGroup.SelectedIndex < 0)
+                    return;
+
+                FriendsManager.RemoveFriend((FriendsManager.FriendGroup) friendsGroup.SelectedItem,
+                    friendsList.SelectedIndex);
+            }
+        }
+
+        private void friendsList_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (friendsGroup.SelectedIndex < 0)
+                return;
+
+            if (e.Button == MouseButtons.Right)
+            {
+                ContextMenu menu = new ContextMenu();
+                menu.MenuItems.Add("Import 'Friends' from clipboard", new EventHandler(onImportFriends));
+                menu.MenuItems.Add("Export 'Friends' to clipboard", new EventHandler(onExportFriends));
+
+                menu.Show(friendsList, new Point(e.X, e.Y));
+            }
+        }
+
+        private void onImportFriends(object sender, System.EventArgs e)
+        {
+            if (friendsGroup.SelectedIndex < 0)
+                return;
+
+            try
+            {
+                if (Clipboard.GetText().Contains("!Razor.Friends.Import"))
+                {
+                    List<string> friendsImport = Clipboard.GetText()
+                        .Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.None).ToList();
+
+                    friendsImport.RemoveAt(0);
+
+                    foreach (string import in friendsImport)
+                    {
+                        if (string.IsNullOrEmpty(import))
+                            continue;
+
+                        string[] friend = import.Split('#');
+
+                        FriendsManager.FriendGroup friendGroup = (FriendsManager.FriendGroup) friendsGroup.SelectedItem;
+
+                        friendGroup.AddFriend(friend[0], Serial.Parse(friend[1]));
+                    }
+
+                    Clipboard.Clear();
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private void onExportFriends(object sender, System.EventArgs e)
+        {
+            if (friendsGroup.SelectedIndex < 0 || friendsList.Items.Count == 0)
+                return;
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("!Razor.Friends.Import");
+
+
+            FriendsManager.FriendGroup friendGroup = (FriendsManager.FriendGroup) friendsGroup.SelectedItem;
+
+            foreach (FriendsManager.Friend friend in friendGroup.Friends)
+            {
+                sb.AppendLine($"{friend.Name}#{friend.Serial}");
+            }
+
+
+            Clipboard.SetDataObject(sb.ToString(), true);
+        }
+
+        private void setTargetIndicatorHue_Click(object sender, EventArgs e)
+        {
+            lblTargetFormat.SafeAction(s => { SetHue(s, "TargetIndicatorHue"); });
+        }
+
+        private void filterSystemMessages_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("FilterSystemMessages", filterSystemMessages.Checked);
+        }
+
+        private void filterRazorMessages_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("FilterRazorMessages", filterRazorMessages.Checked);
+        }
+
+        private void filterDelaySeconds_TextChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("FilterDelay", Utility.ToDouble(filterDelaySeconds.Text.Trim(), 3.5));
+
+            if (Config.GetDouble("FilterDelay") < 0 || Config.GetDouble("FilterDelay") > 20)
+            {
+                Config.SetProperty("FilterDelay", 3.5);
+                filterDelaySeconds.SafeAction(s => s.Text = "3.5");
+            }
+        }
+
+        private void filterOverheadMessages_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("FilterOverheadMessages", filterOverheadMessages.Checked);
+        }
+
+        private void onlyNextPrevBeneficial_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("OnlyNextPrevBeneficial", onlyNextPrevBeneficial.Checked);
+        }
+
+        private void friendBeneficialOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("FriendlyBeneficialOnly", friendBeneficialOnly.Checked);
+        }
+
+        private void nonFriendlyHarmfulOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("NonFriendlyHarmfulOnly", nonFriendlyHarmfulOnly.Checked);
+        }
+
+        private void ShowBandageStart_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("ShowBandageStart", showBandageStart.Checked);
+        }
+
+        private void ShowBandageEnd_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("ShowBandageEnd", showBandageEnd.Checked);
+        }
+
+        private void BandageStartMessage_TextChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(bandageStartMessage.Text))
+            {
+                Config.SetProperty("BandageStartMessage", "Bandage: Starting");
+                bandageStartMessage.SafeAction(s => s.Text = "Bandage: Starting");
+            }
+
+            Config.SetProperty("BandageStartMessage", bandageStartMessage.Text);
+        }
+
+        private void BandageEndMessage_TextChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(bandageEndMessage.Text))
+            {
+                Config.SetProperty("BandageEndMessage", "Bandage: Ending");
+                bandageEndMessage.SafeAction(s => s.Text = "Bandage: Ending");
+            }
+
+            Config.SetProperty("BandageEndMessage", bandageEndMessage.Text);
+        }
+
+        private BuffDebuff _buffDebuffOptions = null;
+
+        private void BuffDebuffOptions_Click(object sender, EventArgs e)
+        {
+            if (_buffDebuffOptions != null)
+            {
+                _buffDebuffOptions.SafeAction(s => s.Show());
+            }
+            else
+            {
+                _buffDebuffOptions = new BuffDebuff();
+
+                _buffDebuffOptions.SafeAction(s => s.Show());
+            }
+        }
+
+        private void CaptureOthersDeathDelay_TextChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("CaptureOthersDeathDelay", Utility.ToDouble(captureOthersDeathDelay.Text.Trim(), 0.5));
+
+            if (Config.GetDouble("CaptureOthersDeathDelay") < 0 || Config.GetDouble("CaptureOthersDeathDelay") > 5)
+            {
+                Config.SetProperty("CaptureOthersDeathDelay", 0.5);
+                captureOthersDeathDelay.SafeAction(s => s.Text = "0.5");
+            }
+        }
+
+        private void CaptureOthersDeath_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("CaptureOthersDeath", captureOthersDeath.Checked);
+        }
+
+        private void CaptureOwnDeath_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("CaptureOwnDeath", captureOwnDeath.Checked);
+        }
+
+        private void CaptureOwnDeathDelay_TextChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("CaptureOwnDeathDelay", Utility.ToDouble(captureOwnDeathDelay.Text.Trim(), 0.5));
+
+            if (Config.GetDouble("CaptureOwnDeathDelay") < 0 || Config.GetDouble("CaptureOwnDeathDelay") > 5)
+            {
+                Config.SetProperty("CaptureOwnDeathDelay", 0.5);
+                captureOwnDeathDelay.SafeAction(s => s.Text = "0.5");
+            }
+        }
+
+        private void TargetFilterRemove_Click(object sender, EventArgs e)
+        {
+            if (targetFilter.SelectedIndex < 0)
+                return;
+
+            TargetFilterManager.RemoveTargetFilter(targetFilter.SelectedIndex);
+        }
+
+        private void TargetFilterClear_Click(object sender, EventArgs e)
+        {
+            TargetFilterManager.ClearTargetFilters();
+        }
+
+        private void TargetFilterEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("TargetFilterEnabled", targetFilterEnabled.Checked);
+        }
+
+        /*private void onAddAllMobilesTargetFilter(object sender, System.EventArgs e)
+        {
+            if (targetFilter.SelectedIndex < 0)
+                return;
+
+            if (World.Player == null)
+                return;
+            
+            TargetFilterManager.AddAllMobileAsTargetFilters();
+        }
+
+        private void onAddAllMobilesHumanoidTargetFilter(object sender, System.EventArgs e)
+        {
+            if (targetFilter.SelectedIndex < 0)
+                return;
+
+            if (World.Player == null)
+                return;
+
+            TargetFilterManager.AddAllHumanoidsAsTargetFilters();
+        }*/
+
+        private void TargetFilterAdd_Click(object sender, EventArgs e)
+        {
+            if (World.Player == null)
+                return;
+
+            TargetFilterManager.OnTargetAddTargetFilter();
+        }
+
+        private void FriendAddTarget_Click(object sender, EventArgs e)
+        {
+            if (World.Player == null)
+                return;
+
+            if (friendsGroup.SelectedIndex < 0)
+                return;
+
+            ((FriendsManager.FriendGroup) friendsGroup.SelectedItem).AddFriendToGroup();
+        }
+
+        private TreeNode SearchTreeView(string p_sSearchTerm, TreeNodeCollection p_Nodes)
+        {
+            foreach (TreeNode node in p_Nodes)
+            {
+                if (node.Text.Contains(p_sSearchTerm))
+                    return node;
+
+                if (node.Nodes.Count > 0)
+                {
+                    TreeNode child = SearchTreeView(p_sSearchTerm, node.Nodes);
+                    if (child != null) return child;
+                }
+            }
+
+            return null;
+        }
+
+        private void SetMacroHotKey_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Engine.MainWindow.SafeAction(s =>
+                {
+                    Macro sel = GetMacroSel();
+
+                    tabs.SelectedTab = hotkeysTab;
+
+                    TreeNode resultNode = SearchTreeView(sel.GetName(), hotkeyTree.Nodes);
+
+                    if (resultNode != null)
+                    {
+                        KeyData hk = (KeyData) resultNode.Tag;
+
+                        hotkeyTree.SelectedNode = resultNode;
+                        key.Focus();
+                    }
+                });
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        public void SaveMacroVariables()
+        {
+            MacroManager.DisplayMacroVariables(macroVariables);
+        }
+
+        public void SaveScriptVariables()
+        {
+            ScriptManager.DisplayScriptVariables(scriptVariables);
+        }
+
+        private void filterDaemonGraphics_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("FilterDaemonGraphics", filterDaemonGraphics.Checked);
+        }
+
+        private void daemonAnimationList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (daemonAnimationList.SelectedIndex < 0)
+                    return;
+
+                Config.SetProperty("DaemonGraphic",
+                    Convert.ToInt32(_animationData[daemonAnimationList.SelectedIndex].body));
+            }
+            catch
+            {
+                MessageBox.Show(this, "Unable to find animation in file", "Animation Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        private void soundFilterEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("SoundFilterEnabled", soundFilterEnabled.Checked);
+        }
+
+        private void soundFilterList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (soundFilterList.SelectedIndex < 0)
+                return;
+
+            SoundMusicManager.Sound sound = (SoundMusicManager.Sound) soundFilterList.SelectedItem;
+
+            if (soundFilterList.GetItemChecked(soundFilterList.SelectedIndex))
+            {
+                SoundMusicManager.AddSoundFilter(sound);
+            }
+            else
+            {
+                SoundMusicManager.RemoveSoundFilter(sound);
+            }
+        }
+
+        private System.Media.SoundPlayer sp = new System.Media.SoundPlayer();
+
+        private void playSound_Click(object sender, EventArgs e)
+        {
+            sp.Stop();
+
+            if (soundFilterList.SelectedIndex < 0)
+                return;
+
+            SoundMusicManager.Sound sound = (SoundMusicManager.Sound) soundFilterList.SelectedItem;
+
+            if (playInClient.Checked && World.Player != null)
+            {
+                Client.Instance.SendToClient(new PlaySound(sound.Serial - 1));
+            }
+            else
+            {
+                Ultima.UOSound s = Ultima.Sounds.GetSound(sound.Serial - 1);
+                using (MemoryStream m = new MemoryStream(s.buffer))
+                {
+                    sp.Stream = m;
+                    sp.Play();
+                }
+            }
+        }
+
+        private void showFilteredSound_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("ShowFilteredSound", showFilteredSound.Checked);
+        }
+
+        private void showPlayingSoundInfo_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("ShowPlayingSoundInfo", showPlayingSoundInfo.Checked);
+        }
+
+        private void playMusic_Click(object sender, EventArgs e)
+        {
+            if (playableMusicList.SelectedIndex < 0 || World.Player == null)
+                return;
+
+            Client.Instance.SendToClient(new PlayMusic(Convert.ToUInt16(playableMusicList.SelectedIndex)));
+        }
+
+        private void showPlayingMusic_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("ShowMusicInfo", showPlayingMusic.Checked);
+        }
+
+        private void playScript_Click(object sender, EventArgs e)
+        {
+            if (ScriptManager.Running)
+            {
+                ScriptManager.StopScript();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(scriptEditor.Text))
+            {
+                return;
+            }
+
+            if (Config.GetBool("AutoSaveScriptPlay"))
+            {
+                SaveScript();
+            }
+
+            // We want to play the contents of the script editor
+            ScriptManager.PlayScript(scriptEditor.Lines.ToArray());
+        }
+
+        public void LockScriptUI(bool enabled)
+        {
+            Engine.MainWindow.SafeAction(s =>
+            {
+                scriptEditor.Enabled = !enabled;
+                recordScript.Enabled = !enabled;
+                setScriptHotkey.Enabled = !enabled;
+                scriptList.Enabled = !enabled;
+
+                saveScript.Enabled = !enabled;
+                deleteScript.Enabled = !enabled;
+                newScript.Enabled = !enabled;
+                renameScript.Enabled = !enabled;
+
+                playScript.Text = !enabled ? "Play" : "Stop";
+            });
+        }
+
+        private void onScriptReload(object sender, System.EventArgs e)
+        {
+            /*Macro m = GetMacroSel();
+
+            if (m == null)
+                return;
+
+            m.Load();
+            RedrawActionList(m);*/
+        }
+
+        private void onScriptSave(object sender, System.EventArgs e)
+        {
+            /*Macro m = GetMacroSel();
+
+            if (m == null)
+                return;
+
+            m.Save();
+            RedrawActionList(m);*/
+        }
+
+        private void scriptEditor_LostFocus(object sender, EventArgs e)
+        {
+            if (Config.GetBool("AutoSaveScript"))
+            {
+                SaveScript();
+            }
+        }
+
+        private void SaveScript()
+        {
+            if (scriptList.SelectedIndex < 0)
+            {
+                string filePath = $"{ScriptManager.ScriptPath}\\auto-{Guid.NewGuid().ToString().Substring(0, 4)}.razor";
+
+                File.WriteAllText(filePath, scriptEditor.Text);
+
+                ScriptManager.RazorScript script = new ScriptManager.RazorScript
+                {
+                    Lines = File.ReadAllLines(filePath),
+                    Name = Path.GetFileNameWithoutExtension(filePath),
+                    Path = filePath
+                };
+
+                ScriptManager.RedrawScripts();
+
+                for (int i = 0; i < scriptList.Items.Count; i++)
+                {
+                    ScriptManager.RazorScript scriptItem = (ScriptManager.RazorScript) scriptList.Items[i];
+                    if (scriptItem.Name.Equals(script.Name))
+                    {
+                        scriptList.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                int curIndex = scriptList.SelectedIndex;
+
+                ScriptManager.RazorScript script = (ScriptManager.RazorScript) scriptList.SelectedItem;
+                File.WriteAllText(script.Path, scriptEditor.Text);
+
+                ScriptManager.RedrawScripts();
+
+                scriptList.SelectedIndex = curIndex;
+            }
+        }
+
+        private void scriptList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (scriptList.SelectedIndex < 0)
+                return;
+
+            ScriptManager.ClearHighlightLine();
+
+            scriptEditor.Text =
+                File.ReadAllText(Path.Combine(ScriptManager.ScriptPath, $"{scriptList.SelectedItem}.razor"));
+        }
+
+        private void recordScript_Click(object sender, EventArgs e)
+        {
+            if (World.Player == null)
+                return;
+
+            if (ScriptManager.Recording) // stop recording
+            {
+                recordScript.Text = "Record";
+                ScriptManager.Recording = false;
+                scriptEditor.Enabled = true;
+                playScript.Enabled = true;
+            }
+            else //start recording
+            {
+                recordScript.Text = "Stop";
+                ScriptManager.Recording = true;
+                scriptEditor.Enabled = false;
+                playScript.Enabled = false;
+            }
+        }
+
+        private void newScript_Click(object sender, EventArgs e)
+        {
+            if (InputBox.Show(this, "New Razor Script", "Enter the name of the script"))
+            {
+                string name = InputBox.GetString();
+                if (string.IsNullOrEmpty(name) || name.IndexOfAny(Path.GetInvalidPathChars()) != -1 ||
+                    name.IndexOfAny(m_InvalidNameChars) != -1)
+                {
+                    MessageBox.Show(this, Language.GetString(LocString.InvalidChars),
+                        Language.GetString(LocString.Invalid), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                string path = Path.Combine(ScriptManager.ScriptPath, $"{name}.razor");
+
+                if (File.Exists(path))
+                {
+                    MessageBox.Show(this, Language.GetString(LocString.MacroExists),
+                        Language.GetString(LocString.Invalid), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                File.CreateText(path).Close();
+
+                ScriptManager.RazorScript script = new ScriptManager.RazorScript
+                {
+                    Lines = File.ReadAllLines(path),
+                    Name = name,
+                    Path = path
+                };
+
+                ScriptManager.AddHotkey(script.Name);
+
+                ScriptManager.RedrawScripts();
+
+                for (int i = 0; i < scriptList.Items.Count; i++)
+                {
+                    if (scriptList.Items[i].ToString().Equals(script.Name))
+                    {
+                        scriptList.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void saveScript_Click(object sender, EventArgs e)
+        {
+            SaveScript();
+        }
+
+        private void deleteScript_Click(object sender, EventArgs e)
+        {
+            if (scriptList.SelectedIndex < 0)
+                return;
+
+            ScriptManager.RazorScript script = (ScriptManager.RazorScript) scriptList.SelectedItem;
+
+            if (MessageBox.Show(this, Language.Format(LocString.DelConf, $"{scriptList.SelectedItem}"),
+                    "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                try
+                {
+                    File.Delete(script.Path);
+                    ScriptManager.RemoveHotkey(script.Name);
+                }
+                catch
+                {
+                    return;
+                }
+            }
+
+            ScriptManager.RedrawScripts();
+        }
+
+        private void setScriptHotkey_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Engine.MainWindow.SafeAction(s =>
+                {
+                    ScriptManager.RazorScript script = GetScriptSel();
+
+                    tabs.SelectedTab = hotkeysTab;
+
+                    TreeNode resultNode = SearchTreeView($"{Language.Format(LocString.PlayScript, script)}",
+                        hotkeyTree.Nodes);
+
+                    if (resultNode != null)
+                    {
+                        KeyData hk = (KeyData) resultNode.Tag;
+
+                        hotkeyTree.SelectedNode = resultNode;
+                        key.Focus();
+                    }
+                });
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private void addScriptVariable_Click(object sender, EventArgs e)
+        {
+            if (ScriptManager.Running || ScriptManager.Recording || World.Player == null)
+                return;
+
+            Targeting.OneTimeTarget(OnScriptVariableAddTarget);
+
+            World.Player.SendMessage(MsgLevel.Force, LocString.SelTargAct);
+        }
+
+        private void OnScriptVariableAddTarget(bool ground, Serial serial, Point3D pt, ushort gfx)
+        {
+            TargetInfo t = new TargetInfo
+            {
+                Gfx = gfx,
+                Serial = serial,
+                Type = (byte) (ground ? 1 : 0),
+                X = pt.X,
+                Y = pt.Y,
+                Z = pt.Z
+            };
+
+            if (InputBox.Show(this, Language.GetString(LocString.NewScriptVariable),
+                Language.GetString(LocString.EnterAName)))
+            {
+                string name = InputBox.GetString();
+
+                foreach (ScriptVariables.ScriptVariable mV in ScriptVariables.ScriptVariableList
+                )
+                {
+                    if (mV.Name.ToLower().Equals(name.ToLower()))
+                    {
+                        MessageBox.Show(this, "Pick a unique Script Variable name and try again",
+                            "New Script Variable", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+
+                ScriptVariables.ScriptVariableList.Add(
+                    new ScriptVariables.ScriptVariable(name, t));
+
+                ScriptVariables.RegisterVariable(name);
+
+                ScriptManager.DisplayScriptVariables(scriptVariables);
+            }
+
+            Engine.MainWindow.ShowMe();
+        }
+
+        private void OnScriptVariableReTarget(bool ground, Serial serial, Point3D pt, ushort gfx)
+        {
+            TargetInfo t = new TargetInfo
+            {
+                Gfx = gfx,
+                Serial = serial,
+                Type = (byte) (ground ? 1 : 0),
+                X = pt.X,
+                Y = pt.Y,
+                Z = pt.Z
+            };
+
+            ScriptVariables.ScriptVariableList[scriptVariables.SelectedIndex].TargetInfo = t;
+
+            ScriptManager.DisplayScriptVariables(scriptVariables);
+
+            Engine.MainWindow.ShowMe();
+        }
+
+        private void changeScriptVariable_Click(object sender, EventArgs e)
+        {
+            if (ScriptManager.Running || ScriptManager.Recording || World.Player == null)
+                return;
+
+            if (scriptVariables.SelectedIndex < 0)
+                return;
+
+            Targeting.OneTimeTarget(OnScriptVariableReTarget);
+
+            World.Player.SendMessage(MsgLevel.Force, LocString.SelTargAct);
+        }
+
+        private void removeScriptVariable_Click(object sender, EventArgs e)
+        {
+            if (ScriptManager.Running || ScriptManager.Recording || World.Player == null)
+                return;
+
+            if (scriptVariables.SelectedIndex < 0)
+                return;
+
+            ScriptVariables.UnregisterVariable(ScriptVariables.ScriptVariableList[scriptVariables.SelectedIndex].Name);
+            ScriptVariables.ScriptVariableList.RemoveAt(scriptVariables.SelectedIndex);
+
+            ScriptManager.DisplayScriptVariables(scriptVariables);
+        }
+
+        private void linkScriptGuide_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("http://www.uor-razor.com/guide/");
+        }
+
+        private void autoSaveScript_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("AutoSaveScript", autoSaveScript.Checked);
+        }
+
+        private void scriptList_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (scriptList.SelectedIndex < 0)
+                return;
+
+            /*if (e.Button == MouseButtons.Right && e.Clicks == 1)
+            {
+                if (ScriptManager.Running || ScriptManager.Recording || World.Player == null)
+                    return;
+
+                ScriptManager.RazorScript script = (ScriptManager.RazorScript) scriptList.SelectedItem;
+
+                ContextMenu menu = new ContextMenu();
+                
+                menu.MenuItems.Add("New", OnScriptNew);
+                menu.MenuItems.Add($"Rename '{script.Name}'", OnScriptRename);
+                menu.MenuItems.Add($"Delete '{script.Name}'", OnScriptDelete);
+
+                menu.Show(scriptList, new Point(e.X, e.Y));
+            }
+            else if (e.Button == MouseButtons.Left && e.Clicks == 2)
+            {
+                if (ScriptManager.Running || ScriptManager.Recording || World.Player == null)
+                    return;
+            }*/
+        }
+
+        private void scriptEditor_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && e.Clicks == 1)
+            {
+                if (ScriptManager.Running || ScriptManager.Recording || World.Player == null)
+                    return;
+
+                if (!string.IsNullOrEmpty(scriptEditor.SelectedText))
+                {
+                    ContextMenu menu = new ContextMenu();
+
+                    menu.MenuItems.Add("Comment", OnScriptComment);
+                    menu.MenuItems.Add("Uncomment", OnScriptUncomment);
+
+                    if (!string.IsNullOrEmpty(scriptEditor.SelectedText))
+                    {
+                        menu.MenuItems.Add("-");
+                        menu.MenuItems.Add("Play selected script code", OnScriptPlaySelected);
+
+                        int space = scriptEditor.SelectedText.IndexOf(" ", StringComparison.Ordinal);
+
+                        if (space > -1)
+                        {
+                            string command = scriptEditor.SelectedText.Substring(0, space);
+
+                            if (command.Equals("dclick"))
+                            {
+                                menu.MenuItems.Add("-");
+                                menu.MenuItems.Add("Convert to 'dclicktype' by gfxid", OnScriptDclickTypeId);
+                                menu.MenuItems.Add("Convert to 'dclicktype' by name", OnScriptDclickTypeName);
+                            }
+                        }
+                    }
+
+                    menu.Show(scriptEditor, new Point(e.X, e.Y));
+                }
+            }
+            else if (e.Button == MouseButtons.Left && e.Clicks == 2)
+            {
+                if (ScriptManager.Running || ScriptManager.Recording || World.Player == null)
+                    return;
+            }
+        }
+
+        private void OnScriptComment(object sender, System.EventArgs e)
+        {
+            string[] lines = scriptEditor.SelectedText.Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.None);
+
+            scriptEditor.SelectedText = "";
+            for (int i = 0; i < lines.Count(); i++)
+            {
+                scriptEditor.SelectedText += "#" + lines[i];
+                if (i < lines.Count() - 1)
+                    scriptEditor.SelectedText += "\r\n";
+            }
+        }
+
+        private void OnScriptUncomment(object sender, System.EventArgs e)
+        {
+            string[] lines = scriptEditor.SelectedText.Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.None);
+
+            scriptEditor.SelectedText = "";
+            for (int i = 0; i < lines.Count(); i++)
+            {
+                scriptEditor.SelectedText += lines[i].TrimStart('#');
+                if (i < lines.Count() - 1)
+                    scriptEditor.SelectedText += "\r\n";
+            }
+        }
+
+        private void OnScriptDclickTypeId(object sender, System.EventArgs e)
+        {
+            Serial itemId = Serial.Zero;
+
+            try
+            {
+                itemId = Serial.Parse(scriptEditor.SelectedText.Split(' ')[1]);
+            }
+            catch
+            {
+                return;
+            }
+
+            Item item = World.FindItem(itemId);
+
+            if (item == null)
+                return;
+
+            scriptEditor.SelectedText = "";
+            scriptEditor.SelectedText = $"dclicktype '{item.ItemID.Value}'";
+        }
+
+        private void OnScriptDclickTypeName(object sender, System.EventArgs e)
+        {
+            Serial gfxid = Serial.Zero;
+
+            try
+            {
+                gfxid = Serial.Parse(scriptEditor.SelectedText.Split(' ')[1]);
+            }
+            catch
+            {
+                return;
+            }
+
+
+            Item item = World.FindItem(gfxid);
+
+            if (item == null)
+                return;
+
+            scriptEditor.SelectedText = "";
+            scriptEditor.SelectedText = $"dclicktype '{item.ItemID.ItemData.Name}'";
+        }
+
+        private void OnScriptPlaySelected(object sender, System.EventArgs e)
+        {
+            if (ScriptManager.Running)
+            {
+                ScriptManager.StopScript();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(scriptEditor.SelectedText))
+                return;
+
+            string[] lines = scriptEditor.SelectedText.Split(new[] {"\r\n", "\r", "\n"}, StringSplitOptions.None);
+
+            ScriptManager.PlayScript(lines);
+        }
+
+        private void autoSaveScriptPlay_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("AutoSaveScriptPlay", autoSaveScriptPlay.Checked);
+        }
+
+        private void renameScript_Click(object sender, EventArgs e)
+        {
+            if (scriptList.SelectedIndex < 0)
+                return;
+
+            if (InputBox.Show(this, "Enter a new name for the script", "Rename Script"))
+            {
+                string name = InputBox.GetString();
+
+                if (string.IsNullOrEmpty(name) || name.IndexOfAny(Path.GetInvalidPathChars()) != -1 ||
+                    name.IndexOfAny(m_InvalidNameChars) != -1)
+                {
+                    MessageBox.Show(this, Language.GetString(LocString.InvalidChars),
+                        Language.GetString(LocString.Invalid), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                ScriptManager.RazorScript script = (ScriptManager.RazorScript) scriptList.SelectedItem;
+
+                string newScriptPath = Path.Combine(ScriptManager.ScriptPath, $"{name}.razor");
+
+                if (File.Exists(newScriptPath))
+                {
+                    MessageBox.Show(this, "A script with that name already exists.",
+                        Language.GetString(LocString.Invalid),
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                try
+                {
+                    Engine.MainWindow.SafeAction(s =>
+                    {
+                        ScriptManager.RemoveHotkey(script.Name);
+
+                        File.Move(script.Path, newScriptPath);
+
+                        script.Path = newScriptPath;
+                        script.Name = Path.GetFileNameWithoutExtension(newScriptPath);
+
+                        ScriptManager.RedrawScripts();
+
+                        ScriptManager.AddHotkey(script.Name);
+                    });
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
+        }
+
+        private void highlightFriend_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("HighlightFriend", highlightFriend.Checked);
+        }
+
+        private void scriptFilter_TextChanged(object sender, EventArgs e)
+        {
+             scriptList.SafeAction(s =>
+             {
+                 s.BeginUpdate();
+                 s.Items.Clear();
+
+                 if (!string.IsNullOrEmpty(scriptFilter.Text))
+                 {
+                     foreach (ScriptManager.RazorScript script in ScriptManager.Scripts)
+                     {
+                         if (script.Name.IndexOf(scriptFilter.Text, StringComparison.OrdinalIgnoreCase) != -1)
+                         {
+                             s.Items.Add(script);
+                         }
+                     }
+                 }
+                 else
+                 {
+                     foreach (ScriptManager.RazorScript script in ScriptManager.Scripts)
+                     {
+                         s.Items.Add(script);
+                     }
+                 }
+
+                 s.EndUpdate();
+             });
+        }
+
+        private void scriptTargetTypeRange_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("ScriptTargetTypeRange", scriptTargetTypeRange.Checked);
+        }
+
+        private void scriptDClickTypeRange_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("ScriptDClickTypeRange", scriptDClickTypeRange.Checked);
+        }
+
+        private void scriptFindTypeRange_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SetProperty("ScriptFindTypeRange", scriptFindTypeRange.Checked);
         }
     }
 }

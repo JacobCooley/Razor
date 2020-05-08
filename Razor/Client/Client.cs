@@ -1,45 +1,61 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using Assistant.Core;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace Assistant
 {
     public class FeatureBit
     {
-        public static readonly int WeatherFilter        =  0;
-        public static readonly int LightFilter          =  1;
-        public static readonly int SmartLT              =  2;
-        public static readonly int RangeCheckLT         =  3;
-        public static readonly int AutoOpenDoors        =  4;
-        public static readonly int UnequipBeforeCast    = 5;
-        public static readonly int AutoPotionEquip      =  6;
-        public static readonly int BlockHealPoisoned    = 7;
-        public static readonly int LoopingMacros        =  8; // includes fors and macros running macros
-        public static readonly int UseOnceAgent         =  9;
-        public static readonly int RestockAgent         = 10;
-        public static readonly int SellAgent            = 11;
-        public static readonly int BuyAgent             = 12;
-        public static readonly int PotionHotkeys        = 13;
-        public static readonly int RandomTargets        = 14;
-        public static readonly int ClosestTargets       = 15;
-        public static readonly int OverheadHealth       = 16;
-        public static readonly int AutolootAgent        = 17;
-        public static readonly int BoneCutterAgent      = 18;
-        public static readonly int AdvancedMacros       = 19;
-        public static readonly int AutoRemount          = 20;
-        public static readonly int AutoBandage          = 21;
-        public static readonly int EnemyTargetShare     = 22;
-        public static readonly int FilterSeason         = 23;
-        public static readonly int SpellTargetShare     = 24;
+        public static readonly int WeatherFilter = 0;
+        public static readonly int LightFilter = 1;
+        public static readonly int SmartLT = 2;
+        public static readonly int RangeCheckLT = 3;
+        public static readonly int AutoOpenDoors = 4;
+        public static readonly int UnequipBeforeCast = 5;
+        public static readonly int AutoPotionEquip = 6;
+        public static readonly int BlockHealPoisoned = 7;
+        public static readonly int LoopingMacros = 8; // includes fors and macros running macros
+        public static readonly int UseOnceAgent = 9;
+        public static readonly int RestockAgent = 10;
+        public static readonly int SellAgent = 11;
+        public static readonly int BuyAgent = 12;
+        public static readonly int PotionHotkeys = 13;
+        public static readonly int RandomTargets = 14;
+        public static readonly int ClosestTargets = 15;
+        public static readonly int OverheadHealth = 16;
+        public static readonly int AutolootAgent = 17;
+        public static readonly int BoneCutterAgent = 18;
+        public static readonly int AdvancedMacros = 19;
+        public static readonly int AutoRemount = 20;
+        public static readonly int AutoBandage = 21;
+        public static readonly int EnemyTargetShare = 22;
+        public static readonly int FilterSeason = 23;
+        public static readonly int SpellTargetShare = 24;
         public static readonly int HumanoidHealthChecks = 25;
-        public static readonly int SpeechJournalChecks  = 26;
+        public static readonly int SpeechJournalChecks = 26;
 
         public static readonly int MaxBit = 26;
     }
@@ -47,7 +63,7 @@ namespace Assistant
     public abstract class Client
     {
         public static Client Instance;
-        public static  bool IsOSI;
+        public static bool IsOSI;
 
         internal static void Init(bool isOSI)
         {
@@ -111,7 +127,7 @@ namespace Assistant
 
         public abstract Loader_Error LaunchClient(string client);
 
-        public abstract bool ClientEncrypted { get; set;  }
+        public abstract bool ClientEncrypted { get; set; }
 
         public abstract bool ServerEncrypted { get; set; }
 
@@ -145,27 +161,29 @@ namespace Assistant
 
         public abstract string GetClientVersion();
 
+        public abstract string GetUoFilePath();
+
         public abstract IntPtr GetWindowHandle();
 
         public abstract uint TotalDataIn();
 
         public abstract uint TotalDataOut();
-        internal abstract void RequestMove( Direction m_Dir );
+        internal abstract void RequestMove(Direction m_Dir);
 
 
         public void RequestTitlebarUpdate()
         {
             // throttle updates, since things like counters might request 1000000 million updates/sec
-            if ( m_TBTimer == null )
+            if (m_TBTimer == null)
                 m_TBTimer = new TitleBarThrottle();
 
-            if ( !m_TBTimer.Running )
+            if (!m_TBTimer.Running)
                 m_TBTimer.Start();
         }
 
         private class TitleBarThrottle : Timer
         {
-            public TitleBarThrottle() : base( TimeSpan.FromSeconds( 0.25 ) )
+            public TitleBarThrottle() : base(TimeSpan.FromSeconds(0.25))
             {
             }
 
@@ -188,7 +206,7 @@ namespace Assistant
 
         public virtual void UpdateTitleBar()
         {
-            if ( !ClientRunning )
+            if (!ClientRunning || World.Player == null)
                 return;
 
             StringBuilder sb = TitleBarBuilder;
@@ -245,7 +263,10 @@ namespace Assistant
             sb.Replace(@"{stealthsteps}", StealthSteps.Counting ? StealthSteps.Count.ToString() : "-");
             //Client.ConnectionStart != DateTime.MinValue )
             //time = (int)((DateTime.UtcNow - Client.ConnectionStart).TotalSeconds);
-            sb.Replace(@"{uptime}", ConnectionStart != DateTime.MinValue ? Utility.FormatTime((int)((DateTime.UtcNow - ConnectionStart).TotalSeconds)) : "-");
+            sb.Replace(@"{uptime}",
+                ConnectionStart != DateTime.MinValue
+                    ? Utility.FormatTime((int) ((DateTime.UtcNow - ConnectionStart).TotalSeconds))
+                    : "-");
 
             sb.Replace(@"{dps}", DamageTracker.Running ? $"{DamageTracker.DamagePerSecond:N2}" : "-");
             sb.Replace(@"{maxdps}", DamageTracker.Running ? $"{DamageTracker.MaxDamagePerSecond:N2}" : "-");
@@ -267,7 +288,7 @@ namespace Assistant
                     if (buff.Duration > 0)
                     {
                         TimeSpan diff = DateTime.UtcNow - buff.Timestamp;
-                        timeLeft = buff.Duration - (int)diff.TotalSeconds;
+                        timeLeft = buff.Duration - (int) diff.TotalSeconds;
                     }
 
                     buffs.Append(timeLeft <= 0
@@ -275,10 +296,9 @@ namespace Assistant
                         : $"{buff.ClilocMessage1} ({timeLeft}), ");
                 }
 
-                buffs.Length = buffs.Length - 2;
+                buffs.Length = Math.Max(0, buffs.Length - 2);
                 buffList = buffs.ToString();
                 sb.Replace(@"{buffsdebuffs}", buffList);
-
             }
             else
             {
@@ -294,6 +314,4 @@ namespace Assistant
             return new Packet(data, pr.Length, pr.DynamicLength);
         }
     }
-
 }
-

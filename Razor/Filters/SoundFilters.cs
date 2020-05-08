@@ -1,5 +1,22 @@
-using System;
-using Assistant;
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
 
 namespace Assistant.Filters
 {
@@ -21,11 +38,17 @@ namespace Assistant.Filters
             Filter.Register(new SoundFilter(LocString.CyclopTitanSounds, 0x25D, 0x25E, 0x25F, 0x260, 0x261, 0x262,
                 0x263, 0x264, 0x265, 0x266));
             Filter.Register(new SoundFilter(LocString.BullSounds, 0x065, 0x066, 0x067, 0x068, 0x069));
-      
-            Filter.Register(new SoundFilter(LocString.DragonSounds, 0x2C8, 0x2C9, 0x2CA, 0x2CB, 0x2CC, 0x2CD, 0x2CE, 0x2CF,
-                0x2D0, 0x2D1, 0x2D2, 0x2D3, 0x2D4, 0x2D5, 0x2D6, 0x16B, 0x16C, 0x16D, 0x16E, 0x16F, 0x15F, 0x160, 0x161));
+
+            Filter.Register(new SoundFilter(LocString.DragonSounds, 0x2C8, 0x2C9, 0x2CA, 0x2CB, 0x2CC, 0x2CD, 0x2CE,
+                0x2CF,
+                0x2D0, 0x2D1, 0x2D2, 0x2D3, 0x2D4, 0x2D5, 0x2D6, 0x16B, 0x16C, 0x16D, 0x16E, 0x16F, 0x15F, 0x160,
+                0x161));
 
             Filter.Register(new SoundFilter(LocString.ChickenSounds, 0x06F, 0x070, 0x071, 0x072, 0x073));
+
+            Filter.Register(new SoundFilter(LocString.BirdSounds, 0x017, 0x018, 0x019, 0x01A, 0x01B, 0x01C, 0x01D,
+                0x01E, 0x01F, 0x270, 0x271, 0x272, 0x273, 0x274, 0x29B, 0x275, 0x29C, 0x276, 0x29D, 0x277, 0x29E, 0x278,
+                0x29F, 0x279, 0x2A0));
         }
 
         public static ushort[] GetRange(ushort min, ushort max)

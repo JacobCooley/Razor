@@ -1,3 +1,23 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 //#define LOG_CONTROL_TEXT
 
 using System;
@@ -401,7 +421,7 @@ namespace Assistant
         CopyClipboardMacro = 1951,
         DeerSounds,
         MacroRename,
-        NewAbsoluteTargetVar,
+        NewMacroVariable,
 
         TargCloseGreyMonster,
         TargCloseEnemyMonster,
@@ -510,6 +530,50 @@ namespace Assistant
         TogglePeace,
         GHealOrCureSelf,
         SmartTarget,
+        SetLastBeneficial,
+        SetLastHarmful,
+        SetLTBene,
+        SetLTHarm,
+        TargClosestFriend,
+        TargRandomFriend,
+        NextTargetFriend,
+        PrevTargetFriend,
+        UseRightHand,
+        UseLeftHand,
+        InsertOverheadMessage,
+        InsertWaitForTarget,
+        AddAllHumanoidsAsFriends,
+        NextTargetEnemyMonster,
+        NextTargetCriminalMonster,
+        NextTargetMurdererMonster,
+        NextTargetInnocentMonster,
+        PrevTargetCriminalMonster,
+        PrevTargetMurdererMonster,
+        PrevTargetInnocentMonster,
+        NextTargetFriendlyMonster,
+        NextTargetGreyMonster,
+        NextTargetNonFriendlyMonster,
+        PrevTargetEnemyMonster,
+        PrevTargetFriendlyMonster,
+        PrevTargetGreyMonster,
+        PrevTargetNonFriendlyMonster,
+        NewBeneficialTarget,
+        NewHarmfulTarget,
+        BirdSounds,
+        AddAllMobilesTargetFilter,
+        AddAllMobilesHumanoidTargetFilter,
+        InsertWhile,
+        InsertEndWhile,
+        InsertDo,
+        InsertDoWhile,
+        PlayScript,
+        NewScriptVariable,
+        ScriptPlaying,
+        ScriptFinished,
+        StopScript,
+        PartyAdd,
+        Mysticism,
+        Masteries,
         __End
     }
 

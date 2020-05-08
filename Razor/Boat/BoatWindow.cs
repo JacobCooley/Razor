@@ -1,11 +1,24 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
+using System;
 using System.Windows.Forms;
 
 namespace Assistant.Boat
@@ -71,10 +84,10 @@ namespace Assistant.Boat
 
             if (World.Player != null)
             {
-                World.Player.Say(World.Player.SpeechHue, boatCommand);
+                World.Player.Say(boatCommand);
             }
         }
-       
+
         private string[] _boatDirCommands =
             {"Forward", "Forward Right", "Right", "Back Right", "Back", "Back Left", "Left", "Forward Left"};
         //        0             1            2           3          4        5          6           7
@@ -87,16 +100,16 @@ namespace Assistant.Boat
 
                     switch (_orientation)
                     {
-                        case (int)Orientation.Northwest:
+                        case (int) Orientation.Northwest:
                             SendBoatCommand(_boatDirCommands[1]);
                             break;
-                        case (int)Orientation.Southwest:
+                        case (int) Orientation.Southwest:
                             SendBoatCommand(_boatDirCommands[3]);
                             break;
-                        case (int)Orientation.Southeast:
+                        case (int) Orientation.Southeast:
                             SendBoatCommand(_boatDirCommands[5]);
                             break;
-                        case (int)Orientation.Northeast:
+                        case (int) Orientation.Northeast:
                             SendBoatCommand(_boatDirCommands[7]);
                             break;
                         default:
@@ -132,22 +145,23 @@ namespace Assistant.Boat
                 case MouseButtons.Left:
                     switch (_orientation)
                     {
-                        case (int)Orientation.Northwest:
+                        case (int) Orientation.Northwest:
                             SendBoatCommand(_boatDirCommands[0]);
                             break;
-                        case (int)Orientation.Southwest:
+                        case (int) Orientation.Southwest:
                             SendBoatCommand(_boatDirCommands[2]);
                             break;
-                        case (int)Orientation.Southeast:
+                        case (int) Orientation.Southeast:
                             SendBoatCommand(_boatDirCommands[4]);
                             break;
-                        case (int)Orientation.Northeast:
+                        case (int) Orientation.Northeast:
                             SendBoatCommand(_boatDirCommands[6]);
                             break;
                         default:
                             SendBoatCommand(_boatDirCommands[7]);
                             break;
                     }
+
                     break;
                 case MouseButtons.Right:
                     _orientation = (int) Orientation.Northwest;
@@ -170,16 +184,16 @@ namespace Assistant.Boat
         {
             switch (_orientation)
             {
-                case (int)Orientation.Northwest:
+                case (int) Orientation.Northwest:
                     SendBoatCommand(_boatDirCommands[5]);
                     break;
-                case (int)Orientation.Southwest:
+                case (int) Orientation.Southwest:
                     SendBoatCommand(_boatDirCommands[7]);
                     break;
-                case (int)Orientation.Southeast:
+                case (int) Orientation.Southeast:
                     SendBoatCommand(_boatDirCommands[1]);
                     break;
-                case (int)Orientation.Northeast:
+                case (int) Orientation.Northeast:
                     SendBoatCommand(_boatDirCommands[3]);
                     break;
                 default:
@@ -195,22 +209,23 @@ namespace Assistant.Boat
                 case MouseButtons.Left:
                     switch (_orientation)
                     {
-                        case (int)Orientation.Northwest:
+                        case (int) Orientation.Northwest:
                             SendBoatCommand(_boatDirCommands[4]);
                             break;
-                        case (int)Orientation.Southwest:
+                        case (int) Orientation.Southwest:
                             SendBoatCommand(_boatDirCommands[6]);
                             break;
-                        case (int)Orientation.Southeast:
+                        case (int) Orientation.Southeast:
                             SendBoatCommand(_boatDirCommands[0]);
                             break;
-                        case (int)Orientation.Northeast:
+                        case (int) Orientation.Northeast:
                             SendBoatCommand(_boatDirCommands[2]);
                             break;
                         default:
                             SendBoatCommand(_boatDirCommands[3]);
                             break;
                     }
+
                     break;
                 case MouseButtons.Right:
                     _orientation = (int) Orientation.Southeast;
@@ -235,22 +250,23 @@ namespace Assistant.Boat
                 case MouseButtons.Left:
                     switch (_orientation)
                     {
-                        case (int)Orientation.Northwest:
+                        case (int) Orientation.Northwest:
                             SendBoatCommand(_boatDirCommands[6]);
                             break;
-                        case (int)Orientation.Southwest:
+                        case (int) Orientation.Southwest:
                             SendBoatCommand(_boatDirCommands[0]);
                             break;
-                        case (int)Orientation.Southeast:
+                        case (int) Orientation.Southeast:
                             SendBoatCommand(_boatDirCommands[2]);
                             break;
-                        case (int)Orientation.Northeast:
+                        case (int) Orientation.Northeast:
                             SendBoatCommand(_boatDirCommands[4]);
                             break;
                         default:
                             SendBoatCommand(_boatDirCommands[5]);
                             break;
                     }
+
                     break;
                 case MouseButtons.Right:
                     _orientation = (int) Orientation.Southwest;
@@ -272,16 +288,16 @@ namespace Assistant.Boat
         {
             switch (_orientation)
             {
-                case (int)Orientation.Northwest:
+                case (int) Orientation.Northwest:
                     SendBoatCommand(_boatDirCommands[7]);
                     break;
-                case (int)Orientation.Southwest:
+                case (int) Orientation.Southwest:
                     SendBoatCommand(_boatDirCommands[1]);
                     break;
-                case (int)Orientation.Southeast:
+                case (int) Orientation.Southeast:
                     SendBoatCommand(_boatDirCommands[3]);
                     break;
-                case (int)Orientation.Northeast:
+                case (int) Orientation.Northeast:
                     SendBoatCommand(_boatDirCommands[5]);
                     break;
                 default:
@@ -297,22 +313,23 @@ namespace Assistant.Boat
                 case MouseButtons.Left:
                     switch (_orientation)
                     {
-                        case (int)Orientation.Northwest:
+                        case (int) Orientation.Northwest:
                             SendBoatCommand(_boatDirCommands[2]);
                             break;
-                        case (int)Orientation.Southwest:
+                        case (int) Orientation.Southwest:
                             SendBoatCommand(_boatDirCommands[4]);
                             break;
-                        case (int)Orientation.Southeast:
+                        case (int) Orientation.Southeast:
                             SendBoatCommand(_boatDirCommands[6]);
                             break;
-                        case (int)Orientation.Northeast:
+                        case (int) Orientation.Northeast:
                             SendBoatCommand(_boatDirCommands[0]);
                             break;
                         default:
                             SendBoatCommand(_boatDirCommands[1]);
                             break;
                     }
+
                     break;
                 case MouseButtons.Right:
                     _orientation = (int) Orientation.Northeast;
@@ -334,16 +351,16 @@ namespace Assistant.Boat
         {
             switch (_orientation)
             {
-                case (int)Orientation.Northwest:
+                case (int) Orientation.Northwest:
                     SendBoatCommand(_boatDirCommands[3]);
                     break;
-                case (int)Orientation.Southwest:
+                case (int) Orientation.Southwest:
                     SendBoatCommand(_boatDirCommands[5]);
                     break;
-                case (int)Orientation.Southeast:
+                case (int) Orientation.Southeast:
                     SendBoatCommand(_boatDirCommands[7]);
                     break;
-                case (int)Orientation.Northeast:
+                case (int) Orientation.Northeast:
                     SendBoatCommand(_boatDirCommands[1]);
                     break;
                 default:
@@ -358,16 +375,16 @@ namespace Assistant.Boat
 
             switch (_orientation)
             {
-                case (int)Orientation.Northwest:
+                case (int) Orientation.Northwest:
                     boatNortheast_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
-                case (int)Orientation.Southwest:
+                case (int) Orientation.Southwest:
                     boatNorthwest_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
-                case (int)Orientation.Southeast:
+                case (int) Orientation.Southeast:
                     boatSouthwest_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
-                case (int)Orientation.Northeast:
+                case (int) Orientation.Northeast:
                     boatSoutheast_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
             }
@@ -379,16 +396,16 @@ namespace Assistant.Boat
 
             switch (_orientation)
             {
-                case (int)Orientation.Northwest:
+                case (int) Orientation.Northwest:
                     boatSouthwest_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
-                case (int)Orientation.Southwest:
+                case (int) Orientation.Southwest:
                     boatSoutheast_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
-                case (int)Orientation.Southeast:
+                case (int) Orientation.Southeast:
                     boatNortheast_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
-                case (int)Orientation.Northeast:
+                case (int) Orientation.Northeast:
                     boatNorthwest_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
             }
@@ -400,16 +417,16 @@ namespace Assistant.Boat
 
             switch (_orientation)
             {
-                case (int)Orientation.Northwest:
+                case (int) Orientation.Northwest:
                     boatSoutheast_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
-                case (int)Orientation.Southwest:
+                case (int) Orientation.Southwest:
                     boatNortheast_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
-                case (int)Orientation.Southeast:
+                case (int) Orientation.Southeast:
                     boatNorthwest_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
-                case (int)Orientation.Northeast:
+                case (int) Orientation.Northeast:
                     boatSouthwest_Click(null, new MouseEventArgs(MouseButtons.Right, 1, 1, 1, 1));
                     break;
             }

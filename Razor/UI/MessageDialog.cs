@@ -1,71 +1,93 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
-using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace Assistant
 {
-	/// <summary>
-	/// Summary description for MessageDialog.
-	/// </summary>
-	public class MessageDialog : System.Windows.Forms.Form
-	{
-		private System.Windows.Forms.Button okay;
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.Container components = null;
-		private string m_Title;
-		private string m_Message;
-		private System.Windows.Forms.TextBox message;
-		private bool m_CanIgnore;
+    /// <summary>
+    /// Summary description for MessageDialog.
+    /// </summary>
+    public class MessageDialog : System.Windows.Forms.Form
+    {
+        private System.Windows.Forms.Button okay;
 
-		public MessageDialog( string title, string message ) : this( title, false, message )
-		{
-		}
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.Container components = null;
 
-		public MessageDialog( string title, bool ignorable, string message, params object[] msgArgs ) : this( title, ignorable, String.Format( message, msgArgs ) )
-		{
-		}
+        private string m_Title;
+        private string m_Message;
+        private System.Windows.Forms.TextBox message;
+        private bool m_CanIgnore;
 
-		public MessageDialog( string title, bool ignorable, string message )
-		{
-			m_Title = title;
-			m_Message = message;
-			m_CanIgnore = ignorable;
-			//
-			// Required for Windows Form Designer support
-			//
-			InitializeComponent();
+        public MessageDialog(string title, string message) : this(title, false, message)
+        {
+        }
 
-			//
-			// TODO: Add any constructor code after InitializeComponent call
-			//
-		}
+        public MessageDialog(string title, bool ignorable, string message, params object[] msgArgs) : this(title,
+            ignorable, String.Format(message, msgArgs))
+        {
+        }
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		protected override void Dispose( bool disposing )
-		{
-			if( disposing )
-			{
-				if(components != null)
-				{
-					components.Dispose();
-				}
-			}
-			base.Dispose( disposing );
-		}
+        public MessageDialog(string title, bool ignorable, string message)
+        {
+            m_Title = title;
+            m_Message = message;
+            m_CanIgnore = ignorable;
+            //
+            // Required for Windows Form Designer support
+            //
+            InitializeComponent();
 
-		#region Windows Form Designer generated code
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+            //
+            // TODO: Add any constructor code after InitializeComponent call
+            //
+        }
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             this.message = new System.Windows.Forms.TextBox();
             this.okay = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -98,7 +120,8 @@ namespace Assistant
             this.ControlBox = false;
             this.Controls.Add(this.okay);
             this.Controls.Add(this.message);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular,
+                System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "MessageDialog";
             this.ShowInTaskbar = false;
@@ -107,25 +130,25 @@ namespace Assistant
             this.Load += new System.EventHandler(this.MessageDialog_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
+        }
 
-		}
-		#endregion
+        #endregion
 
-		private void MessageDialog_Load(object sender, System.EventArgs e)
-		{
-			this.Text = m_Title;
-			this.message.Text = m_Message;
-			this.message.Select( 0, 0 );
-			this.BringToFront();
+        private void MessageDialog_Load(object sender, System.EventArgs e)
+        {
+            this.Text = m_Title;
+            this.message.Text = m_Message;
+            this.message.Select(0, 0);
+            this.BringToFront();
 
-			if ( m_CanIgnore )
-				this.okay.Text = "&Ignore";
-		}
+            if (m_CanIgnore)
+                this.okay.Text = "&Ignore";
+        }
 
-		private void okay_Click(object sender, System.EventArgs e)
-		{
-			this.DialogResult = DialogResult.OK;
-			this.Close();
-		}
-	}
+        private void okay_Click(object sender, System.EventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
+    }
 }

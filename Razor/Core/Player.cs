@@ -1,15 +1,31 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
 using System.IO;
-using System.Reflection;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-
+using Assistant.Agents;
 using Assistant.Core;
 using Assistant.Macros;
 using Assistant.UI;
-using Ultima;
 
 namespace Assistant
 {
@@ -26,7 +42,8 @@ namespace Assistant
         Info = 0,
         Warning = 1,
         Error = 2,
-        Force = 3
+        Force = 3,
+        Friend = 4
     }
 
     public class Skill
@@ -45,7 +62,10 @@ namespace Assistant
             m_Idx = idx;
         }
 
-        public int Index { get { return m_Idx; } }
+        public int Index
+        {
+            get { return m_Idx; }
+        }
 
         public LockType Lock
         {
@@ -64,7 +84,7 @@ namespace Assistant
             get { return m_Base; }
             set
             {
-                m_Delta += (short)(value - m_Base);
+                m_Delta += (short) (value - m_Base);
                 m_Base = value;
             }
         }
@@ -78,25 +98,25 @@ namespace Assistant
         public double Value
         {
             get { return m_Value / 10.0; }
-            set { m_Value = (ushort)(value * 10.0); }
+            set { m_Value = (ushort) (value * 10.0); }
         }
 
         public double Base
         {
             get { return m_Base / 10.0; }
-            set { m_Base = (ushort)(value * 10.0); }
+            set { m_Base = (ushort) (value * 10.0); }
         }
 
         public double Cap
         {
             get { return m_Cap / 10.0; }
-            set { m_Cap = (ushort)(value * 10.0); }
+            set { m_Cap = (ushort) (value * 10.0); }
         }
 
         public double Delta
         {
             get { return m_Delta / 10.0; }
-            set { m_Delta = (short)(value * 10); }
+            set { m_Delta = (short) (value * 10); }
         }
     }
 
@@ -156,7 +176,10 @@ namespace Assistant
         Chivalry = 51,
         Bushido = 52,
         Ninjitsu = 53,
-        SpellWeaving = 54
+        SpellWeaving = 54,
+        Mysticism,
+        Imbuing,
+        Throwing,
     }
 
     public enum MaleSounds
@@ -258,7 +281,11 @@ namespace Assistant
     public class PlayerData : Mobile
     {
         public int VisRange = 18;
-        public int MultiVisRange { get { return VisRange + 5; } }
+
+        public int MultiVisRange
+        {
+            get { return VisRange + 5; }
+        }
 
         private int m_MaxWeight = -1;
 
@@ -288,10 +315,18 @@ namespace Assistant
         private DateTime m_CriminalStart = DateTime.MinValue;
 
         internal List<BuffsDebuffs> m_BuffsDebuffs = new List<BuffsDebuffs>();
-        internal List<BuffsDebuffs> BuffsDebuffs { get { return m_BuffsDebuffs; } }
+
+        internal List<BuffsDebuffs> BuffsDebuffs
+        {
+            get { return m_BuffsDebuffs; }
+        }
 
         private List<uint> m_OpenedCorpses = new List<uint>();
-        public List<uint> OpenedCorpses { get { return m_OpenedCorpses; } }
+
+        public List<uint> OpenedCorpses
+        {
+            get { return m_OpenedCorpses; }
+        }
 
 
         public override void SaveState(BinaryWriter writer)
@@ -305,19 +340,19 @@ namespace Assistant
             writer.Write(m_Stam);
             writer.Write(m_ManaMax);
             writer.Write(m_Mana);
-            writer.Write((byte)m_StrLock);
-            writer.Write((byte)m_DexLock);
-            writer.Write((byte)m_IntLock);
+            writer.Write((byte) m_StrLock);
+            writer.Write((byte) m_DexLock);
+            writer.Write((byte) m_IntLock);
             writer.Write(m_Gold);
             writer.Write(m_Weight);
 
-            writer.Write((byte)Skill.Count);
+            writer.Write((byte) Skill.Count);
             for (int i = 0; i < Skill.Count; i++)
             {
                 writer.Write(m_Skills[i].FixedBase);
                 writer.Write(m_Skills[i].FixedCap);
                 writer.Write(m_Skills[i].FixedValue);
-                writer.Write((byte)m_Skills[i].Lock);
+                writer.Write((byte) m_Skills[i].Lock);
             }
 
             writer.Write(m_AR);
@@ -331,9 +366,9 @@ namespace Assistant
             writer.Write(m_Features);
             writer.Write(m_Season);
 
-            writer.Write((byte)m_MapPatches.Length);
+            writer.Write((byte) m_MapPatches.Length);
             for (int i = 0; i < m_MapPatches.Length; i++)
-                writer.Write((int)m_MapPatches[i]);
+                writer.Write((int) m_MapPatches[i]);
         }
 
         public PlayerData(BinaryReader reader, int version) : base(reader, version)
@@ -346,9 +381,9 @@ namespace Assistant
             m_Stam = reader.ReadUInt16();
             m_ManaMax = reader.ReadUInt16();
             m_Mana = reader.ReadUInt16();
-            m_StrLock = (LockType)reader.ReadByte();
-            m_DexLock = (LockType)reader.ReadByte();
-            m_IntLock = (LockType)reader.ReadByte();
+            m_StrLock = (LockType) reader.ReadByte();
+            m_DexLock = (LockType) reader.ReadByte();
+            m_IntLock = (LockType) reader.ReadByte();
             m_Gold = reader.ReadUInt32();
             m_Weight = reader.ReadUInt16();
 
@@ -399,7 +434,7 @@ namespace Assistant
                 m_Skills[i].FixedBase = reader.ReadUInt16();
                 m_Skills[i].FixedCap = reader.ReadUInt16();
                 m_Skills[i].FixedValue = reader.ReadUInt16();
-                m_Skills[i].Lock = (LockType)reader.ReadByte();
+                m_Skills[i].Lock = (LockType) reader.ReadByte();
             }
 
             m_AR = reader.ReadUInt16();
@@ -464,14 +499,11 @@ namespace Assistant
             get
             {
                 if (m_MaxWeight == -1)
-                    return (ushort)((m_Str * 3.5) + 40);
+                    return (ushort) ((m_Str * 3.5) + 40);
                 else
-                    return (ushort)m_MaxWeight;
+                    return (ushort) m_MaxWeight;
             }
-            set
-            {
-                m_MaxWeight = value;
-            }
+            set { m_MaxWeight = value; }
         }
 
         public short FireResistance
@@ -564,7 +596,10 @@ namespace Assistant
             set { m_Tithe = value; }
         }
 
-        public Skill[] Skills { get { return m_Skills; } }
+        public Skill[] Skills
+        {
+            get { return m_Skills; }
+        }
 
         public bool SkillsSent
         {
@@ -578,7 +613,7 @@ namespace Assistant
             {
                 if (m_CriminalStart != DateTime.MinValue)
                 {
-                    int sec = (int)(DateTime.UtcNow - m_CriminalStart).TotalSeconds;
+                    int sec = (int) (DateTime.UtcNow - m_CriminalStart).TotalSeconds;
                     if (sec > 300)
                     {
                         if (m_CriminalTime != null)
@@ -598,11 +633,27 @@ namespace Assistant
             }
         }
 
-        private void AutoOpenDoors()
+        private class DoorOpenTimer : Timer
         {
-            if (Body != 0x03DB &&
-                !IsGhost &&
-                ((int)(Direction & Direction.Mask)) % 2 == 0 &&
+            // Fire off once in 5ms
+            public DoorOpenTimer() : base(TimeSpan.FromMilliseconds(5), 1)
+            {
+            }
+
+            protected override void OnTick()
+            {
+                Client.Instance.SendToServer(new OpenDoorMacro());
+            }
+        }
+
+        private readonly DoorOpenTimer _doorTimer = new DoorOpenTimer();
+
+        private void AutoOpenDoors(bool onDirChange)
+        {
+            if (!Visible && !Config.GetBool("AutoOpenDoorWhenHidden"))
+                return;
+
+            if (Body != 0x03DB && !IsGhost && ((int) (Direction & Direction.Mask)) % 2 == 0 &&
                 Config.GetBool("AutoOpenDoors") &&
                 Client.Instance.AllowBit(FeatureBit.AutoOpenDoors))
             {
@@ -611,20 +662,37 @@ namespace Assistant
                 /* Check if one more tile in the direction we just moved is a door */
                 Utility.Offset(Direction, ref x, ref y);
 
-                if (World.Items.Values.Any(s => s.IsDoor && s.Position.X == x && s.Position.Y == y && s.Position.Z - 15 <= z && s.Position.Z + 15 >= z))
+                if (World.Items.Values.Any(s =>
+                    s.IsDoor && s.Position.X == x && s.Position.Y == y && s.Position.Z - 15 <= z &&
+                    s.Position.Z + 15 >= z))
                 {
-                    Client.Instance.SendToServer(new OpenDoorMacro());
+                    if (Client.IsOSI)
+                    {
+                        Client.Instance.SendToServer(new OpenDoorMacro());
+                    }
+                    else
+                    {
+                        // ClassicUO requires a slight pause before attempting to
+                        // open a door after a direction change
+                        if (onDirChange)
+                        {
+                            _doorTimer.Start();
+                        }
+                        else
+                        {
+                            Client.Instance.SendToServer(new OpenDoorMacro());
+                        }
+                    }
                 }
             }
         }
-
 
         public override void OnPositionChanging(Point3D oldPos)
         {
             if (!IsGhost)
                 StealthSteps.OnMove();
 
-            AutoOpenDoors();
+            AutoOpenDoors(false);
 
             List<Mobile> mlist = new List<Mobile>(World.Mobiles.Values);
             for (int i = 0; i < mlist.Count; i++)
@@ -667,7 +735,7 @@ namespace Assistant
 
         public override void OnDirectionChanging(Direction oldDir)
         {
-            AutoOpenDoors();
+            AutoOpenDoors(true);
         }
 
         public override void OnMapChange(byte old, byte cur)
@@ -686,7 +754,7 @@ namespace Assistant
             Counter.Reset();
             for (int i = 0; i < Contains.Count; i++)
             {
-                Item item = (Item)Contains[i];
+                Item item = (Item) Contains[i];
                 World.AddItem(item);
                 item.Contains.Clear();
             }
@@ -746,6 +814,7 @@ namespace Assistant
         private class CriminalTimer : Timer
         {
             private PlayerData m_Player;
+
             public CriminalTimer(PlayerData player) : base(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1))
             {
                 m_Player = player;
@@ -777,10 +846,11 @@ namespace Assistant
             SendMessage(MsgLevel.Info, Language.GetString(loc));
         }
 
-        /*internal void SendMessage( int hue, LocString loc, params object[] args )
+        internal void SendMessage(int hue, string text)
         {
-             SendMessage( hue, Language.Format( loc, args ) );
-        }*/
+            Client.Instance.SendToClient(new UnicodeMessage(0xFFFFFFFF, -1, MessageType.Regular, hue, 3,
+                Language.CliLocName, "System", text));
+        }
 
         internal void SendMessage(MsgLevel lvl, string format, params object[] args)
         {
@@ -799,7 +869,7 @@ namespace Assistant
 
         internal void SendMessage(MsgLevel lvl, string text)
         {
-            if (lvl >= (MsgLevel)Config.GetInt("MessageLevel") && text.Length > 0)
+            if (lvl >= (MsgLevel) Config.GetInt("MessageLevel") && text.Length > 0)
             {
                 int hue;
                 switch (lvl)
@@ -808,18 +878,30 @@ namespace Assistant
                     case MsgLevel.Warning:
                         hue = Config.GetInt("WarningColor");
                         break;
-
+                    case MsgLevel.Friend:
+                        hue = Config.GetInt("FriendOverheadFormatHue");
+                        break;
                     default:
                         hue = Config.GetInt("SysColor");
                         break;
                 }
 
-                Client.Instance.SendToClient(new UnicodeMessage(0xFFFFFFFF, -1, MessageType.Regular, hue, 3, Language.CliLocName, "System", text));
-
                 PacketHandlers.SysMessages.Add(text);
 
                 if (PacketHandlers.SysMessages.Count >= 25)
                     PacketHandlers.SysMessages.RemoveRange(0, 10);
+
+                if (Config.GetBool("FilterRazorMessages"))
+                {
+                    if (!MessageQueue.Enqueue(0xFFFFFFFF, null, 0, MessageType.Regular, (ushort) hue, 3,
+                        Language.CliLocName, "System", text))
+                    {
+                        return;
+                    }
+                }
+
+                Client.Instance.SendToClient(new UnicodeMessage(0xFFFFFFFF, -1, MessageType.Regular, hue, 3,
+                    Language.CliLocName, "System", text));
             }
         }
 
@@ -829,22 +911,25 @@ namespace Assistant
 
             if (keywords.Count == 1 && (int) keywords[0] == 0)
             {
-                Client.Instance.SendToServer(new ClientUniEncodedCommandMessage(MessageType.Regular, hue, 3, Language.CliLocName, keywords, msg));
+                Client.Instance.SendToServer(new ClientUniEncodedCommandMessage(MessageType.Regular, hue, 3,
+                    Language.CliLocName, keywords, msg));
             }
             else
             {
-                Client.Instance.SendToServer(new ClientUniEncodedCommandMessage(MessageType.Encoded, hue, 3, Language.CliLocName, keywords, msg));
+                Client.Instance.SendToServer(new ClientUniEncodedCommandMessage(MessageType.Encoded, hue, 3,
+                    Language.CliLocName, keywords, msg));
             }
         }
 
         internal void Say(string msg)
         {
-            Say(World.Player.SpeechHue, msg);
+            Say(Config.GetInt("SpeechHue"), msg);
         }
 
         public uint CurrentGumpS, CurrentGumpI;
         public GumpResponseAction LastGumpResponseAction;
         public bool HasGump;
+        public bool HasCompressedGump;
         public List<string> CurrentGumpStrings = new List<string>();
         public string CurrentGumpRawData;
         public uint CurrentMenuS;
@@ -859,23 +944,39 @@ namespace Assistant
 
         public void CancelPrompt()
         {
-            Client.Instance.SendToServer(new PromptResponse(World.Player.PromptSenderSerial, World.Player.PromptID, 0, Language.CliLocName, string.Empty));
+            Client.Instance.SendToServer(new PromptResponse(World.Player.PromptSenderSerial, World.Player.PromptID, 0,
+                Language.CliLocName, string.Empty));
             World.Player.HasPrompt = false;
         }
 
         public void ResponsePrompt(string text)
         {
-            Client.Instance.SendToServer(new PromptResponse(World.Player.PromptSenderSerial, World.Player.PromptID, 1, Language.CliLocName, text));
+            Client.Instance.SendToServer(new PromptResponse(World.Player.PromptSenderSerial, World.Player.PromptID, 1,
+                Language.CliLocName, text));
 
             PromptInputText = text;
             World.Player.HasPrompt = false;
         }
 
         private ushort m_SpeechHue;
-        public ushort SpeechHue { get { return m_SpeechHue; } set { m_SpeechHue = value; } }
 
-        public sbyte LocalLightLevel { get { return m_LocalLight; } set { m_LocalLight = value; } }
-        public byte GlobalLightLevel { get { return m_GlobalLight; } set { m_GlobalLight = value; } }
+        public ushort SpeechHue
+        {
+            get { return m_SpeechHue; }
+            set { m_SpeechHue = value; }
+        }
+
+        public sbyte LocalLightLevel
+        {
+            get { return m_LocalLight; }
+            set { m_LocalLight = value; }
+        }
+
+        public byte GlobalLightLevel
+        {
+            get { return m_GlobalLight; }
+            set { m_GlobalLight = value; }
+        }
 
         public enum SeasonFlag
         {
@@ -886,9 +987,17 @@ namespace Assistant
             Desolation
         }
 
-        public byte Season { get { return m_Season; } set { m_Season = value; } }
+        public byte Season
+        {
+            get { return m_Season; }
+            set { m_Season = value; }
+        }
 
-        public byte DefaultSeason { get { return m_DefaultSeason; } set { m_DefaultSeason = value; } }
+        public byte DefaultSeason
+        {
+            get { return m_DefaultSeason; }
+            set { m_DefaultSeason = value; }
+        }
 
         /// <summary>
         /// Sets the player's season, set a default to revert back if required
@@ -898,12 +1007,7 @@ namespace Assistant
         {
             if (Config.GetInt("Season") < 5)
             {
-                byte season = (byte)Config.GetInt("Season");
-
-                if (Config.GetBool("RealSeason"))
-                {
-                    season = World.Player.WhichSeason();
-                }
+                byte season = (byte) Config.GetInt("Season");
 
                 World.Player.Season = season;
                 World.Player.DefaultSeason = defaultSeason;
@@ -933,39 +1037,68 @@ namespace Assistant
             }
         }
 
-        public byte WhichSeason()
+        public ushort Features
         {
-            DateTime now = DateTime.UtcNow;
-
-            /* Astronomically Spring begins on March 21st, the 80th day of the year.
-               * Summer begins on the 172nd day, Autumn, the 266th and Winter the 355th.
-               * Of course, on a leap year add one day to each, 81, 173, 267 and 356. */
-
-            int doy = now.DayOfYear - Convert.ToInt32((DateTime.IsLeapYear(now.Year)) && now.DayOfYear > 59);
-
-            if (doy < 80 || doy >= 355) return (byte)SeasonFlag.Winter;
-
-            if (doy >= 80 && doy < 172) return (byte)SeasonFlag.Spring;
-
-            if (doy >= 172 && doy < 266) return (byte)SeasonFlag.Summer;
-
-            return (byte)SeasonFlag.Fall;
+            get { return m_Features; }
+            set { m_Features = value; }
         }
 
-        public ushort Features { get { return m_Features; } set { m_Features = value; } }
-        public int[] MapPatches { get { return m_MapPatches; } set { m_MapPatches = value; } }
+        public int[] MapPatches
+        {
+            get { return m_MapPatches; }
+            set { m_MapPatches = value; }
+        }
 
         private int m_LastSkill = -1;
-        public int LastSkill { get { return m_LastSkill; } set { m_LastSkill = value; } }
+
+        public int LastSkill
+        {
+            get { return m_LastSkill; }
+            set { m_LastSkill = value; }
+        }
 
         private Serial m_LastObj = Serial.Zero;
-        public Serial LastObject { get { return m_LastObj; } }
+
+        public Serial LastObject
+        {
+            get { return m_LastObj; }
+            set { m_LastObj = value; }
+        }
 
         private int m_LastSpell = -1;
-        public int LastSpell { get { return m_LastSpell; } set { m_LastSpell = value; } }
+
+        public int LastSpell
+        {
+            get { return m_LastSpell; }
+            set { m_LastSpell = value; }
+        }
 
         //private UOEntity m_LastCtxM = null;
         //public UOEntity LastContextMenu { get { return m_LastCtxM; } set { m_LastCtxM = value; } }
+        
+        public bool UseItem(Item cont, ushort find)
+        {
+            if (!Client.Instance.AllowBit(FeatureBit.PotionHotkeys))
+                return false;
+
+            for (int i = 0; i < cont.Contains.Count; i++)
+            {
+                Item item = (Item)cont.Contains[i];
+
+                if (item.ItemID == find)
+                {
+                    PlayerData.DoubleClick(item);
+                    return true;
+                }
+                else if (item.Contains != null && item.Contains.Count > 0)
+                {
+                    if (UseItem(item, find))
+                        return true;
+                }
+            }
+
+            return false;
+        }
 
         public static bool DoubleClick(object clicked)
         {
@@ -976,18 +1109,19 @@ namespace Assistant
         {
             Serial s;
             if (clicked is Mobile)
-                s = ((Mobile)clicked).Serial.Value;
+                s = ((Mobile) clicked).Serial.Value;
             else if (clicked is Item)
-                s = ((Item)clicked).Serial.Value;
+                s = ((Item) clicked).Serial.Value;
             else if (clicked is Serial)
-                s = ((Serial)clicked).Value;
+                s = ((Serial) clicked).Value;
             else
                 s = Serial.Zero;
 
             if (s != Serial.Zero)
             {
                 Item free = null, pack = World.Player.Backpack;
-                if (s.IsItem && pack != null && Config.GetBool("PotionEquip") && Client.Instance.AllowBit(FeatureBit.AutoPotionEquip))
+                if (s.IsItem && pack != null && Config.GetBool("PotionEquip") &&
+                    Client.Instance.AllowBit(FeatureBit.AutoPotionEquip))
                 {
                     Item i = World.FindItem(s);
                     if (i != null && i.IsPotion && i.ItemID != 3853) // dont unequip for exploison potions

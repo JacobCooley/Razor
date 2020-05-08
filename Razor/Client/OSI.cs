@@ -1,6 +1,27 @@
-﻿using Assistant.Core;
+﻿#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
+using Assistant.Core;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -11,10 +32,8 @@ using System.Windows.Forms;
 
 namespace Assistant
 {
-
     public unsafe class OSIClient : Client
     {
-
         public enum UONetMessage
         {
             Send = 1,
@@ -70,31 +89,43 @@ namespace Assistant
 
         [DllImport("Crypt.dll")]
         private static unsafe extern int InstallLibrary(IntPtr thisWnd, int procid, int features);
+
         [DllImport("Crypt.dll")]
         private static unsafe extern void Shutdown(bool closeClient);
+
         [DllImport("Crypt.dll")]
         internal static unsafe extern IntPtr FindUOWindow();
+
         [DllImport("Crypt.dll")]
         private static unsafe extern IntPtr GetSharedAddress();
+
         [DllImport("Crypt.dll")]
         private static unsafe extern IntPtr GetCommMutex();
+
         [DllImport("Crypt.dll")]
         internal static unsafe extern uint TotalIn();
+
         [DllImport("Crypt.dll")]
         internal static unsafe extern uint TotalOut();
+
         [DllImport("Crypt.dll")]
         private static unsafe extern void WaitForWindow(int pid);
+
         [DllImport("Crypt.dll")]
         internal static unsafe extern void SetDataPath(string path);
+
         [DllImport("Crypt.dll")]
         internal static unsafe extern void CalibratePosition(uint x, uint y, uint z, byte dir);
+
         [DllImport("Crypt.dll")]
         private static unsafe extern void SetServer(uint ip, ushort port);
+
         [DllImport("Crypt.dll")]
         internal static unsafe extern string GetUOVersion();
 
         [DllImport("Loader.dll")]
-        private static unsafe extern uint Load(string exe, string dll, string func, void* dllData, int dataLen, out uint pid);
+        private static unsafe extern uint Load(string exe, string dll, string func, void* dllData, int dataLen,
+            out uint pid);
 
         private Queue<Packet> m_SendQueue = new Queue<Packet>();
         private Queue<Packet> m_RecvQueue = new Queue<Packet>();
@@ -113,12 +144,22 @@ namespace Assistant
         private bool m_Ready = false;
         private string m_LastStr = "";
         private DateTime m_ConnStart;
-        private Timer m_TBTimer;
         private IPAddress m_LastConnection;
 
-        public override DateTime ConnectionStart { get { return m_ConnStart; } }
-        public override IPAddress LastConnection { get { return m_LastConnection; } }
-        public override Process ClientProcess { get { return ClientProc; } }
+        public override DateTime ConnectionStart
+        {
+            get { return m_ConnStart; }
+        }
+
+        public override IPAddress LastConnection
+        {
+            get { return m_LastConnection; }
+        }
+
+        public override Process ClientProcess
+        {
+            get { return ClientProc; }
+        }
 
         public override bool ClientRunning
         {
@@ -137,30 +178,39 @@ namespace Assistant
 
         public override void SetMapWndHandle(Form mapWnd)
         {
-            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr)UONetMessage.SetMapHWnd, mapWnd.Handle);
+            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr) UONetMessage.SetMapHWnd, mapWnd.Handle);
         }
 
         public override void RequestStatbarPatch(bool preAOS)
         {
-            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr)UONetMessage.StatBar, preAOS ? (IntPtr)1 : IntPtr.Zero);
+            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr) UONetMessage.StatBar,
+                preAOS ? (IntPtr) 1 : IntPtr.Zero);
         }
 
         public override void SetCustomNotoHue(int hue)
         {
-            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr)UONetMessage.NotoHue, (IntPtr)hue);
+            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr) UONetMessage.NotoHue, (IntPtr) hue);
         }
 
         public override void SetSmartCPU(bool enabled)
         {
             if (enabled)
-                try { ClientProcess.PriorityClass = System.Diagnostics.ProcessPriorityClass.Normal; } catch { }
+                try
+                {
+                    ClientProcess.PriorityClass = System.Diagnostics.ProcessPriorityClass.Normal;
+                }
+                catch
+                {
+                }
 
-            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr)UONetMessage.SmartCPU, (IntPtr)(enabled ? 1 : 0));
+            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr) UONetMessage.SmartCPU,
+                (IntPtr) (enabled ? 1 : 0));
         }
 
         public override void SetGameSize(int x, int y)
         {
-            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr)UONetMessage.SetGameSize, (IntPtr)((x & 0xFFFF) | ((y & 0xFFFF) << 16)));
+            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr) UONetMessage.SetGameSize,
+                (IntPtr) ((x & 0xFFFF) | ((y & 0xFFFF) << 16)));
         }
 
         public override Loader_Error LaunchClient(string client)
@@ -185,13 +235,13 @@ namespace Assistant
 
             string dll = Path.Combine(Config.GetInstallDirectory(), "Crypt.dll");
             uint pid = 0;
-            Loader_Error err = (Loader_Error)Load(client, dll, "OnAttach", null, 0, out pid);
+            Loader_Error err = (Loader_Error) Load(client, dll, "OnAttach", null, 0, out pid);
 
             if (err == Loader_Error.SUCCESS)
             {
                 try
                 {
-                    ClientProc = Process.GetProcessById((int)pid);
+                    ClientProc = Process.GetProcessById((int) pid);
 
                     /*if ( ClientProc != null && !Config.GetBool( "SmartCPU" ) )
                         ClientProc.PriorityClass = (ProcessPriorityClass)Enum.Parse( typeof(ProcessPriorityClass), Config.GetString( "ClientPrio" ), true );*/
@@ -208,10 +258,20 @@ namespace Assistant
         }
 
         private bool m_ClientEnc = false;
-        public override bool ClientEncrypted { get { return m_ClientEnc; } set { m_ClientEnc = value; } }
+
+        public override bool ClientEncrypted
+        {
+            get { return m_ClientEnc; }
+            set { m_ClientEnc = value; }
+        }
 
         private bool m_ServerEnc = false;
-        public override bool ServerEncrypted { get { return m_ServerEnc; } set { m_ServerEnc = value; } }
+
+        public override bool ServerEncrypted
+        {
+            get { return m_ServerEnc; }
+            set { m_ServerEnc = value; }
+        }
 
         public override bool InstallHooks(IntPtr mainWindow)
         {
@@ -232,7 +292,7 @@ namespace Assistant
 
             WaitForWindow(ClientProc.Id);
 
-            error = (InitError)InstallLibrary(mainWindow, ClientProc.Id, flags);
+            error = (InitError) InstallLibrary(mainWindow, ClientProc.Id, flags);
             if (error != InitError.SUCCESS)
             {
                 FatalInit(error);
@@ -249,14 +309,15 @@ namespace Assistant
         public override void SetConnectionInfo(IPAddress addr, int port)
         {
 #pragma warning disable 618
-            m_ServerIP = (uint)addr.Address;
+            m_ServerIP = (uint) addr.Address;
 #pragma warning restore 618
-            m_ServerPort = (ushort)port;
+            m_ServerPort = (ushort) port;
         }
 
         public override void SetNegotiate(bool negotiate)
         {
-            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr)UONetMessage.Negotiate, (IntPtr)(negotiate ? 1 : 0));
+            Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr) UONetMessage.Negotiate,
+                (IntPtr) (negotiate ? 1 : 0));
         }
 
         public override bool Attach(int pid)
@@ -276,7 +337,7 @@ namespace Assistant
 
         private string EncodeColorStat(int val, int max)
         {
-            double perc = ((double)val) / ((double)max);
+            double perc = ((double) val) / ((double) max);
 
             if (perc <= 0.25)
                 return String.Format("~#FF0000{0}~#~", val);
@@ -286,7 +347,7 @@ namespace Assistant
 
             return val.ToString();
         }
-        
+
         public override void UpdateTitleBar()
         {
             if (!ClientRunning)
@@ -297,11 +358,17 @@ namespace Assistant
                 ResetTitleBarBuilder();
 
                 TitleBarBuilder.Replace(@"{char}",
-                    Config.GetBool("ShowNotoHue") ? $"~#{World.Player.GetNotorietyColor() & 0x00FFFFFF:X6}{World.Player.Name}~#~" : World.Player.Name);
+                    Config.GetBool("ShowNotoHue")
+                        ? $"~#{World.Player.GetNotorietyColor() & 0x00FFFFFF:X6}{World.Player.Name}~#~"
+                        : World.Player.Name);
 
-                TitleBarBuilder.Replace(@"{crimtime}", World.Player.CriminalTime != 0 ? $"~^C0C0C0{World.Player.CriminalTime}~#~" : "-");
+                TitleBarBuilder.Replace(@"{crimtime}",
+                    World.Player.CriminalTime != 0 ? $"~^C0C0C0{World.Player.CriminalTime}~#~" : "-");
 
-                TitleBarBuilder.Replace(@"{hp}", World.Player.Poisoned ? $"~#FF8000{World.Player.Hits}~#~" : EncodeColorStat(World.Player.Hits, World.Player.HitsMax));
+                TitleBarBuilder.Replace(@"{hp}",
+                    World.Player.Poisoned
+                        ? $"~#FF8000{World.Player.Hits}~#~"
+                        : EncodeColorStat(World.Player.Hits, World.Player.HitsMax));
                 TitleBarBuilder.Replace(@"{mana}", EncodeColorStat(World.Player.Mana, World.Player.ManaMax));
                 TitleBarBuilder.Replace(@"{stam}", EncodeColorStat(World.Player.Stam, World.Player.StamMax));
 
@@ -313,10 +380,10 @@ namespace Assistant
                 TitleBarBuilder.Replace(@"{bandage}", BandageTimer.Running ? $"~#FF8000{BandageTimer.Count}~#~" : "-");
 
                 string statStr = String.Format("{0}{1:X2}{2:X2}{3:X2}",
-                    (int)(World.Player.GetStatusCode()),
-                    (int)(World.Player.HitsMax == 0 ? 0 : (double)World.Player.Hits / World.Player.HitsMax * 99),
-                    (int)(World.Player.ManaMax == 0 ? 0 : (double)World.Player.Mana / World.Player.ManaMax * 99),
-                    (int)(World.Player.StamMax == 0 ? 0 : (double)World.Player.Stam / World.Player.StamMax * 99));
+                    (int) (World.Player.GetStatusCode()),
+                    (int) (World.Player.HitsMax == 0 ? 0 : (double) World.Player.Hits / World.Player.HitsMax * 99),
+                    (int) (World.Player.ManaMax == 0 ? 0 : (double) World.Player.Mana / World.Player.ManaMax * 99),
+                    (int) (World.Player.StamMax == 0 ? 0 : (double) World.Player.Stam / World.Player.StamMax * 99));
 
                 TitleBarBuilder.Replace(@"{statbar}", $"~SR{statStr}");
                 TitleBarBuilder.Replace(@"{mediumstatbar}", $"~SL{statStr}");
@@ -327,7 +394,8 @@ namespace Assistant
                 {
                     Counter c = Counter.List[i];
                     if (c.Enabled)
-                        TitleBarBuilder.Replace($"{{{c.Format}}}", c.GetTitlebarString(dispImg && c.DisplayImage, true));
+                        TitleBarBuilder.Replace($"{{{c.Format}}}",
+                            c.GetTitlebarString(dispImg && c.DisplayImage, true));
                 }
 
                 base.UpdateTitleBar();
@@ -357,6 +425,7 @@ namespace Assistant
                 fixed (byte* array = copy)
                     Platform.memcpy(m_TitleStr, array, clen);
             }
+
             *(m_TitleStr + clen) = 0;
             CommMutex.ReleaseMutex();
 
@@ -367,9 +436,10 @@ namespace Assistant
         {
             StringBuilder sb = new StringBuilder(Language.GetString(LocString.InitError));
             sb.AppendFormat("{0}\n", error);
-            sb.Append(Language.GetString((int)(LocString.InitError + (int)error)));
+            sb.Append(Language.GetString((int) (LocString.InitError + (int) error)));
 
-            MessageBox.Show(Engine.ActiveWindow, sb.ToString(), "Init Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            MessageBox.Show(Engine.ActiveWindow, sb.ToString(), "Init Error", MessageBoxButtons.OK,
+                MessageBoxIcon.Stop);
         }
 
         private void OnLogout(bool fake)
@@ -411,12 +481,14 @@ namespace Assistant
         {
             bool retVal = true;
 
-            switch ((UONetMessage)(wParam & 0xFFFF))
+            switch ((UONetMessage) (wParam & 0xFFFF))
             {
                 case UONetMessage.Ready: //Patch status
-                    if (lParam == (int)InitError.NO_MEMCOPY)
+                    if (lParam == (int) InitError.NO_MEMCOPY)
                     {
-                        if (MessageBox.Show(Engine.ActiveWindow, Language.GetString(LocString.NoMemCpy), "No Client MemCopy", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                        if (MessageBox.Show(Engine.ActiveWindow, Language.GetString(LocString.NoMemCpy),
+                                "No Client MemCopy", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) ==
+                            DialogResult.No)
                         {
                             m_Ready = false;
                             ClientProc = null;
@@ -426,13 +498,13 @@ namespace Assistant
                         }
                     }
 
-                    byte* baseAddr = (byte*)GetSharedAddress().ToPointer();
+                    byte* baseAddr = (byte*) GetSharedAddress().ToPointer();
 
-                    m_InRecv = (Buffer*)baseAddr;
-                    m_OutRecv = (Buffer*)(baseAddr + sizeof(Buffer));
-                    m_InSend = (Buffer*)(baseAddr + sizeof(Buffer) * 2);
-                    m_OutSend = (Buffer*)(baseAddr + sizeof(Buffer) * 3);
-                    m_TitleStr = (byte*)(baseAddr + sizeof(Buffer) * 4);
+                    m_InRecv = (Buffer*) baseAddr;
+                    m_OutRecv = (Buffer*) (baseAddr + sizeof(Buffer));
+                    m_InSend = (Buffer*) (baseAddr + sizeof(Buffer) * 2);
+                    m_OutSend = (Buffer*) (baseAddr + sizeof(Buffer) * 3);
+                    m_TitleStr = (byte*) (baseAddr + sizeof(Buffer) * 4);
 
                     SetServer(m_ServerIP, m_ServerPort);
 
@@ -463,7 +535,7 @@ namespace Assistant
 
                 case UONetMessage.NotReady:
                     m_Ready = false;
-                    FatalInit((InitError)lParam);
+                    FatalInit((InitError) lParam);
                     ClientProc = null;
                     Engine.MainWindow.CanClose = true;
                     Engine.MainWindow.Close();
@@ -480,11 +552,12 @@ namespace Assistant
                     m_ConnStart = DateTime.UtcNow;
                     try
                     {
-                        m_LastConnection = new IPAddress((uint)lParam);
+                        m_LastConnection = new IPAddress((uint) lParam);
                     }
                     catch
                     {
                     }
+
                     break;
                 case UONetMessage.Disconnect:
                     OnLogout(false);
@@ -498,10 +571,10 @@ namespace Assistant
 
                 // Hot Keys
                 case UONetMessage.Mouse:
-                    HotKey.OnMouse((ushort)(lParam & 0xFFFF), (short)(lParam >> 16));
+                    HotKey.OnMouse((ushort) (lParam & 0xFFFF), (short) (lParam >> 16));
                     break;
                 case UONetMessage.KeyDown:
-                    retVal = HotKey.OnKeyDown(lParam);
+                    retVal = HotKey.OnKeyDown(lParam, ModKeys.None);
                     break;
 
                 // Activation Tracking
@@ -562,18 +635,19 @@ namespace Assistant
                     break;
 
                 case UONetMessage.DLL_Error:
+                {
+                    string error = "Unknown";
+                    switch ((UONetMessage) lParam)
                     {
-                        string error = "Unknown";
-                        switch ((UONetMessage)lParam)
-                        {
-                            case UONetMessage.StatBar:
-                                error = "Unable to patch status bar.";
-                                break;
-                        }
-
-                        MessageBox.Show(Engine.ActiveWindow, "An Error has occured : \n" + error, "Error Reported", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        break;
+                        case UONetMessage.StatBar:
+                            error = "Unable to patch status bar.";
+                            break;
                     }
+
+                    MessageBox.Show(Engine.ActiveWindow, "An Error has occured : \n" + error, "Error Reported",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                }
 
                 case UONetMessage.OnTick:
                     // Game engine tick
@@ -582,7 +656,8 @@ namespace Assistant
 
                 // Unknown
                 default:
-                    MessageBox.Show(Engine.ActiveWindow, "Unknown message from uo client\n" + ((int)wParam).ToString(), "Error?");
+                    MessageBox.Show(Engine.ActiveWindow, "Unknown message from uo client\n" + ((int) wParam).ToString(),
+                        "Error?");
                     break;
             }
 
@@ -607,14 +682,14 @@ namespace Assistant
 
         public override bool OnCopyData(IntPtr wparam, IntPtr lparam)
         {
-            CopyData copydata = (CopyData)Marshal.PtrToStructure(lparam, typeof(CopyData));
+            CopyData copydata = (CopyData) Marshal.PtrToStructure(lparam, typeof(CopyData));
 
-            switch ((UONetMessageCopyData)copydata.dwData)
+            switch ((UONetMessageCopyData) copydata.dwData)
             {
                 case UONetMessageCopyData.Position:
                     if (World.Player != null)
                     {
-                        Position pos = (Position)Marshal.PtrToStructure(copydata.lpData, typeof(Position));
+                        Position pos = (Position) Marshal.PtrToStructure(copydata.lpData, typeof(Position));
                         Point3D pt = new Point3D();
 
                         pt.X = pos.x;
@@ -623,6 +698,7 @@ namespace Assistant
 
                         World.Player.Position = pt;
                     }
+
                     return true;
             }
 
@@ -677,6 +753,7 @@ namespace Assistant
                 Packet.Log(PacketPath.RazorToClient, ptr, data.Length);
                 CopyToBuffer(m_OutRecv, ptr, data.Length);
             }
+
             CommMutex.ReleaseMutex();
         }
 
@@ -694,13 +771,14 @@ namespace Assistant
                 Packet.Log(PacketPath.RazorToServer, ptr, data.Length);
                 CopyToBuffer(m_OutSend, ptr, data.Length);
             }
+
             CommMutex.ReleaseMutex();
         }
 
         private void InitSendFlush()
         {
             if (m_OutSend->Length == 0)
-                Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr)UONetMessage.Send, IntPtr.Zero);
+                Platform.PostMessage(FindUOWindow(), WM_UONETEVENT, (IntPtr) UONetMessage.Send, IntPtr.Zero);
         }
 
         private void CopyToBuffer(Buffer* buffer, byte* data, int len)
@@ -762,15 +840,16 @@ namespace Assistant
                 {
                     // yes it should be this way
                     case PacketPath.ClientToServer:
-                        {
-                            blocked = PacketHandler.OnClientPacket(buff[0], pr, p);
-                            break;
-                        }
+                    {
+                        blocked = PacketHandler.OnClientPacket(buff[0], pr, p);
+                        break;
+                    }
+
                     case PacketPath.ServerToClient:
-                        {
-                            blocked = PacketHandler.OnServerPacket(buff[0], pr, p);
-                            break;
-                        }
+                    {
+                        blocked = PacketHandler.OnServerPacket(buff[0], pr, p);
+                        break;
+                    }
                 }
 
                 if (filter)
@@ -792,15 +871,16 @@ namespace Assistant
 
                 while (queue.Count > 0)
                 {
-                    p = (Packet)queue.Dequeue();
+                    p = (Packet) queue.Dequeue();
                     byte[] data = p.Compile();
                     fixed (byte* ptr = data)
                     {
                         CopyToBuffer(outBuff, ptr, data.Length);
-                        Packet.Log((PacketPath)(((int)path) + 1), ptr, data.Length);
+                        Packet.Log((PacketPath) (((int) path) + 1), ptr, data.Length);
                     }
                 }
             }
+
             CommMutex.ReleaseMutex();
         }
 
@@ -827,7 +907,7 @@ namespace Assistant
 
         public void KeyPress(int keyCode)
         {
-            Platform.SendMessage(FindUOWindow(), WM_KEYDOWN, (IntPtr)keyCode, (IntPtr)1);
+            Platform.SendMessage(FindUOWindow(), WM_KEYDOWN, (IntPtr) keyCode, (IntPtr) 1);
         }
 
         public override string GetClientVersion()
@@ -835,6 +915,10 @@ namespace Assistant
             return GetUOVersion();
         }
 
+        public override string GetUoFilePath()
+        {
+            return ConfigurationManager.AppSettings["UODataDir"];
+        }
 
         public override IntPtr GetWindowHandle()
         {
@@ -850,6 +934,7 @@ namespace Assistant
         {
             return TotalOut();
         }
+
         private enum KeyboardDir
         {
             North = 0x21, //page up
@@ -861,42 +946,43 @@ namespace Assistant
             West = 0x24, // home
             Up = 0x26, // up
         }
-        internal override void RequestMove( Direction m_Dir )
+
+        internal override void RequestMove(Direction m_Dir)
         {
             int direction;
 
-            switch ( m_Dir )
+            switch (m_Dir)
             {
                 case Direction.Down:
-                    direction = (int)KeyboardDir.Down;
+                    direction = (int) KeyboardDir.Down;
                     break;
                 case Direction.East:
-                    direction = (int)KeyboardDir.East;
+                    direction = (int) KeyboardDir.East;
                     break;
                 case Direction.Left:
-                    direction = (int)KeyboardDir.Left;
+                    direction = (int) KeyboardDir.Left;
                     break;
                 case Direction.North:
-                    direction = (int)KeyboardDir.North;
+                    direction = (int) KeyboardDir.North;
                     break;
                 case Direction.Right:
-                    direction = (int)KeyboardDir.Right;
+                    direction = (int) KeyboardDir.Right;
                     break;
                 case Direction.South:
-                    direction = (int)KeyboardDir.South;
+                    direction = (int) KeyboardDir.South;
                     break;
                 case Direction.Up:
-                    direction = (int)KeyboardDir.Up;
+                    direction = (int) KeyboardDir.Up;
                     break;
                 case Direction.West:
-                    direction = (int)KeyboardDir.West;
+                    direction = (int) KeyboardDir.West;
                     break;
                 default:
-                    direction = (int)KeyboardDir.Up;
+                    direction = (int) KeyboardDir.Up;
                     break;
             }
-            KeyPress( direction );
+
+            KeyPress(direction);
         }
     }
-
 };

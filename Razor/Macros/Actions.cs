@@ -1,22 +1,42 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-
+using Assistant.Core;
 using Assistant.UI;
 
 namespace Assistant.Macros
 {
     public delegate void MacroMenuCallback(object[] Args);
+
     public class MacroMenuItem : MenuItem
     {
         private MacroMenuCallback m_Call;
         private object[] m_Args;
 
-        public MacroMenuItem(LocString name, MacroMenuCallback call, params object[] args) : base(Language.GetString(name))
+        public MacroMenuItem(LocString name, MacroMenuCallback call, params object[] args) : base(
+            Language.GetString(name))
         {
             base.Click += new EventHandler(OnMenuClick);
             m_Call = call;
@@ -42,6 +62,8 @@ namespace Assistant.Macros
             return String.Format("?{0}?", GetType().Name);
         }
 
+        public abstract string ToScript();
+
         public virtual string Serialize()
         {
             return GetType().FullName;
@@ -60,7 +82,11 @@ namespace Assistant.Macros
             return null;
         }
 
-        public Macro Parent { get { return m_Parent; } set { m_Parent = value; } }
+        public Macro Parent
+        {
+            get { return m_Parent; }
+            set { m_Parent = value; }
+        }
 
         public abstract bool Perform();
     }
@@ -76,8 +102,17 @@ namespace Assistant.Macros
         }
 
         public abstract bool PerformWait();
-        public TimeSpan Timeout { get { return m_Timeout; } }
-        public DateTime StartTime { get { return m_Start; } set { m_Start = value; } }
+
+        public TimeSpan Timeout
+        {
+            get { return m_Timeout; }
+        }
+
+        public DateTime StartTime
+        {
+            get { return m_Start; }
+            set { m_Start = value; }
+        }
 
         public MacroMenuItem EditTimeoutMenuItem
         {
@@ -91,7 +126,8 @@ namespace Assistant.Macros
 
         private void EditTimeout(object[] args)
         {
-            if (InputBox.Show(Language.GetString(LocString.NewTimeout), Language.GetString(LocString.ChangeTimeout), ((int)(m_Timeout.TotalSeconds)).ToString()))
+            if (InputBox.Show(Language.GetString(LocString.NewTimeout), Language.GetString(LocString.ChangeTimeout),
+                ((int) (m_Timeout.TotalSeconds)).ToString()))
                 m_Timeout = TimeSpan.FromSeconds(InputBox.GetInt(60));
         }
 
@@ -118,12 +154,21 @@ namespace Assistant.Macros
             return true;
         }
 
+        public override string ToScript()
+        {
+            return $"# {m_Comment}";
+        }
+
         public override string Serialize()
         {
             return ToString();
         }
 
-        public string Comment { get { return m_Comment; } set { m_Comment = value; } }
+        public string Comment
+        {
+            get { return m_Comment; }
+            set { m_Comment = value; }
+        }
 
         public override string ToString()
         {
@@ -134,13 +179,14 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.Edit, new MacroMenuCallback( Edit ) )
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(Edit))
                 };
             }
 
@@ -149,7 +195,8 @@ namespace Assistant.Macros
 
         private void Edit(object[] args)
         {
-            if (InputBox.Show(Language.GetString(LocString.InsComment), Language.GetString(LocString.InputReq), m_Comment))
+            if (InputBox.Show(Language.GetString(LocString.InsComment), Language.GetString(LocString.InputReq),
+                m_Comment))
             {
                 if (m_Comment == null)
                     m_Comment = "";
@@ -188,6 +235,11 @@ namespace Assistant.Macros
             return true;
         }
 
+        public override string ToScript()
+        {
+            return $"dclick '{m_Serial.ToString()}'";
+        }
+
         public override string Serialize()
         {
             return DoSerialize(m_Serial.Value, m_Gfx);
@@ -199,14 +251,15 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.ReTarget, new MacroMenuCallback( ReTarget ) ),
-                         new MacroMenuItem( LocString.Conv2DCT, new MacroMenuCallback( ConvertToByType ) )
+                    new MacroMenuItem(LocString.ReTarget, new MacroMenuCallback(ReTarget)),
+                    new MacroMenuItem(LocString.Conv2DCT, new MacroMenuCallback(ConvertToByType))
                 };
             }
 
@@ -289,8 +342,8 @@ namespace Assistant.Macros
                                 list.Add(i);
                             }
                         }
-
                     }
+
                     if (list.Count == 0)
                     {
                         foreach (Item i in World.Items.Values)
@@ -299,7 +352,7 @@ namespace Assistant.Macros
                             {
                                 if (Config.GetBool("RangeCheckDoubleClick"))
                                 {
-                                    if (Utility.InRange(World.Player.Position, i.Position, 2))
+                                    if (Utility.InRange(World.Player.Position, i.Position, 2) || i.RootContainer == World.Player.Backpack)
                                     {
                                         list.Add(i);
                                     }
@@ -313,7 +366,7 @@ namespace Assistant.Macros
                     }
 
                     if (list.Count > 0)
-                        click = ((Item)list[Utility.Random(list.Count)]).Serial;
+                        click = ((Item) list[Utility.Random(list.Count)]).Serial;
                 }
                 else
                 {
@@ -342,14 +395,20 @@ namespace Assistant.Macros
                 }
 
                 if (list.Count > 0)
-                    click = ((Mobile)list[Utility.Random(list.Count)]).Serial;
+                    click = ((Mobile) list[Utility.Random(list.Count)]).Serial;
             }
 
             if (click != Serial.Zero)
                 PlayerData.DoubleClick(click);
             else
-                World.Player.SendMessage(MsgLevel.Force, LocString.NoItemOfType, m_Item ? ((ItemID)m_Gfx).ToString() : String.Format("(Character) 0x{0:X}", m_Gfx));
+                World.Player.SendMessage(MsgLevel.Force, LocString.NoItemOfType,
+                    m_Item ? ((ItemID) m_Gfx).ToString() : String.Format("(Character) 0x{0:X}", m_Gfx));
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return $"dclicktype '{m_Gfx}'";
         }
 
         public override string Serialize()
@@ -359,17 +418,19 @@ namespace Assistant.Macros
 
         public override string ToString()
         {
-            return Language.Format(LocString.DClickA1, m_Item ? ((ItemID)m_Gfx).ToString() : String.Format("(Character) 0x{0:X}", m_Gfx));
+            return Language.Format(LocString.DClickA1,
+                m_Item ? ((ItemID) m_Gfx).ToString() : String.Format("(Character) 0x{0:X}", m_Gfx));
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.ReTarget, new MacroMenuCallback( ReTarget ) )
+                    new MacroMenuItem(LocString.ReTarget, new MacroMenuCallback(ReTarget))
                 };
             }
 
@@ -400,7 +461,12 @@ namespace Assistant.Macros
         private ushort m_Gfx;
 
         private static Item m_LastLift;
-        public static Item LastLift { get { return m_LastLift; } set { m_LastLift = value; } }
+
+        public static Item LastLift
+        {
+            get { return m_LastLift; }
+            set { m_LastLift = value; }
+        }
 
         public LiftAction(string[] args)
         {
@@ -431,12 +497,18 @@ namespace Assistant.Macros
             {
                 World.Player.SendMessage(MsgLevel.Warning, LocString.MacroItemOutRange);
             }
+
             return false;
         }
 
         public override bool PerformWait()
         {
             return DragDropManager.LastIDLifted < m_Id;
+        }
+
+        public override string ToScript()
+        {
+            return $"lift '{m_Serial}' {m_Amount}";
         }
 
         public override string Serialize()
@@ -450,15 +522,16 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.ReTarget, new MacroMenuCallback( ReTarget ) ),
-                         new MacroMenuItem( LocString.ConvLiftByType, new MacroMenuCallback( ConvertToByType ) ),
-                         new MacroMenuItem( LocString.Edit, new MacroMenuCallback( EditAmount ) )
+                    new MacroMenuItem(LocString.ReTarget, new MacroMenuCallback(ReTarget)),
+                    new MacroMenuItem(LocString.ConvLiftByType, new MacroMenuCallback(ConvertToByType)),
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(EditAmount))
                 };
             }
 
@@ -483,9 +556,10 @@ namespace Assistant.Macros
 
         private void EditAmount(object[] args)
         {
-            if (InputBox.Show(Engine.MainWindow, Language.GetString(LocString.EnterAmount), Language.GetString(LocString.InputReq), m_Amount.ToString()))
+            if (InputBox.Show(Engine.MainWindow, Language.GetString(LocString.EnterAmount),
+                Language.GetString(LocString.InputReq), m_Amount.ToString()))
             {
-                m_Amount = (ushort)InputBox.GetInt(m_Amount);
+                m_Amount = (ushort) InputBox.GetInt(m_Amount);
 
                 if (m_Parent != null)
                     m_Parent.Update();
@@ -517,6 +591,7 @@ namespace Assistant.Macros
         }
 
         private int m_Id;
+
         public override bool Perform()
         {
             Item item = World.Player.Backpack != null ? World.Player.Backpack.FindItemByID(m_Gfx) : null;
@@ -546,9 +621,10 @@ namespace Assistant.Macros
             }
             else
             {
-                World.Player.SendMessage(MsgLevel.Warning, LocString.NoItemOfType, (ItemID)m_Gfx);
+                World.Player.SendMessage(MsgLevel.Warning, LocString.NoItemOfType, (ItemID) m_Gfx);
                 //MacroManager.Stop();
             }
+
             return false;
         }
 
@@ -557,20 +633,26 @@ namespace Assistant.Macros
             return DragDropManager.LastIDLifted < m_Id && !DragDropManager.Empty;
         }
 
+        public override string ToScript()
+        {
+            return $"lifttype '{m_Gfx}' {m_Amount}";
+        }
+
         public override string Serialize()
         {
             return DoSerialize(m_Gfx, m_Amount);
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                    new MacroMenuItem( LocString.ReTarget, new MacroMenuCallback( ReTarget ) ),
-                         new MacroMenuItem( LocString.Edit, new MacroMenuCallback( EditAmount ) )
+                    new MacroMenuItem(LocString.ReTarget, new MacroMenuCallback(ReTarget)),
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(EditAmount))
                 };
             }
 
@@ -594,9 +676,10 @@ namespace Assistant.Macros
 
         private void EditAmount(object[] args)
         {
-            if (InputBox.Show(Engine.MainWindow, Language.GetString(LocString.EnterAmount), Language.GetString(LocString.InputReq), m_Amount.ToString()))
+            if (InputBox.Show(Engine.MainWindow, Language.GetString(LocString.EnterAmount),
+                Language.GetString(LocString.InputReq), m_Amount.ToString()))
             {
-                m_Amount = (ushort)InputBox.GetInt(m_Amount);
+                m_Amount = (ushort) InputBox.GetInt(m_Amount);
 
                 if (m_Parent != null)
                     m_Parent.Update();
@@ -605,7 +688,7 @@ namespace Assistant.Macros
 
         public override string ToString()
         {
-            return Language.Format(LocString.LiftA10, m_Amount, (ItemID)m_Gfx);
+            return Language.Format(LocString.LiftA10, m_Amount, (ItemID) m_Gfx);
         }
     }
 
@@ -621,7 +704,7 @@ namespace Assistant.Macros
             m_At = Point3D.Parse(args[2]);
             try
             {
-                m_Layer = (Layer)Byte.Parse(args[3]);
+                m_Layer = (Layer) Byte.Parse(args[3]);
             }
             catch
             {
@@ -659,12 +742,18 @@ namespace Assistant.Macros
             {
                 World.Player.SendMessage(MsgLevel.Warning, LocString.MacroNoHold);
             }
+
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return m_Layer != Layer.Invalid ? $"drop '{m_To}' {m_Layer}" : $"drop '{m_To}' {m_At.X} {m_At.Y} {m_At.X}";
         }
 
         public override string Serialize()
         {
-            return DoSerialize(m_To, m_At, (byte)m_Layer);
+            return DoSerialize(m_To, m_At, (byte) m_Layer);
         }
 
         public override string ToString()
@@ -676,6 +765,7 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_To.IsValid)
@@ -688,7 +778,7 @@ namespace Assistant.Macros
                 {
                     m_MenuItems = new MacroMenuItem[]
                     {
-                              new MacroMenuItem( LocString.ConvRelLoc, new MacroMenuCallback( ConvertToRelLoc ) )
+                        new MacroMenuItem(LocString.ConvRelLoc, new MacroMenuCallback(ConvertToRelLoc))
                     };
                 }
 
@@ -699,7 +789,9 @@ namespace Assistant.Macros
         private void ConvertToRelLoc(object[] args)
         {
             if (!m_To.IsValid && m_Parent != null)
-                m_Parent.Convert(this, new DropRelLocAction((sbyte)(m_At.X - World.Player.Position.X), (sbyte)(m_At.Y - World.Player.Position.Y), (sbyte)(m_At.Z - World.Player.Position.Z)));
+                m_Parent.Convert(this,
+                    new DropRelLocAction((sbyte) (m_At.X - World.Player.Position.X),
+                        (sbyte) (m_At.Y - World.Player.Position.Y), (sbyte) (m_At.Z - World.Player.Position.Z)));
         }
     }
 
@@ -711,24 +803,31 @@ namespace Assistant.Macros
         {
             m_Loc = new sbyte[3]
             {
-                    Convert.ToSByte( args[1] ),
-                    Convert.ToSByte( args[2] ),
-                    Convert.ToSByte( args[3] )
+                Convert.ToSByte(args[1]),
+                Convert.ToSByte(args[2]),
+                Convert.ToSByte(args[3])
             };
         }
 
         public DropRelLocAction(sbyte x, sbyte y, sbyte z)
         {
-            m_Loc = new sbyte[3] { x, y, z };
+            m_Loc = new sbyte[3] {x, y, z};
         }
 
         public override bool Perform()
         {
             if (DragDropManager.Holding != null)
-                DragDropManager.Drop(DragDropManager.Holding, null, new Point3D((ushort)(World.Player.Position.X + m_Loc[0]), (ushort)(World.Player.Position.Y + m_Loc[1]), (short)(World.Player.Position.Z + m_Loc[2])));
+                DragDropManager.Drop(DragDropManager.Holding, null,
+                    new Point3D((ushort) (World.Player.Position.X + m_Loc[0]),
+                        (ushort) (World.Player.Position.Y + m_Loc[1]), (short) (World.Player.Position.Z + m_Loc[2])));
             else
                 World.Player.SendMessage(LocString.MacroNoHold);
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return $"droprelloc {m_Loc[0]} {m_Loc[1]}";
         }
 
         public override string Serialize()
@@ -758,8 +857,8 @@ namespace Assistant.Macros
             for (int i = 0; i < m_TextEntries.Length; i++)
             {
                 string[] split = args[4 + m_Switches.Length + i].Split('&');
-                m_TextEntries[i].EntryID = Convert.ToUInt16(split[0]);
-                m_TextEntries[i].Text = split[1];
+
+                m_TextEntries[i] = new GumpTextEntry(Convert.ToUInt16(split[0]), split[1]);
             }
         }
 
@@ -773,9 +872,16 @@ namespace Assistant.Macros
         public override bool Perform()
         {
             Client.Instance.SendToClient(new CloseGump(World.Player.CurrentGumpI));
-            Client.Instance.SendToServer(new GumpResponse(World.Player.CurrentGumpS, World.Player.CurrentGumpI, m_ButtonID, m_Switches, m_TextEntries));
+            Client.Instance.SendToServer(new GumpResponse(World.Player.CurrentGumpS, World.Player.CurrentGumpI,
+                m_ButtonID, m_Switches, m_TextEntries));
             World.Player.HasGump = false;
+            World.Player.HasCompressedGump = false;
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return m_ButtonID == 0 ? "gumpclose" : $"gumpresponse {m_ButtonID}";
         }
 
         public override string Serialize()
@@ -787,7 +893,7 @@ namespace Assistant.Macros
             list.Add(m_TextEntries.Length);
             for (int i = 0; i < m_TextEntries.Length; i++)
                 list.Add(String.Format("{0}&{1}", m_TextEntries[i].EntryID, m_TextEntries[i].Text));
-            return DoSerialize((object[])list.ToArray(typeof(object)));
+            return DoSerialize((object[]) list.ToArray(typeof(object)));
         }
 
         public override string ToString()
@@ -803,9 +909,10 @@ namespace Assistant.Macros
         public override MenuItem[] GetContextMenuItems()
         {
             if (this.m_MenuItems == null)
-                this.m_MenuItems = (MenuItem[])new MacroMenuItem[]
+                this.m_MenuItems = (MenuItem[]) new MacroMenuItem[]
                 {
-                    new MacroMenuItem(LocString.UseLastGumpResponse, new MacroMenuCallback(this.UseLastResponse), new object[0]),
+                    new MacroMenuItem(LocString.UseLastGumpResponse, new MacroMenuCallback(this.UseLastResponse),
+                        new object[0]),
                     new MacroMenuItem(LocString.Edit, new MacroMenuCallback(this.Edit), new object[0])
                 };
             return this.m_MenuItems;
@@ -851,9 +958,15 @@ namespace Assistant.Macros
 
         public override bool Perform()
         {
-            Client.Instance.SendToServer(new MenuResponse(World.Player.CurrentMenuS, World.Player.CurrentMenuI, m_Index, m_ItemID, m_Hue));
+            Client.Instance.SendToServer(new MenuResponse(World.Player.CurrentMenuS, World.Player.CurrentMenuI, m_Index,
+                m_ItemID, m_Hue));
             World.Player.HasMenu = false;
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return $"menuresponse {m_Index} {m_ItemID} {m_Hue}";
         }
 
         public override string Serialize()
@@ -902,9 +1015,15 @@ namespace Assistant.Macros
             return true;
         }
 
+        public override string ToScript()
+        {
+            return $"target {m_Info.Serial}";
+        }
+
         public override string Serialize()
         {
-            return DoSerialize(m_Info.Type, m_Info.Flags, m_Info.Serial.Value, m_Info.X, m_Info.Y, m_Info.Z, m_Info.Gfx);
+            return DoSerialize(m_Info.Type, m_Info.Flags, m_Info.Serial.Value, m_Info.X, m_Info.Y, m_Info.Z,
+                m_Info.Gfx);
         }
 
         public override string ToString()
@@ -913,16 +1032,17 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.ReTarget, new MacroMenuCallback( ReTarget ) ),
-                         new MacroMenuItem( LocString.ConvLT, new MacroMenuCallback( ConvertToLastTarget ) ),
-                         new MacroMenuItem( LocString.ConvTargType, new MacroMenuCallback( ConvertToByType ) ),
-                         new MacroMenuItem( LocString.ConvRelLoc, new MacroMenuCallback( ConvertToRelLoc ) )
+                    new MacroMenuItem(LocString.ReTarget, new MacroMenuCallback(ReTarget)),
+                    new MacroMenuItem(LocString.ConvLT, new MacroMenuCallback(ConvertToLastTarget)),
+                    new MacroMenuItem(LocString.ConvTargType, new MacroMenuCallback(ConvertToByType)),
+                    new MacroMenuItem(LocString.ConvRelLoc, new MacroMenuCallback(ConvertToRelLoc))
                 };
             }
 
@@ -939,7 +1059,7 @@ namespace Assistant.Macros
         {
             m_Info.Gfx = gfx;
             m_Info.Serial = serial;
-            m_Info.Type = (byte)(ground ? 1 : 0);
+            m_Info.Type = (byte) (ground ? 1 : 0);
             m_Info.X = pt.X;
             m_Info.Y = pt.Y;
             m_Info.Z = pt.Z;
@@ -964,7 +1084,10 @@ namespace Assistant.Macros
         private void ConvertToRelLoc(object[] args)
         {
             if (m_Parent != null)
-                m_Parent.Convert(this, new TargetRelLocAction((sbyte)(m_Info.X - World.Player.Position.X), (sbyte)(m_Info.Y - World.Player.Position.Y)));//, (sbyte)(m_Info.Z - World.Player.Position.Z) ) );
+                m_Parent.Convert(this,
+                    new TargetRelLocAction((sbyte) (m_Info.X - World.Player.Position.X),
+                        (sbyte) (m_Info.Y - World.Player.Position
+                                     .Y))); //, (sbyte)(m_Info.Z - World.Player.Position.Z) ) );
         }
     }
 
@@ -988,11 +1111,11 @@ namespace Assistant.Macros
         {
             _target = null;
 
-            foreach (AbsoluteTargetVariables.AbsoluteTargetVariable at in AbsoluteTargetVariables.AbsoluteTargetList)
+            foreach (MacroVariables.MacroVariable mV in MacroVariables.MacroVariableList)
             {
-                if (at.Name.Equals(_variableName))
+                if (mV.Name.Equals(_variableName))
                 {
-                    _target = at.TargetInfo;
+                    _target = mV.TargetInfo;
                     break;
                 }
             }
@@ -1006,8 +1129,11 @@ namespace Assistant.Macros
             {
                 return false;
             }
+        }
 
-
+        public override string ToScript()
+        {
+            return $"target '{_variableName}'";
         }
 
         public override string Serialize()
@@ -1064,7 +1190,6 @@ namespace Assistant.Macros
     public class DoubleClickVariableAction : MacroAction
     {
         private Serial _serial;
-        private ushort _gfx;
         private readonly string _variableName;
 
         public DoubleClickVariableAction(string[] args)
@@ -1076,11 +1201,11 @@ namespace Assistant.Macros
         {
             _serial = Serial.Zero;
 
-            foreach (DoubleClickVariables.DoubleClickVariable dblClick in DoubleClickVariables.DoubleClickTargetList)
+            foreach (MacroVariables.MacroVariable mV in MacroVariables.MacroVariableList)
             {
-                if (dblClick.Name.Equals(_variableName))
+                if (mV.Name.Equals(_variableName))
                 {
-                    _serial = dblClick.Serial;
+                    _serial = mV.TargetInfo.Serial;
                     break;
                 }
             }
@@ -1092,6 +1217,11 @@ namespace Assistant.Macros
             }
 
             return false;
+        }
+
+        public override string ToScript()
+        {
+            return $"dclick '{_variableName}'";
         }
 
         public override string Serialize()
@@ -1157,7 +1287,7 @@ namespace Assistant.Macros
                     {
                         if (Config.GetBool("RangeCheckTargetByType"))
                         {
-                            if (Utility.InRange(World.Player.Position, i.Position, 2))
+                            if (Utility.InRange(World.Player.Position, i.Position, 2) || i.RootContainer == World.Player.Backpack)
                             {
                                 list.Add(i);
                             }
@@ -1167,7 +1297,6 @@ namespace Assistant.Macros
                             list.Add(i);
                         }
                     }
-
                 }
             }
 
@@ -1190,15 +1319,19 @@ namespace Assistant.Macros
                 {
                     Targeting.Target(list[Utility.Random(list.Count)]);
                 }
-
             }
             else
             {
                 World.Player.SendMessage(MsgLevel.Warning, LocString.NoItemOfType,
-                    m_Mobile ? String.Format("Character [{0}]", m_Gfx) : ((ItemID)m_Gfx).ToString());
+                    m_Mobile ? String.Format("Character [{0}]", m_Gfx) : ((ItemID) m_Gfx).ToString());
             }
 
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return $"targettype '{m_Gfx}'";
         }
 
         public override string Serialize()
@@ -1211,18 +1344,19 @@ namespace Assistant.Macros
             if (m_Mobile)
                 return Language.Format(LocString.TargByType, m_Gfx);
             else
-                return Language.Format(LocString.TargByType, (ItemID)m_Gfx);
+                return Language.Format(LocString.TargByType, (ItemID) m_Gfx);
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.ReTarget, new MacroMenuCallback( ReTarget ) ),
-                         new MacroMenuItem( LocString.ConvLT, new MacroMenuCallback( ConvertToLastTarget ) )
+                    new MacroMenuItem(LocString.ReTarget, new MacroMenuCallback(ReTarget)),
+                    new MacroMenuItem(LocString.ConvLT, new MacroMenuCallback(ConvertToLastTarget))
                 };
             }
 
@@ -1242,6 +1376,7 @@ namespace Assistant.Macros
                 m_Mobile = serial.IsMobile;
                 m_Gfx = gfx;
             }
+
             Engine.MainWindow.SafeAction(s => s.ShowMe());
             if (m_Parent != null)
                 m_Parent.Update();
@@ -1272,19 +1407,25 @@ namespace Assistant.Macros
 
         public override bool Perform()
         {
-            ushort x = (ushort)(World.Player.Position.X + m_X);
-            ushort y = (ushort)(World.Player.Position.Y + m_Y);
-            short z = (short)World.Player.Position.Z;
+            ushort x = (ushort) (World.Player.Position.X + m_X);
+            ushort y = (ushort) (World.Player.Position.Y + m_Y);
+            short z = (short) World.Player.Position.Z;
             try
             {
                 Ultima.HuedTile tile = Map.GetTileNear(World.Player.Map, x, y, z);
-                Targeting.Target(new Point3D(x, y, tile.Z), (ushort)tile.ID);
+                Targeting.Target(new Point3D(x, y, tile.Z), (ushort) tile.ID);
             }
             catch (Exception e)
             {
                 World.Player.SendMessage(MsgLevel.Debug, "Error Executing TargetRelLoc: {0}", e.Message);
             }
+
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return $"targetrelloc {m_X} {m_Y}";
         }
 
         public override string Serialize()
@@ -1298,13 +1439,14 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.ReTarget, new MacroMenuCallback( ReTarget ) )
+                    new MacroMenuItem(LocString.ReTarget, new MacroMenuCallback(ReTarget))
                 };
             }
 
@@ -1321,8 +1463,8 @@ namespace Assistant.Macros
 
         private void ReTargetResponse(bool ground, Serial serial, Point3D pt, ushort gfx)
         {
-            m_X = (sbyte)(pt.X - World.Player.Position.X);
-            m_Y = (sbyte)(pt.Y - World.Player.Position.Y);
+            m_X = (sbyte) (pt.X - World.Player.Position.X);
+            m_Y = (sbyte) (pt.Y - World.Player.Position.Y);
             // m_Z = (sbyte)(pt.Z - World.Player.Position.Z);
             if (m_Parent != null)
                 m_Parent.Update();
@@ -1337,7 +1479,10 @@ namespace Assistant.Macros
 
         public override bool Perform()
         {
-            if (!Targeting.DoLastTarget())//Targeting.LastTarget( true );
+            if (Targeting.FromGrabHotKey)
+                return false;
+
+            if (!Targeting.DoLastTarget()) //Targeting.LastTarget( true );
                 Targeting.ResendTarget();
             return true;
         }
@@ -1345,6 +1490,11 @@ namespace Assistant.Macros
         public override string ToString()
         {
             return String.Format("Exec: {0}", Language.GetString(LocString.LastTarget));
+        }
+
+        public override string ToScript()
+        {
+            return "lasttarget";
         }
     }
 
@@ -1369,6 +1519,88 @@ namespace Assistant.Macros
         {
             return Language.GetString(LocString.SetLT);
         }
+
+        public override string ToScript()
+        {
+            return "setlasttarget";
+        }
+    }
+
+    public class SetMacroVariableTargetAction : MacroWaitAction
+    {
+        private string m_VarName;
+        private MacroVariables.MacroVariable m_MacroVariable;
+
+        public SetMacroVariableTargetAction(string[] args)
+        {
+            m_VarName = args.Length > 1 ? args[1] : args[0];
+
+            FindMacroVariable();
+        }
+
+        public SetMacroVariableTargetAction(string varName)
+        {
+            m_VarName = varName;
+
+            FindMacroVariable();
+        }
+
+        private bool FindMacroVariable()
+        {
+            foreach (MacroVariables.MacroVariable mV in MacroVariables.MacroVariableList)
+            {
+                if (mV.Name.ToLower().Equals(m_VarName.ToLower()))
+                {
+                    m_MacroVariable = mV;
+                    break;
+                }
+            }
+
+            if (m_MacroVariable == null)
+            {
+                m_VarName = $"?{m_VarName}?";
+                return false;
+            }
+
+            return true;
+        }
+
+        public override bool Perform()
+        {
+            if (m_MacroVariable == null)
+            {
+                return false;
+            }
+
+            m_MacroVariable.TargetSetMacroVariable();
+
+            return !PerformWait();
+        }
+
+        public override bool PerformWait()
+        {
+            if (m_MacroVariable == null)
+            {
+                return false;
+            }
+
+            return !m_MacroVariable.TargetWasSet;
+        }
+
+        public override string ToString()
+        {
+            return $"Set Macro Variable (${m_VarName})";
+        }
+
+        public override string ToScript()
+        {
+            return $"setvar {m_VarName}";
+        }
+
+        public override string Serialize()
+        {
+            return DoSerialize(m_VarName);
+        }
     }
 
     public class SpeechAction : MacroAction
@@ -1382,7 +1614,7 @@ namespace Assistant.Macros
 
         public SpeechAction(string[] args)
         {
-            m_Type = ((MessageType)Convert.ToInt32(args[1])) & ~MessageType.Encoded;
+            m_Type = ((MessageType) Convert.ToInt32(args[1])) & ~MessageType.Encoded;
             m_Hue = Convert.ToUInt16(args[2]);
             m_Font = Convert.ToUInt16(args[3]);
             m_Lang = args[4];
@@ -1416,10 +1648,10 @@ namespace Assistant.Macros
             {
                 string text = m_Speech.Substring(1);
                 string[] split = text.Split(' ', '\t');
-                CommandCallback call = (CommandCallback)Command.List[split[0]];
+                CommandCallback call = (CommandCallback) Command.List[split[0]];
                 if (call == null && text[0] == '-')
                 {
-                    call = (CommandCallback)Command.List["-"];
+                    call = (CommandCallback) Command.List["-"];
                     if (call != null && split.Length > 1 && split[1] != null && split[1].Length > 1)
                         split[1] = split[1].Substring(1);
                 }
@@ -1432,7 +1664,8 @@ namespace Assistant.Macros
                         if (split[i] != null && split[i].Length > 0)
                             list.Add(split[i]);
                     }
-                    call((string[])list.ToArray(typeof(string)));
+
+                    call((string[]) list.ToArray(typeof(string)));
                     return true;
                 }
             }
@@ -1450,16 +1683,21 @@ namespace Assistant.Macros
             return true;
         }
 
+        public override string ToScript()
+        {
+            return $"say '{m_Speech}'";
+        }
+
         public override string Serialize()
         {
             ArrayList list = new ArrayList(6);
-            list.Add((int)m_Type);
+            list.Add((int) m_Type);
             list.Add(m_Hue);
             list.Add(m_Font);
             list.Add(m_Lang);
             if (m_Keywords != null && m_Keywords.Count > 1)
             {
-                list.Add((int)m_Keywords.Count);
+                list.Add((int) m_Keywords.Count);
                 for (int i = 0; i < m_Keywords.Count; i++)
                     list.Add(m_Keywords[i]);
             }
@@ -1467,9 +1705,10 @@ namespace Assistant.Macros
             {
                 list.Add("0");
             }
+
             list.Add(m_Speech);
 
-            return DoSerialize((object[])list.ToArray(typeof(object)));
+            return DoSerialize((object[]) list.ToArray(typeof(object)));
         }
 
         public override string ToString()
@@ -1492,6 +1731,7 @@ namespace Assistant.Macros
                     sb.Append("Say: ");
                     break;
             }
+
             sb.Append(m_Speech);
             return sb.ToString();
         }
@@ -1501,9 +1741,9 @@ namespace Assistant.Macros
         public override MenuItem[] GetContextMenuItems()
         {
             if (this.m_MenuItems == null)
-                this.m_MenuItems = (MenuItem[])new MacroMenuItem[1]
+                this.m_MenuItems = (MenuItem[]) new MacroMenuItem[1]
                 {
-          new MacroMenuItem(LocString.Edit, new MacroMenuCallback(this.Edit), new object[0])
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(this.Edit), new object[0])
                 };
             return this.m_MenuItems;
         }
@@ -1515,6 +1755,80 @@ namespace Assistant.Macros
             if (this.Parent == null)
                 return;
             this.Parent.Update();
+        }
+    }
+
+    public class OverheadMessageAction : MacroAction
+    {
+        private ushort _hue;
+        private string _message;
+
+        public OverheadMessageAction(string[] args)
+        {
+            _hue = Convert.ToUInt16(args[1]);
+
+            List<string> message = new List<string>();
+
+            for (int i = 2; i < args.Length; i++)
+            {
+                message.Add(args[i]);
+            }
+
+            _message = string.Join(" ", message);
+        }
+
+        public OverheadMessageAction(ushort hue, string message)
+        {
+            _hue = hue;
+            _message = message;
+        }
+
+        public override bool Perform()
+        {
+            if (_message.Length > 0)
+            {
+                World.Player.OverheadMessage(_hue, _message);
+            }
+
+            return true;
+        }
+
+        public override string ToScript()
+        {
+            return $"overhead '{_message}' {_hue}";
+        }
+
+        public override string Serialize()
+        {
+            ArrayList list = new ArrayList(2) {_hue, _message};
+
+            return DoSerialize((object[]) list.ToArray(typeof(object)));
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"Overhead ({_hue}): ");
+            sb.Append(_message);
+            return sb.ToString();
+        }
+
+        private MenuItem[] _menuItems;
+
+        public override MenuItem[] GetContextMenuItems()
+        {
+            return _menuItems ?? (_menuItems = new MacroMenuItem[1]
+            {
+                new MacroMenuItem(LocString.Edit, Edit)
+            });
+        }
+
+        private void Edit(object[] args)
+        {
+            if (InputBox.Show(Language.GetString(LocString.EnterNewText), "Input Box", _message))
+                _message = InputBox.GetString();
+
+            Parent?.Update();
         }
     }
 
@@ -1536,6 +1850,11 @@ namespace Assistant.Macros
         {
             Client.Instance.SendToServer(new UseSkill(m_Skill));
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return $"skill '{Language.Skill2Str(m_Skill)}'";
         }
 
         public override string Serialize()
@@ -1574,8 +1893,13 @@ namespace Assistant.Macros
 
         public override bool Perform()
         {
-            m_Spell.OnCast(new ExtCastSpell(m_Book, (ushort)m_Spell.GetID()));
+            m_Spell.OnCast(new ExtCastSpell(m_Book, (ushort) m_Spell.GetID()));
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return $"cast '{m_Spell.GetName()}'";
         }
 
         public override string Serialize()
@@ -1614,8 +1938,13 @@ namespace Assistant.Macros
 
         public override bool Perform()
         {
-            m_Spell.OnCast(new CastSpellFromBook(m_Book, (ushort)m_Spell.GetID()));
+            m_Spell.OnCast(new CastSpellFromBook(m_Book, (ushort) m_Spell.GetID()));
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return $"cast '{m_Spell.GetName()}'";
         }
 
         public override string Serialize()
@@ -1650,8 +1979,13 @@ namespace Assistant.Macros
 
         public override bool Perform()
         {
-            m_Spell.OnCast(new CastSpellFromMacro((ushort)m_Spell.GetID()));
+            m_Spell.OnCast(new CastSpellFromMacro((ushort) m_Spell.GetID()));
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return $"cast '{m_Spell.GetName()}'";
         }
 
         public override string Serialize()
@@ -1671,7 +2005,7 @@ namespace Assistant.Macros
 
         public SetAbilityAction(string[] args)
         {
-            m_Ability = (AOSAbility)Convert.ToInt32(args[1]);
+            m_Ability = (AOSAbility) Convert.ToInt32(args[1]);
         }
 
         public SetAbilityAction(AOSAbility a)
@@ -1685,9 +2019,14 @@ namespace Assistant.Macros
             return true;
         }
 
+        public override string ToScript()
+        {
+            return $"setability '{m_Ability}'";
+        }
+
         public override string Serialize()
         {
-            return DoSerialize((int)m_Ability);
+            return DoSerialize((int) m_Ability);
         }
 
         public override string ToString()
@@ -1727,6 +2066,11 @@ namespace Assistant.Macros
         public override bool PerformWait()
         {
             return !ActionQueue.Empty;
+        }
+
+        public override string ToScript()
+        {
+            return $"dress '{m_Name}'";
         }
 
         public override string Serialize()
@@ -1796,13 +2140,23 @@ namespace Assistant.Macros
             }
             else
             {
-                return !HotKeys.UndressHotKeys.Unequip((Layer)m_Layer);
+                return !Dress.Unequip((Layer) m_Layer);
             }
         }
 
         public override bool PerformWait()
         {
             return !ActionQueue.Empty;
+        }
+
+        public override string ToScript()
+        {
+            if (m_Layer == 255)
+            {
+                return $"undress '{m_Name}'";
+            }
+
+            return m_Layer == 0 ? "undress" : $"undress '{m_Layer}'";
         }
 
         public override string Serialize()
@@ -1817,7 +2171,7 @@ namespace Assistant.Macros
             else if (m_Layer == 0)
                 return Language.GetString(LocString.UndressAll);
             else
-                return Language.Format(LocString.UndressLayerA1, (Layer)m_Layer);
+                return Language.Format(LocString.UndressLayerA1, (Layer) m_Layer);
         }
     }
 
@@ -1826,11 +2180,15 @@ namespace Assistant.Macros
         private Direction m_Dir;
         private static DateTime m_LastWalk = DateTime.MinValue;
 
-        public static DateTime LastWalkTime { get { return m_LastWalk; } set { m_LastWalk = value; } }
+        public static DateTime LastWalkTime
+        {
+            get { return m_LastWalk; }
+            set { m_LastWalk = value; }
+        }
 
         public WalkAction(string[] args)
         {
-            m_Dir = (Direction)(Convert.ToByte(args[1])) & Direction.Mask;
+            m_Dir = (Direction) (Convert.ToByte(args[1])) & Direction.Mask;
         }
 
         public WalkAction(Direction dir)
@@ -1865,14 +2223,19 @@ namespace Assistant.Macros
                 //Client.Instance.SendToServer(new WalkRequest(m_Dir, World.Player.WalkSequence));
                 //World.Player.MoveReq(m_Dir, World.Player.WalkSequence);
 
-                Client.Instance.RequestMove( m_Dir );
+                Client.Instance.RequestMove(m_Dir);
                 return false;
             }
         }
 
+        public override string ToScript()
+        {
+            return m_Dir == Direction.Mask ? $"walk 'Up'" : $"walk '{m_Dir}'";
+        }
+
         public override string Serialize()
         {
-            return DoSerialize((byte)m_Dir);
+            return DoSerialize((byte) m_Dir);
         }
 
         public override string ToString()
@@ -1922,6 +2285,11 @@ namespace Assistant.Macros
                 return Language.Format(LocString.WaitMenuA1, m_MenuID);
         }
 
+        public override string ToScript()
+        {
+            return $"waitformenu {m_MenuID}";
+        }
+
         public override string Serialize()
         {
             return DoSerialize(m_MenuID, m_Timeout.TotalSeconds);
@@ -1931,7 +2299,7 @@ namespace Assistant.Macros
         {
             if (a is WaitForMenuAction)
             {
-                if (m_MenuID == 0 || ((WaitForMenuAction)a).m_MenuID == m_MenuID)
+                if (m_MenuID == 0 || ((WaitForMenuAction) a).m_MenuID == m_MenuID)
                     return true;
             }
 
@@ -1939,14 +2307,15 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.Edit, new MacroMenuCallback( Edit ) ),
-                         this.EditTimeoutMenuItem
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(Edit)),
+                    this.EditTimeoutMenuItem
                 };
             }
 
@@ -2004,7 +2373,8 @@ namespace Assistant.Macros
 
         public override bool PerformWait()
         {
-            return !(World.Player.HasGump && (World.Player.CurrentGumpI == m_GumpID || !m_Strict || m_GumpID == 0));
+            return !((World.Player.HasGump || World.Player.HasCompressedGump) &&
+                     (World.Player.CurrentGumpI == m_GumpID || !m_Strict || m_GumpID == 0));
 
             //if (!World.Player.HasGump) // Does the player even have a gump?
             //    return true;
@@ -2023,6 +2393,11 @@ namespace Assistant.Macros
                 return Language.Format(LocString.WaitGumpA1, m_GumpID);
         }
 
+        public override string ToScript()
+        {
+            return $"waitforgump {m_GumpID}";
+        }
+
         public override string Serialize()
         {
             return DoSerialize(m_GumpID, m_Strict, m_Timeout.TotalSeconds);
@@ -2032,7 +2407,7 @@ namespace Assistant.Macros
         {
             if (a is WaitForGumpAction)
             {
-                if (m_GumpID == 0 || ((WaitForGumpAction)a).m_GumpID == m_GumpID)
+                if (m_GumpID == 0 || ((WaitForGumpAction) a).m_GumpID == m_GumpID)
                     return true;
             }
 
@@ -2040,20 +2415,22 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.Edit, new MacroMenuCallback( Edit ) ),
-                         new MacroMenuItem( LocString.Null, new MacroMenuCallback( ToggleStrict ) ),
-                         this.EditTimeoutMenuItem
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(Edit)),
+                    new MacroMenuItem(LocString.Null, new MacroMenuCallback(ToggleStrict)),
+                    this.EditTimeoutMenuItem
                 };
             }
 
             if (!m_Strict)
-                m_MenuItems[1].Text = String.Format("Change to \"{0}\"", Language.Format(LocString.WaitGumpA1, m_GumpID));
+                m_MenuItems[1].Text =
+                    String.Format("Change to \"{0}\"", Language.Format(LocString.WaitGumpA1, m_GumpID));
             else
                 m_MenuItems[1].Text = String.Format("Change to \"{0}\"", Language.GetString(LocString.WaitAnyGump));
             m_MenuItems[1].Enabled = m_GumpID != 0 || m_Strict;
@@ -2108,20 +2485,26 @@ namespace Assistant.Macros
             return Language.GetString(LocString.WaitTarg);
         }
 
+        public override string ToScript()
+        {
+            return $"waitfortarget";
+        }
+
         public override string Serialize()
         {
             return DoSerialize(m_Timeout.TotalSeconds);
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.Edit, new MacroMenuCallback( Edit ) ),
-                         this.EditTimeoutMenuItem
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(Edit)),
+                    this.EditTimeoutMenuItem
                 };
             }
 
@@ -2156,6 +2539,11 @@ namespace Assistant.Macros
             m_Timeout = time;
         }
 
+        public override string ToScript()
+        {
+            return $"wait {m_Timeout.Milliseconds}";
+        }
+
         public override string Serialize()
         {
             return DoSerialize(m_Timeout);
@@ -2178,13 +2566,14 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.Edit, new MacroMenuCallback( Edit ) )
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(Edit))
                 };
             }
 
@@ -2203,13 +2592,24 @@ namespace Assistant.Macros
         private int m_Value;
         private IfAction.IfVarType m_Stat;
 
-        public byte Op { get { return m_Direction; } }
-        public int Amount { get { return m_Value; } }
-        public IfAction.IfVarType Stat { get { return m_Stat; } }
+        public byte Op
+        {
+            get { return m_Direction; }
+        }
+
+        public int Amount
+        {
+            get { return m_Value; }
+        }
+
+        public IfAction.IfVarType Stat
+        {
+            get { return m_Stat; }
+        }
 
         public WaitForStatAction(string[] args)
         {
-            m_Stat = (IfAction.IfVarType)Convert.ToInt32(args[1]);
+            m_Stat = (IfAction.IfVarType) Convert.ToInt32(args[1]);
             m_Direction = Convert.ToByte(args[2]);
             m_Value = Convert.ToInt32(args[3]);
 
@@ -2232,9 +2632,30 @@ namespace Assistant.Macros
             m_Timeout = TimeSpan.FromMinutes(60.0);
         }
 
+        public override string ToScript()
+        {
+            string op = m_Direction > 0 ? ">=" : "<=";
+            string stat = "unknown";
+
+            switch (m_Stat)
+            {
+                case IfAction.IfVarType.Hits:
+                    stat = "hits";
+                    break;
+                case IfAction.IfVarType.Mana:
+                    stat = "mana";
+                    break;
+                case IfAction.IfVarType.Stamina:
+                    stat = "stam";
+                    break;
+            }
+
+            return $"if {stat} {op} {m_Value}";
+        }
+
         public override string Serialize()
         {
-            return DoSerialize((int)m_Stat, m_Direction, m_Value, m_Timeout.TotalSeconds);
+            return DoSerialize((int) m_Stat, m_Direction, m_Value, m_Timeout.TotalSeconds);
         }
 
         public override bool Perform()
@@ -2280,14 +2701,15 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.Edit, new MacroMenuCallback( Edit ) ),
-                         this.EditTimeoutMenuItem
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(Edit)),
+                    this.EditTimeoutMenuItem
                 };
             }
 
@@ -2316,7 +2738,8 @@ namespace Assistant.Macros
 
             BeginCountersMarker,
 
-            Counter = 50
+            Counter = 50,
+            Skill = 100
         }
 
         // 0 <=,1 >=,2 <,3 >
@@ -2324,16 +2747,37 @@ namespace Assistant.Macros
         private object m_Value;
         private IfVarType m_Var;
         private string m_Counter;
+        private int m_SkillId = -1;
         private Assistant.Counter m_CountObj;
 
-        public sbyte Op { get { return m_Direction; } }
-        public object Value { get { return m_Value; } }
-        public IfVarType Variable { get { return m_Var; } }
-        public string Counter { get { return m_Counter; } }
+        public sbyte Op
+        {
+            get { return m_Direction; }
+        }
+
+        public object Value
+        {
+            get { return m_Value; }
+        }
+
+        public IfVarType Variable
+        {
+            get { return m_Var; }
+        }
+
+        public string Counter
+        {
+            get { return m_Counter; }
+        }
+
+        public int SkillId
+        {
+            get { return m_SkillId; }
+        }
 
         public IfAction(string[] args)
         {
-            m_Var = (IfVarType)Convert.ToInt32(args[1]);
+            m_Var = (IfVarType) Convert.ToInt32(args[1]);
             try
             {
                 m_Direction = Convert.ToSByte(args[2]);
@@ -2345,7 +2789,22 @@ namespace Assistant.Macros
                 m_Direction = -1;
             }
 
-            if (m_Var != IfVarType.SysMessage)
+            if (m_Var == IfVarType.SysMessage)
+            {
+                m_Value = args[3].ToLower();
+            }
+            else if (m_Var == IfVarType.Skill)
+            {
+                if (args[3] is string strVal)
+                {
+                    m_Value = strVal;
+                }
+                else
+                {
+                    m_Value = Convert.ToDouble(args[3]);
+                }
+            }
+            else
             {
                 if (args[3] is string strVal)
                 {
@@ -2356,13 +2815,12 @@ namespace Assistant.Macros
                     m_Value = Convert.ToInt32(args[3]);
                 }
             }
-            else
-            {
-                m_Value = args[3].ToLower();
-            }   
 
             if (m_Var == IfVarType.Counter)
                 m_Counter = args[4];
+
+            if (m_Var == IfVarType.Skill)
+                m_SkillId = Convert.ToInt32(args[4]);
         }
 
         public IfAction(IfVarType var, sbyte dir, int val)
@@ -2387,18 +2845,99 @@ namespace Assistant.Macros
             m_Counter = counter;
         }
 
+        public IfAction(IfVarType var, sbyte dir, double val, int skillId)
+        {
+            m_Var = var;
+            m_Direction = dir;
+            m_Value = val;
+            m_SkillId = skillId;
+        }
+
         public IfAction(IfVarType var, string text)
         {
             m_Var = var;
             m_Value = text.ToLower();
         }
 
+        public override string ToScript()
+        {
+            string op = "??";
+            string expression = "unknown";
+
+            bool useValue = true;
+
+            switch (m_Direction)
+            {
+                case 0:
+                    // if stat <= m_Value
+                    op = "<=";
+                    break;
+                case 1:
+                    // if stat >= m_Value
+                    op = ">=";
+                    break;
+                case 2:
+                    // if stat < m_Value
+                    op = "<";
+                    break;
+                case 3:
+                    // if stat > m_Value
+                    op = ">";
+                    break;
+            }
+
+            switch (m_Var)
+            {
+                case IfAction.IfVarType.Hits:
+                    expression = "hits";
+                    break;
+                case IfAction.IfVarType.Mana:
+                    expression = "mana";
+                    break;
+                case IfAction.IfVarType.Stamina:
+                    expression = "stam";
+                    break;
+                case IfVarType.Poisoned:
+                    expression = "poisoned";
+                    break;
+                case IfVarType.SysMessage:
+                    expression = $"insysmsg '{m_Value}'";
+                    useValue = false;
+                    break;
+                case IfVarType.Weight:
+                    expression = "weight";
+                    break;
+                case IfVarType.Mounted:
+                    expression = "mounted";
+                    break;
+                case IfVarType.RHandEmpty:
+                    expression = "rhandempty";
+                    break;
+                case IfVarType.LHandEmpty:
+                    expression = "lhandempty";
+                    break;
+                case IfVarType.Counter:
+                    expression = $"count '{m_Counter}'";
+                    break;
+                case IfVarType.Skill:
+                    expression = $"skill '{Language.Skill2Str(m_SkillId)}'";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+            return useValue ? $"if {expression} {op} {m_Value}" : $"if {expression}";
+
+        }
+
         public override string Serialize()
         {
             if (m_Var == IfVarType.Counter && m_Counter != null)
-                return DoSerialize((int)m_Var, m_Direction, m_Value, m_Counter);
+                return DoSerialize((int) m_Var, m_Direction, m_Value, m_Counter);
+            else if (m_Var == IfVarType.Skill && m_SkillId != -1)
+                return DoSerialize((int) m_Var, m_Direction, m_Value, m_SkillId);
             else
-                return DoSerialize((int)m_Var, m_Direction, m_Value);
+                return DoSerialize((int) m_Var, m_Direction, m_Value);
         }
 
         public override bool Perform()
@@ -2415,9 +2954,19 @@ namespace Assistant.Macros
                 case IfVarType.Stamina:
                 case IfVarType.Weight:
                 {
-                    int val = 0;
+                    bool isNumeric = true;
+                    int val;
 
-                    if (m_Value is string strVal)
+                    if (m_Value is string value)
+                    {
+                        isNumeric = int.TryParse(value, out val);
+                    }
+                    else
+                    {
+                        val = Convert.ToInt32(m_Value);
+                    }
+
+                    if (!isNumeric && m_Value is string strVal)
                     {
                         if (strVal.Equals("{maxhp}"))
                         {
@@ -2431,10 +2980,10 @@ namespace Assistant.Macros
                         {
                             val = World.Player.ManaMax;
                         }
-                    }
-                    else
-                    {
-                        val = (int) m_Value;
+                        else
+                        {
+                            val = 0;
+                        }
                     }
 
                     switch (m_Direction)
@@ -2543,6 +3092,33 @@ namespace Assistant.Macros
                     return World.Player.GetItemOnLayer(Layer.LeftHand) == null;
                 }
 
+                case IfVarType.Skill:
+
+                    double skillValToCompare;
+
+                    if (m_Value is string skillVal)
+                    {
+                        double.TryParse(skillVal, out skillValToCompare);
+                    }
+                    else
+                    {
+                        skillValToCompare = Convert.ToDouble(m_Value);
+                    }
+
+                    switch (m_Direction)
+                    {
+                        case 0:
+                            return World.Player.Skills[m_SkillId].Value <= skillValToCompare;
+                        case 1:
+                            return World.Player.Skills[m_SkillId].Value >= skillValToCompare;
+                        case 2:
+                            return World.Player.Skills[m_SkillId].Value < skillValToCompare;
+                        case 3:
+                            return World.Player.Skills[m_SkillId].Value > skillValToCompare;
+                        default:
+                            return World.Player.Skills[m_SkillId].Value <= skillValToCompare;
+                    }
+
                 case IfVarType.Counter:
                 {
                     if (m_CountObj == null)
@@ -2560,18 +3136,29 @@ namespace Assistant.Macros
                     if (m_CountObj == null || !m_CountObj.Enabled)
                         return false;
 
+                    int val;
+
+                    if (m_Value is string value)
+                    {
+                        int.TryParse(value, out val);
+                    }
+                    else
+                    {
+                        val = Convert.ToInt32(m_Value);
+                    }
+
                     switch (m_Direction)
                     {
                         case 0:
-                            return m_CountObj.Amount <= (int) m_Value;
+                            return m_CountObj.Amount <= val;
                         case 1:
-                            return m_CountObj.Amount >= (int) m_Value;
+                            return m_CountObj.Amount >= val;
                         case 2:
-                            return m_CountObj.Amount < (int) m_Value;
+                            return m_CountObj.Amount < val;
                         case 3:
-                            return m_CountObj.Amount > (int) m_Value;
+                            return m_CountObj.Amount > val;
                         default:
-                            return m_CountObj.Amount <= (int) m_Value;
+                            return m_CountObj.Amount <= val;
                     }
                 }
 
@@ -2605,16 +3192,19 @@ namespace Assistant.Macros
                 case IfVarType.Mana:
                 case IfVarType.Stamina:
                 case IfVarType.Weight:
-                    return String.Format("If ( {0} {1} {2} )", m_Var, DirectionString(), m_Value);
+                    return $"If ( {m_Var} {DirectionString()} {m_Value} )";
                 case IfVarType.Poisoned:
                     return "If ( Poisoned )";
                 case IfVarType.SysMessage:
-                    {
-                        string str = (string)m_Value;
-                        if (str.Length > 10)
-                            str = str.Substring(0, 7) + "...";
-                        return String.Format("If ( SysMessage \"{0}\" )", str);
-                    }
+                {
+                    string str = (string) m_Value;
+                    if (str.Length > 10)
+                        str = str.Substring(0, 7) + "...";
+                    return String.Format("If ( SysMessage \"{0}\" )", str);
+                }
+
+                case IfVarType.Skill:
+                    return $"If ( \"{Language.Skill2Str(m_SkillId)}\" {DirectionString()} {m_Value})";
                 case IfVarType.Mounted:
                     return "If ( Mounted )";
                 case IfVarType.RHandEmpty:
@@ -2622,20 +3212,21 @@ namespace Assistant.Macros
                 case IfVarType.LHandEmpty:
                     return "If ( L-Hand Empty )";
                 case IfVarType.Counter:
-                    return String.Format("If ( \"{0} count\" {1} {2} )", m_Counter, DirectionString(), m_Value);
+                    return $"If ( \"{m_Counter} count\" {DirectionString()} {m_Value} )";
                 default:
                     return "If ( ??? )";
             }
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.Edit, new MacroMenuCallback( Edit ) )
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(Edit))
                 };
             }
 
@@ -2663,6 +3254,11 @@ namespace Assistant.Macros
         {
             return "Else";
         }
+
+        public override string ToScript()
+        {
+            return "else";
+        }
     }
 
     public class EndIfAction : MacroAction
@@ -2679,6 +3275,11 @@ namespace Assistant.Macros
         public override string ToString()
         {
             return "End If";
+        }
+
+        public override string ToScript()
+        {
+            return "endif";
         }
     }
 
@@ -2712,9 +3313,15 @@ namespace Assistant.Macros
 
         public override bool Perform()
         {
-            if (Client.Instance.AllowBit(FeatureBit.LoopingMacros) || m_Key.DispName.IndexOf(Language.GetString(LocString.PlayA1).Replace(@"{0}", "")) == -1)
+            if (Client.Instance.AllowBit(FeatureBit.LoopingMacros) ||
+                m_Key.DispName.IndexOf(Language.GetString(LocString.PlayA1).Replace(@"{0}", "")) == -1)
                 m_Key.Callback();
             return true;
+        }
+
+        public override string ToScript()
+        {
+            return $"hotkey '{m_Key.DispName}'";
         }
 
         public override string Serialize()
@@ -2732,8 +3339,16 @@ namespace Assistant.Macros
     {
         private int m_Max, m_Count;
 
-        public int Count { get { return m_Count; } set { m_Count = value; } }
-        public int Max { get { return m_Max; } }
+        public int Count
+        {
+            get { return m_Count; }
+            set { m_Count = value; }
+        }
+
+        public int Max
+        {
+            get { return m_Max; }
+        }
 
         public ForAction(string[] args)
         {
@@ -2743,6 +3358,11 @@ namespace Assistant.Macros
         public ForAction(int max)
         {
             m_Max = max;
+        }
+
+        public override string ToScript()
+        {
+            return $"for {m_Max}";
         }
 
         public override string Serialize()
@@ -2761,13 +3381,14 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.Edit, new MacroMenuCallback( Edit ) )
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(Edit))
                 };
             }
 
@@ -2797,6 +3418,1022 @@ namespace Assistant.Macros
         public override string ToString()
         {
             return "End For";
+        }
+
+        public override string ToScript()
+        {
+            return "endfor";
+        }
+    }
+
+    public class WhileAction : MacroAction
+    {
+        public enum WhileVarType : int
+        {
+            Hits = 0,
+            Mana,
+            Stamina,
+            Poisoned,
+            SysMessage,
+            Weight,
+            Mounted,
+            RHandEmpty,
+            LHandEmpty,
+
+            BeginCountersMarker,
+
+            Counter = 50,
+            Skill = 100
+        }
+
+        // 0 <=,1 >=,2 <,3 >
+        private sbyte m_Direction;
+        private object m_Value;
+        private WhileVarType m_Var;
+        private string m_Counter;
+        private int m_SkillId = -1;
+        private Assistant.Counter m_CountObj;
+
+        public sbyte Op
+        {
+            get { return m_Direction; }
+        }
+
+        public object Value
+        {
+            get { return m_Value; }
+        }
+
+        public WhileVarType Variable
+        {
+            get { return m_Var; }
+        }
+
+        public string Counter
+        {
+            get { return m_Counter; }
+        }
+
+        public int SkillId
+        {
+            get { return m_SkillId; }
+        }
+
+        public WhileAction(string[] args)
+        {
+            m_Var = (WhileVarType) Convert.ToInt32(args[1]);
+            try
+            {
+                m_Direction = Convert.ToSByte(args[2]);
+                if (m_Direction > 3)
+                    m_Direction = 0;
+            }
+            catch
+            {
+                m_Direction = -1;
+            }
+
+            if (m_Var == WhileVarType.SysMessage)
+            {
+                m_Value = args[3].ToLower();
+            }
+            else if (m_Var == WhileVarType.Skill)
+            {
+                if (args[3] is string strVal)
+                {
+                    m_Value = strVal;
+                }
+                else
+                {
+                    m_Value = Convert.ToDouble(args[3]);
+                }
+            }
+            else
+            {
+                if (args[3] is string strVal)
+                {
+                    m_Value = strVal;
+                }
+                else
+                {
+                    m_Value = Convert.ToInt32(args[3]);
+                }
+            }
+
+            if (m_Var == WhileVarType.Counter)
+                m_Counter = args[4];
+
+            if (m_Var == WhileVarType.Skill)
+                m_SkillId = Convert.ToInt32(args[4]);
+        }
+
+        public WhileAction(WhileVarType var, sbyte dir, int val)
+        {
+            m_Var = var;
+            m_Direction = dir;
+            m_Value = val;
+        }
+
+        public WhileAction(WhileVarType var, sbyte dir, string val)
+        {
+            m_Var = var;
+            m_Direction = dir;
+            m_Value = val;
+        }
+
+        public WhileAction(WhileVarType var, sbyte dir, int val, string counter)
+        {
+            m_Var = var;
+            m_Direction = dir;
+            m_Value = val;
+            m_Counter = counter;
+        }
+
+        public WhileAction(WhileVarType var, sbyte dir, double val, int skillId)
+        {
+            m_Var = var;
+            m_Direction = dir;
+            m_Value = val;
+            m_SkillId = skillId;
+        }
+
+        public WhileAction(WhileVarType var, string text)
+        {
+            m_Var = var;
+            m_Value = text.ToLower();
+        }
+
+        public override string ToScript()
+        {
+            string op = "??";
+            string expression = "unknown";
+
+            bool useValue = true;
+
+            switch (m_Direction)
+            {
+                case 0:
+                    // if stat <= m_Value
+                    op = "<=";
+                    break;
+                case 1:
+                    // if stat >= m_Value
+                    op = ">=";
+                    break;
+                case 2:
+                    // if stat < m_Value
+                    op = "<";
+                    break;
+                case 3:
+                    // if stat > m_Value
+                    op = ">";
+                    break;
+            }
+
+            switch (m_Var)
+            {
+                case WhileVarType.Hits:
+                    expression = "hits";
+                    break;
+                case WhileVarType.Mana:
+                    expression = "mana";
+                    break;
+                case WhileVarType.Stamina:
+                    expression = "stam";
+                    break;
+                case WhileVarType.Poisoned:
+                    expression = "poisoned";
+                    break;
+                case WhileVarType.SysMessage:
+                    expression = $"insysmsg '{m_Value}'";
+                    useValue = false;
+                    break;
+                case WhileVarType.Weight:
+                    expression = "weight";
+                    break;
+                case WhileVarType.Mounted:
+                    expression = "mounted";
+                    break;
+                case WhileVarType.RHandEmpty:
+                    expression = "rhandempty";
+                    break;
+                case WhileVarType.LHandEmpty:
+                    expression = "lhandempty";
+                    break;
+                case WhileVarType.Counter:
+                    expression = $"count '{m_Counter}'";
+                    break;
+                case WhileVarType.Skill:
+                    expression = $"skill '{Language.Skill2Str(m_SkillId)}'";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+            return useValue ? $"while {expression} {op} {m_Value}" : $"while {expression}";
+        }
+
+        public override string Serialize()
+        {
+            if (m_Var == WhileVarType.Counter && m_Counter != null)
+                return DoSerialize((int) m_Var, m_Direction, m_Value, m_Counter);
+            else if (m_Var == WhileVarType.Skill && m_SkillId != -1)
+                return DoSerialize((int) m_Var, m_Direction, m_Value, m_SkillId);
+            else
+                return DoSerialize((int) m_Var, m_Direction, m_Value);
+        }
+
+        public override bool Perform()
+        {
+            return true;
+        }
+
+        public bool Evaluate()
+        {
+            switch (m_Var)
+            {
+                case WhileVarType.Hits:
+                case WhileVarType.Mana:
+                case WhileVarType.Stamina:
+                case WhileVarType.Weight:
+                {
+                    bool isNumeric = true;
+                    int val;
+
+                    if (m_Value is string value)
+                    {
+                        isNumeric = int.TryParse(value, out val);
+                    }
+                    else
+                    {
+                        val = Convert.ToInt32(m_Value);
+                    }
+
+                    if (!isNumeric && m_Value is string strVal)
+                    {
+                        if (strVal.Equals("{maxhp}"))
+                        {
+                            val = World.Player.HitsMax;
+                        }
+                        else if (strVal.Equals("{maxstam}"))
+                        {
+                            val = World.Player.StamMax;
+                        }
+                        else if (strVal.Equals("{maxmana}"))
+                        {
+                            val = World.Player.ManaMax;
+                        }
+                        else
+                        {
+                            val = 0;
+                        }
+                    }
+
+                    switch (m_Direction)
+                    {
+                        case 0:
+                            // if stat <= m_Value
+                            switch (m_Var)
+                            {
+                                case WhileVarType.Hits:
+                                    return World.Player.Hits <= val;
+                                case WhileVarType.Mana:
+                                    return World.Player.Mana <= val;
+                                case WhileVarType.Stamina:
+                                    return World.Player.Stam <= val;
+                                case WhileVarType.Weight:
+                                    return World.Player.Weight <= val;
+                            }
+
+                            break;
+                        case 1:
+                            // if stat >= m_Value
+                            switch (m_Var)
+                            {
+                                case WhileVarType.Hits:
+                                    return World.Player.Hits >= val;
+                                case WhileVarType.Mana:
+                                    return World.Player.Mana >= val;
+                                case WhileVarType.Stamina:
+                                    return World.Player.Stam >= val;
+                                case WhileVarType.Weight:
+                                    return World.Player.Weight >= val;
+                            }
+
+                            break;
+                        case 2:
+                            // if stat < m_Value
+                            switch (m_Var)
+                            {
+                                case WhileVarType.Hits:
+                                    return World.Player.Hits < val;
+                                case WhileVarType.Mana:
+                                    return World.Player.Mana < val;
+                                case WhileVarType.Stamina:
+                                    return World.Player.Stam < val;
+                                case WhileVarType.Weight:
+                                    return World.Player.Weight < val;
+                            }
+
+                            break;
+                        case 3:
+                            // if stat > m_Value
+                            switch (m_Var)
+                            {
+                                case WhileVarType.Hits:
+                                    return World.Player.Hits > val;
+                                case WhileVarType.Mana:
+                                    return World.Player.Mana > val;
+                                case WhileVarType.Stamina:
+                                    return World.Player.Stam > val;
+                                case WhileVarType.Weight:
+                                    return World.Player.Weight > val;
+                            }
+
+                            break;
+                    }
+
+                    return false;
+                }
+
+                case WhileVarType.Poisoned:
+                {
+                    if (Client.Instance.AllowBit(FeatureBit.BlockHealPoisoned))
+                        return World.Player.Poisoned;
+                    else
+                        return false;
+                }
+
+                case WhileVarType.SysMessage:
+                {
+                    string text = (string) m_Value;
+                    for (int i = PacketHandlers.SysMessages.Count - 1; i >= 0; i--)
+                    {
+                        string sys = PacketHandlers.SysMessages[i];
+                        if (sys.IndexOf(text, StringComparison.OrdinalIgnoreCase) != -1)
+                        {
+                            PacketHandlers.SysMessages.RemoveRange(0, i + 1);
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                case WhileVarType.Mounted:
+                {
+                    return World.Player.GetItemOnLayer(Layer.Mount) != null;
+                }
+
+                case WhileVarType.RHandEmpty:
+                {
+                    return World.Player.GetItemOnLayer(Layer.RightHand) == null;
+                }
+
+                case WhileVarType.LHandEmpty:
+                {
+                    return World.Player.GetItemOnLayer(Layer.LeftHand) == null;
+                }
+
+                case WhileVarType.Skill:
+
+                    double skillValToCompare;
+
+                    if (m_Value is string skillVal)
+                    {
+                        double.TryParse(skillVal, out skillValToCompare);
+                    }
+                    else
+                    {
+                        skillValToCompare = Convert.ToDouble(m_Value);
+                    }
+
+                    switch (m_Direction)
+                    {
+                        case 0:
+                            return World.Player.Skills[m_SkillId].Value <= skillValToCompare;
+                        case 1:
+                            return World.Player.Skills[m_SkillId].Value >= skillValToCompare;
+                        case 2:
+                            return World.Player.Skills[m_SkillId].Value < skillValToCompare;
+                        case 3:
+                            return World.Player.Skills[m_SkillId].Value > skillValToCompare;
+                        default:
+                            return World.Player.Skills[m_SkillId].Value <= skillValToCompare;
+                    }
+
+                case WhileVarType.Counter:
+                {
+                    if (m_CountObj == null)
+                    {
+                        foreach (Assistant.Counter c in Assistant.Counter.List)
+                        {
+                            if (c.Name == m_Counter)
+                            {
+                                m_CountObj = c;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (m_CountObj == null || !m_CountObj.Enabled)
+                        return false;
+
+                    int val;
+
+                    if (m_Value is string value)
+                    {
+                        int.TryParse(value, out val);
+                    }
+                    else
+                    {
+                        val = Convert.ToInt32(m_Value);
+                    }
+
+                    switch (m_Direction)
+                    {
+                        case 0:
+                            return m_CountObj.Amount <= val;
+                        case 1:
+                            return m_CountObj.Amount >= val;
+                        case 2:
+                            return m_CountObj.Amount < val;
+                        case 3:
+                            return m_CountObj.Amount > val;
+                        default:
+                            return m_CountObj.Amount <= val;
+                    }
+                }
+
+                default:
+                    return false;
+            }
+        }
+
+        private string DirectionString()
+        {
+            switch (m_Direction)
+            {
+                case 0:
+                    return "<=";
+                case 1:
+                    return ">=";
+                case 2:
+                    return "<";
+                case 3:
+                    return ">";
+                default:
+                    return "<=";
+            }
+        }
+
+        public override string ToString()
+        {
+            switch (m_Var)
+            {
+                case WhileVarType.Hits:
+                case WhileVarType.Mana:
+                case WhileVarType.Stamina:
+                case WhileVarType.Weight:
+                    return $"While ( {m_Var} {DirectionString()} {m_Value} )";
+                case WhileVarType.Poisoned:
+                    return "While ( Poisoned )";
+                case WhileVarType.SysMessage:
+                {
+                    string str = (string) m_Value;
+                    if (str.Length > 10)
+                        str = str.Substring(0, 7) + "...";
+                    return $"While ( SysMessage \"{str}\" )";
+                }
+
+                case WhileVarType.Skill:
+                    return $"While ( \"{Language.Skill2Str(m_SkillId)}\" {DirectionString()} {m_Value})";
+                case WhileVarType.Mounted:
+                    return "While ( Mounted )";
+                case WhileVarType.RHandEmpty:
+                    return "While ( R-Hand Empty )";
+                case WhileVarType.LHandEmpty:
+                    return "While ( L-Hand Empty )";
+                case WhileVarType.Counter:
+                    return $"While ( \"{m_Counter} count\" {DirectionString()} {m_Value} )";
+                default:
+                    return "While ( ??? )";
+            }
+        }
+
+        private MenuItem[] m_MenuItems;
+
+        public override MenuItem[] GetContextMenuItems()
+        {
+            if (m_MenuItems == null)
+            {
+                m_MenuItems = new MacroMenuItem[]
+                {
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(Edit))
+                };
+            }
+
+            return m_MenuItems;
+        }
+
+        private void Edit(object[] args)
+        {
+            new MacroInsertWhile(this).ShowDialog(Engine.MainWindow);
+        }
+    }
+
+    public class EndWhileAction : MacroAction
+    {
+        public EndWhileAction()
+        {
+        }
+
+        public override bool Perform()
+        {
+            return true;
+        }
+
+        public override string ToString()
+        {
+            return "End While";
+        }
+
+        public override string ToScript()
+        {
+            return "endwhile";
+        }
+    }
+
+    public class StartDoWhileAction : MacroAction
+    {
+        public StartDoWhileAction()
+        {
+        }
+
+        public override bool Perform()
+        {
+            return true;
+        }
+
+        public override string ToString()
+        {
+            return "Do";
+        }
+
+        public override string ToScript()
+        {
+            return "# do-while not implemented, use while";
+        }
+    }
+
+    public class DoWhileAction : MacroAction
+    {
+        public enum DoWhileVarType : int
+        {
+            Hits = 0,
+            Mana,
+            Stamina,
+            Poisoned,
+            SysMessage,
+            Weight,
+            Mounted,
+            RHandEmpty,
+            LHandEmpty,
+
+            BeginCountersMarker,
+
+            Counter = 50,
+            Skill = 100
+        }
+
+        // 0 <=,1 >=,2 <,3 >
+        private sbyte m_Direction;
+        private object m_Value;
+        private DoWhileVarType m_Var;
+        private string m_Counter;
+        private int m_SkillId = -1;
+        private Assistant.Counter m_CountObj;
+
+        public sbyte Op
+        {
+            get { return m_Direction; }
+        }
+
+        public object Value
+        {
+            get { return m_Value; }
+        }
+
+        public DoWhileVarType Variable
+        {
+            get { return m_Var; }
+        }
+
+        public string Counter
+        {
+            get { return m_Counter; }
+        }
+
+        public int SkillId
+        {
+            get { return m_SkillId; }
+        }
+
+        public DoWhileAction(string[] args)
+        {
+            m_Var = (DoWhileVarType) Convert.ToInt32(args[1]);
+            try
+            {
+                m_Direction = Convert.ToSByte(args[2]);
+                if (m_Direction > 3)
+                    m_Direction = 0;
+            }
+            catch
+            {
+                m_Direction = -1;
+            }
+
+            if (m_Var == DoWhileVarType.SysMessage)
+            {
+                m_Value = args[3].ToLower();
+            }
+            else if (m_Var == DoWhileVarType.Skill)
+            {
+                if (args[3] is string strVal)
+                {
+                    m_Value = strVal;
+                }
+                else
+                {
+                    m_Value = Convert.ToDouble(args[3]);
+                }
+            }
+            else
+            {
+                if (args[3] is string strVal)
+                {
+                    m_Value = strVal;
+                }
+                else
+                {
+                    m_Value = Convert.ToInt32(args[3]);
+                }
+            }
+
+            if (m_Var == DoWhileVarType.Counter)
+                m_Counter = args[4];
+
+            if (m_Var == DoWhileVarType.Skill)
+                m_SkillId = Convert.ToInt32(args[4]);
+        }
+
+        public DoWhileAction(DoWhileVarType var, sbyte dir, int val)
+        {
+            m_Var = var;
+            m_Direction = dir;
+            m_Value = val;
+        }
+
+        public DoWhileAction(DoWhileVarType var, sbyte dir, string val)
+        {
+            m_Var = var;
+            m_Direction = dir;
+            m_Value = val;
+        }
+
+        public DoWhileAction(DoWhileVarType var, sbyte dir, int val, string counter)
+        {
+            m_Var = var;
+            m_Direction = dir;
+            m_Value = val;
+            m_Counter = counter;
+        }
+
+        public DoWhileAction(DoWhileVarType var, sbyte dir, double val, int skillId)
+        {
+            m_Var = var;
+            m_Direction = dir;
+            m_Value = val;
+            m_SkillId = skillId;
+        }
+
+        public DoWhileAction(DoWhileVarType var, string text)
+        {
+            m_Var = var;
+            m_Value = text.ToLower();
+        }
+
+        public override string ToScript()
+        {
+            return "# do-while not implemented, use while";
+        }
+
+        public override string Serialize()
+        {
+            if (m_Var == DoWhileVarType.Counter && m_Counter != null)
+                return DoSerialize((int) m_Var, m_Direction, m_Value, m_Counter);
+            else if (m_Var == DoWhileVarType.Skill && m_SkillId != -1)
+                return DoSerialize((int) m_Var, m_Direction, m_Value, m_SkillId);
+            else
+                return DoSerialize((int) m_Var, m_Direction, m_Value);
+        }
+
+        public override bool Perform()
+        {
+            return true;
+        }
+
+        public bool Evaluate()
+        {
+            switch (m_Var)
+            {
+                case DoWhileVarType.Hits:
+                case DoWhileVarType.Mana:
+                case DoWhileVarType.Stamina:
+                case DoWhileVarType.Weight:
+                {
+                    bool isNumeric = true;
+                    int val;
+
+                    if (m_Value is string value)
+                    {
+                        isNumeric = int.TryParse(value, out val);
+                    }
+                    else
+                    {
+                        val = Convert.ToInt32(m_Value);
+                    }
+
+                    if (!isNumeric && m_Value is string strVal)
+                    {
+                        if (strVal.Equals("{maxhp}"))
+                        {
+                            val = World.Player.HitsMax;
+                        }
+                        else if (strVal.Equals("{maxstam}"))
+                        {
+                            val = World.Player.StamMax;
+                        }
+                        else if (strVal.Equals("{maxmana}"))
+                        {
+                            val = World.Player.ManaMax;
+                        }
+                        else
+                        {
+                            val = 0;
+                        }
+                    }
+
+                    switch (m_Direction)
+                    {
+                        case 0:
+                            // if stat <= m_Value
+                            switch (m_Var)
+                            {
+                                case DoWhileVarType.Hits:
+                                    return World.Player.Hits <= val;
+                                case DoWhileVarType.Mana:
+                                    return World.Player.Mana <= val;
+                                case DoWhileVarType.Stamina:
+                                    return World.Player.Stam <= val;
+                                case DoWhileVarType.Weight:
+                                    return World.Player.Weight <= val;
+                            }
+
+                            break;
+                        case 1:
+                            // if stat >= m_Value
+                            switch (m_Var)
+                            {
+                                case DoWhileVarType.Hits:
+                                    return World.Player.Hits >= val;
+                                case DoWhileVarType.Mana:
+                                    return World.Player.Mana >= val;
+                                case DoWhileVarType.Stamina:
+                                    return World.Player.Stam >= val;
+                                case DoWhileVarType.Weight:
+                                    return World.Player.Weight >= val;
+                            }
+
+                            break;
+                        case 2:
+                            // if stat < m_Value
+                            switch (m_Var)
+                            {
+                                case DoWhileVarType.Hits:
+                                    return World.Player.Hits < val;
+                                case DoWhileVarType.Mana:
+                                    return World.Player.Mana < val;
+                                case DoWhileVarType.Stamina:
+                                    return World.Player.Stam < val;
+                                case DoWhileVarType.Weight:
+                                    return World.Player.Weight < val;
+                            }
+
+                            break;
+                        case 3:
+                            // if stat > m_Value
+                            switch (m_Var)
+                            {
+                                case DoWhileVarType.Hits:
+                                    return World.Player.Hits > val;
+                                case DoWhileVarType.Mana:
+                                    return World.Player.Mana > val;
+                                case DoWhileVarType.Stamina:
+                                    return World.Player.Stam > val;
+                                case DoWhileVarType.Weight:
+                                    return World.Player.Weight > val;
+                            }
+
+                            break;
+                    }
+
+                    return false;
+                }
+
+                case DoWhileVarType.Poisoned:
+                {
+                    if (Client.Instance.AllowBit(FeatureBit.BlockHealPoisoned))
+                        return World.Player.Poisoned;
+                    else
+                        return false;
+                }
+
+                case DoWhileVarType.SysMessage:
+                {
+                    string text = (string) m_Value;
+                    for (int i = PacketHandlers.SysMessages.Count - 1; i >= 0; i--)
+                    {
+                        string sys = PacketHandlers.SysMessages[i];
+                        if (sys.IndexOf(text, StringComparison.OrdinalIgnoreCase) != -1)
+                        {
+                            PacketHandlers.SysMessages.RemoveRange(0, i + 1);
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                case DoWhileVarType.Mounted:
+                {
+                    return World.Player.GetItemOnLayer(Layer.Mount) != null;
+                }
+
+                case DoWhileVarType.RHandEmpty:
+                {
+                    return World.Player.GetItemOnLayer(Layer.RightHand) == null;
+                }
+
+                case DoWhileVarType.LHandEmpty:
+                {
+                    return World.Player.GetItemOnLayer(Layer.LeftHand) == null;
+                }
+
+                case DoWhileVarType.Skill:
+
+                    double skillValToCompare;
+
+                    if (m_Value is string skillVal)
+                    {
+                        double.TryParse(skillVal, out skillValToCompare);
+                    }
+                    else
+                    {
+                        skillValToCompare = Convert.ToDouble(m_Value);
+                    }
+
+                    switch (m_Direction)
+                    {
+                        case 0:
+                            return World.Player.Skills[m_SkillId].Value <= skillValToCompare;
+                        case 1:
+                            return World.Player.Skills[m_SkillId].Value >= skillValToCompare;
+                        case 2:
+                            return World.Player.Skills[m_SkillId].Value < skillValToCompare;
+                        case 3:
+                            return World.Player.Skills[m_SkillId].Value > skillValToCompare;
+                        default:
+                            return World.Player.Skills[m_SkillId].Value <= skillValToCompare;
+                    }
+
+                case DoWhileVarType.Counter:
+                {
+                    if (m_CountObj == null)
+                    {
+                        foreach (Assistant.Counter c in Assistant.Counter.List)
+                        {
+                            if (c.Name == m_Counter)
+                            {
+                                m_CountObj = c;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (m_CountObj == null || !m_CountObj.Enabled)
+                        return false;
+
+                    int val;
+
+                    if (m_Value is string value)
+                    {
+                        int.TryParse(value, out val);
+                    }
+                    else
+                    {
+                        val = Convert.ToInt32(m_Value);
+                    }
+
+                    switch (m_Direction)
+                    {
+                        case 0:
+                            return m_CountObj.Amount <= val;
+                        case 1:
+                            return m_CountObj.Amount >= val;
+                        case 2:
+                            return m_CountObj.Amount < val;
+                        case 3:
+                            return m_CountObj.Amount > val;
+                        default:
+                            return m_CountObj.Amount <= val;
+                    }
+                }
+
+                default:
+                    return false;
+            }
+        }
+
+        private string DirectionString()
+        {
+            switch (m_Direction)
+            {
+                case 0:
+                    return "<=";
+                case 1:
+                    return ">=";
+                case 2:
+                    return "<";
+                case 3:
+                    return ">";
+                default:
+                    return "<=";
+            }
+        }
+
+        public override string ToString()
+        {
+            switch (m_Var)
+            {
+                case DoWhileVarType.Hits:
+                case DoWhileVarType.Mana:
+                case DoWhileVarType.Stamina:
+                case DoWhileVarType.Weight:
+                    return $"Do While ( {m_Var} {DirectionString()} {m_Value} )";
+                case DoWhileVarType.Poisoned:
+                    return "Do While ( Poisoned )";
+                case DoWhileVarType.SysMessage:
+                {
+                    string str = (string) m_Value;
+                    if (str.Length > 10)
+                        str = str.Substring(0, 7) + "...";
+                    return String.Format("Do While ( SysMessage \"{0}\" )", str);
+                }
+
+                case DoWhileVarType.Skill:
+                    return $"Do While ( \"{Language.Skill2Str(m_SkillId)}\" {DirectionString()} {m_Value})";
+                case DoWhileVarType.Mounted:
+                    return "Do While ( Mounted )";
+                case DoWhileVarType.RHandEmpty:
+                    return "Do While ( R-Hand Empty )";
+                case DoWhileVarType.LHandEmpty:
+                    return "Do While ( L-Hand Empty )";
+                case DoWhileVarType.Counter:
+                    return $"Do While ( \"{m_Counter} count\" {DirectionString()} {m_Value} )";
+                default:
+                    return "Do While ( ??? )";
+            }
+        }
+
+        private MenuItem[] m_MenuItems;
+
+        public override MenuItem[] GetContextMenuItems()
+        {
+            if (m_MenuItems == null)
+            {
+                m_MenuItems = new MacroMenuItem[]
+                {
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(Edit))
+                };
+            }
+
+            return m_MenuItems;
+        }
+
+        private void Edit(object[] args)
+        {
+            new MacroInsertDoWhile(this).ShowDialog(Engine.MainWindow);
         }
     }
 
@@ -2842,6 +4479,11 @@ namespace Assistant.Macros
             return true;
         }
 
+        public override string ToScript()
+        {
+            return $"menu {m_Entity} {m_Idx}";
+        }
+
         public override string Serialize()
         {
             return DoSerialize(m_Entity, m_Idx, m_CtxName);
@@ -2885,6 +4527,11 @@ namespace Assistant.Macros
             return false;
         }
 
+        public override string ToScript()
+        {
+            return $"promptresponse '{m_Response}'";
+        }
+
         public override string Serialize()
         {
             return DoSerialize(m_Response);
@@ -2900,9 +4547,9 @@ namespace Assistant.Macros
         public override MenuItem[] GetContextMenuItems()
         {
             if (this.m_MenuItems == null)
-                this.m_MenuItems = (MenuItem[])new MacroMenuItem[1]
+                this.m_MenuItems = (MenuItem[]) new MacroMenuItem[1]
                 {
-          new MacroMenuItem(LocString.Edit, new MacroMenuCallback(this.Edit), new object[0])
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(this.Edit), new object[0])
                 };
             return this.m_MenuItems;
         }
@@ -2977,6 +4624,11 @@ namespace Assistant.Macros
             return $"Wait For Prompt ({m_PromptID})";
         }
 
+        public override string ToScript()
+        {
+            return m_PromptID == 0 || !m_Strict ? "waitforprompt" : $"waitforprompt '{m_PromptID}'";
+        }
+
         public override string Serialize()
         {
             return DoSerialize(m_PromptID, m_Strict, m_Timeout.TotalSeconds);
@@ -2986,7 +4638,7 @@ namespace Assistant.Macros
         {
             if (a is WaitForGumpAction)
             {
-                if (m_PromptID == 0 || ((WaitForPromptAction)a).m_PromptID == m_PromptID)
+                if (m_PromptID == 0 || ((WaitForPromptAction) a).m_PromptID == m_PromptID)
                     return true;
             }
 
@@ -2994,15 +4646,16 @@ namespace Assistant.Macros
         }
 
         private MenuItem[] m_MenuItems;
+
         public override MenuItem[] GetContextMenuItems()
         {
             if (m_MenuItems == null)
             {
                 m_MenuItems = new MacroMenuItem[]
                 {
-                         new MacroMenuItem( LocString.Edit, new MacroMenuCallback( Edit ) ),
-                         new MacroMenuItem( LocString.Null, new MacroMenuCallback( ToggleStrict ) ),
-                         this.EditTimeoutMenuItem
+                    new MacroMenuItem(LocString.Edit, new MacroMenuCallback(Edit)),
+                    new MacroMenuItem(LocString.Null, new MacroMenuCallback(ToggleStrict)),
+                    this.EditTimeoutMenuItem
                 };
             }
 
@@ -3029,4 +4682,3 @@ namespace Assistant.Macros
         }
     }
 }
-

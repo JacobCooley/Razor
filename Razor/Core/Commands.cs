@@ -1,10 +1,31 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using Assistant.Agents;
 using Assistant.Core;
 using Assistant.Macros;
+using Assistant.Scripts;
 
 namespace Assistant
 {
@@ -19,17 +40,20 @@ namespace Assistant
             Command.Register("Help", Command.ListCommands);
             Command.Register("Echo", Echo);
             Command.Register("Macro", MacroCmd);
+            Command.Register("Script", ScriptCmd);
             Command.Register("Hue", GetItemHue);
             Command.Register("Item", GetItemHue);
-            Command.Register("ClearItems", ClearItems);
             Command.Register("Resync", Resync);
             Command.Register("Mobile", GetMobile);
             Command.Register("Weather", SetWeather);
             Command.Register("Season", SetSeason);
             Command.Register("Damage", DamageTrackerReport);
+            Command.Register("Set", SetMacroVariable);
         }
 
         private static DateTime m_LastSync;
+        private static string _lastMacroVariable;
+
         private static void Resync(string[] param)
         {
             if (DateTime.UtcNow - m_LastSync > TimeSpan.FromSeconds(1.0))
@@ -47,6 +71,63 @@ namespace Assistant
         {
             if (DamageTracker.Running)
                 DamageTracker.SendReport();
+        }
+
+        private static void SetMacroVariable(string[] param)
+        {
+            if (MacroManager.Playing || MacroManager.Recording || World.Player == null)
+                return;
+
+            if (string.IsNullOrEmpty(param[0]))
+            {
+                World.Player.SendMessage(MsgLevel.Error, "You must pass in a macro variable name.");
+                return;
+            }
+
+            _lastMacroVariable = param[0];
+
+            Targeting.OneTimeTarget(OnMacroVariableAddTarget);
+            World.Player.SendMessage(MsgLevel.Force, $"Select new target for '{_lastMacroVariable}'");
+        }
+
+        private static void OnMacroVariableAddTarget(bool ground, Serial serial, Point3D pt, ushort gfx)
+        {
+            TargetInfo t = new TargetInfo
+            {
+                Gfx = gfx,
+                Serial = serial,
+                Type = (byte) (ground ? 1 : 0),
+                X = pt.X,
+                Y = pt.Y,
+                Z = pt.Z
+            };
+
+            bool foundVar = false;
+
+            foreach (MacroVariables.MacroVariable mV in MacroVariables.MacroVariableList
+            )
+            {
+                if (mV.Name.ToLower().Equals(_lastMacroVariable.ToLower()))
+                {
+                    foundVar = true;
+                    // macro exists, update
+                    mV.TargetInfo = t;
+
+                    World.Player.SendMessage(MsgLevel.Force, $"'{mV.Name}' macro variable updated to '{t.Serial}'");
+
+                    break;
+                }
+            }
+
+            if (!foundVar)
+            {
+                MacroVariables.MacroVariableList.Add(new MacroVariables.MacroVariable(_lastMacroVariable, t));
+                World.Player.SendMessage(MsgLevel.Force,
+                    $"'{_lastMacroVariable}' not found, created variable and set to '{t.Serial}'");
+            }
+
+            // Save and reload the macros and vars
+            Engine.MainWindow.SaveMacroVariables();
         }
 
         private static void SetWeather(string[] param)
@@ -78,12 +159,9 @@ namespace Assistant
             if (item != null)
             {
                 Client.Instance.SendToClient(new UnicodeMessage(0xFFFFFFFF, -1, MessageType.Regular, 0x3B2, 3,
-                    Language.CliLocName, "System", $"Item: '{item.Name}' '{item.ItemID.Value}'"));
-
-                Client.Instance.SendToClient(new UnicodeMessage(0xFFFFFFFF, -1, MessageType.Regular, 0x3B2, 3,
-                    Language.CliLocName, "System", $"Hue: '{item.Hue}'"));
+                    Language.CliLocName, "System",
+                    $"Item Name: '{item.ItemID.ItemData.Name}' Serial: '{item.Serial}' Id: '{item.ItemID.Value}' Hue: '{item.Hue}'"));
             }
-
         }
 
         private static void GetMobile(string[] param)
@@ -103,9 +181,9 @@ namespace Assistant
                     Language.CliLocName, "System", $"Name: '{mobile.Name}'"));
 
                 Client.Instance.SendToClient(new UnicodeMessage(0xFFFFFFFF, -1, MessageType.Regular, 0x3B2, 3,
-                    Language.CliLocName, "System", $"Serial: '{mobile.Serial}' Hue: '{mobile.Hue}' IsGhost: '{mobile.IsGhost}' IsHuman: '{mobile.IsHuman}' IsMonster: '{mobile.IsMonster}'"));
+                    Language.CliLocName, "System",
+                    $"Serial: '{mobile.Serial}' Hue: '{mobile.Hue}' IsGhost: '{mobile.IsGhost}' IsHuman: '{mobile.IsHuman}' IsMonster: '{mobile.IsMonster}'"));
             }
-
         }
 
 
@@ -118,27 +196,12 @@ namespace Assistant
                 Language.CliLocName, "System", sb.ToString()));
         }
 
-        private static void ClearItems(string[] param)
-        {
-            Client.Instance.SendToClient(new UnicodeMessage(0xFFFFFFFF, -1, MessageType.Regular, 0x3B2, 3,
-                Language.CliLocName, "System", "Clearing all items from memory cache"));
-
-            World.Items.Clear();
-            Resync(param);
-
-            Item.UpdateContainers();
-
-            Client.Instance.SendToClient(new UnicodeMessage(0xFFFFFFFF, -1, MessageType.Regular, 0x3B2, 3,
-                Language.CliLocName, "System", "All items in memory cache have been cleared"));
-
-        }
-
         private static void AddUseOnce(string[] param)
         {
             string use = Language.GetString(LocString.UseOnce);
             for (int i = 0; i < Agent.List.Count; i++)
             {
-                Agent a = (Agent)Agent.List[i];
+                Agent a = Agent.List[i];
                 if (a.Name == use)
                 {
                     a.OnButtonPress(1);
@@ -204,14 +267,29 @@ namespace Assistant
                 return;
             }
 
+            string macroName = string.Join(" ", param);
+
             foreach (Macro m in MacroManager.List)
             {
-                if (m.ToString() == param[0])
+                if (m.ToString().ToLower().Equals(macroName.ToLower()))
                 {
                     MacroManager.HotKeyPlay(m);
                     break;
                 }
             }
+        }
+
+        private static void ScriptCmd(string[] param)
+        {
+            if (param.Length <= 0)
+            {
+                World.Player.SendMessage("You must enter a script name.");
+                return;
+            }
+
+            string name = string.Join(" ", param);
+
+            ScriptManager.PlayScript(name);
         }
     }
 
@@ -262,7 +340,7 @@ namespace Assistant
 
         public static void OnSpeech(Packet pvSrc, PacketHandlerEventArgs args)
         {
-            MessageType type = (MessageType)pvSrc.ReadByte();
+            MessageType type = (MessageType) pvSrc.ReadByte();
             ushort hue = pvSrc.ReadUInt16();
             ushort font = pvSrc.ReadUInt16();
             string lang = pvSrc.ReadString(4);
@@ -277,7 +355,7 @@ namespace Assistant
                 int value = pvSrc.ReadInt16();
                 int count = (value & 0xFFF0) >> 4;
                 keys = new ArrayList();
-                keys.Add((ushort)value);
+                keys.Add((ushort) value);
 
                 for (int i = 0; i < count; ++i)
                 {
@@ -304,11 +382,14 @@ namespace Assistant
 
             text = text.Trim();
 
+            char commandToggle = Client.IsOSI ? '-' : '>';
+
             if (text.Length > 0)
             {
-                if (text[0] != '-')
+                if (text[0] != commandToggle)
                 {
                     Macros.MacroManager.Action(new Macros.SpeechAction(type, hue, font, lang, keys, text));
+                    ScriptManager.AddToScript($"say \'{text}\'");
                 }
                 else
                 {
@@ -317,7 +398,7 @@ namespace Assistant
 
                     if (m_List.ContainsKey(split[0]))
                     {
-                        CommandCallback call = (CommandCallback)m_List[split[0]];
+                        CommandCallback call = (CommandCallback) m_List[split[0]];
                         if (call != null)
                         {
                             string[] param = new String[split.Length - 1];
@@ -332,7 +413,6 @@ namespace Assistant
                     {
                         World.Player.SendMessage(MsgLevel.Force, "Unknown command");
                     }
-                    
                 }
             }
         }

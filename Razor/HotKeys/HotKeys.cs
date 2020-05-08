@@ -1,11 +1,29 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Text;
 using System.Xml;
-
+using Assistant.Scripts;
 using Assistant.UI;
 
 namespace Assistant
@@ -33,8 +51,9 @@ namespace Assistant
         Macros,
         Spells,
         Skills,
-
-        Misc
+        Misc,
+        Friends,
+        Scripts
     }
 
     public enum HKSubCat
@@ -64,10 +83,12 @@ namespace Assistant
         BushidoC = SpellOffset + 40,
         NinjisuC = SpellOffset + 50,
         SpellWeaveC = SpellOffset + 60,
+        MystC = SpellOffset + 65,
+        MasteriesC = SpellOffset + 70,
 
         // pet commands
         PetCommands = 780, //1749
-        
+
         SubTargetCriminal = 796,
         SubTargetEnemy,
         SubTargetFriendly,
@@ -202,7 +223,7 @@ namespace Assistant
             }
         }
 
-        public string KeyString()
+        public string KeyString(bool smallNames = false)
         {
             if (Key != 0)
             {
@@ -211,7 +232,8 @@ namespace Assistant
 
                 if ((Mod & ModKeys.Control) != 0)
                 {
-                    sb.Append("Control");
+                    sb.Append(smallNames ? "Ctrl" : "Control");
+
                     np = true;
                 }
 
@@ -227,7 +249,7 @@ namespace Assistant
                 {
                     if (np)
                         sb.Append("+");
-                    sb.Append("Shift");
+                    sb.Append(smallNames ? "Sft" : "Shift");
                     np = true;
                 }
 
@@ -304,7 +326,7 @@ namespace Assistant
                 UpdateStatus();
             }
         }
-        
+
 
         public static bool KeyDown(Keys k)
         {
@@ -322,8 +344,16 @@ namespace Assistant
         private static void OnToggleEnableDisable()
         {
             m_Enabled = !m_Enabled;
+
+            MsgLevel type = MsgLevel.Warning;
+
+            if (m_Enabled)
+            {
+                type = MsgLevel.Info;
+            }
+
             if (World.Player != null)
-                World.Player.SendMessage(MsgLevel.Warning, UpdateStatus());
+                World.Player.SendMessage(type, UpdateStatus());
         }
 
         private static void OnToggleEnable()
@@ -337,7 +367,7 @@ namespace Assistant
             {
                 m_Enabled = !m_Enabled;
                 if (World.Player != null)
-                    World.Player.SendMessage(MsgLevel.Warning, UpdateStatus());
+                    World.Player.SendMessage(MsgLevel.Info, UpdateStatus());
             }
         }
 
@@ -380,10 +410,7 @@ namespace Assistant
                     msg = Language.GetString(LocString.HKDisabled);
             }
 
-            m_Status?.SafeAction(s =>
-            {
-                s.Text = msg;
-            });
+            m_Status?.SafeAction(s => { s.Text = msg; });
 
             return msg;
         }
@@ -428,12 +455,17 @@ namespace Assistant
             MakeNode(spells, "Bushido", HKSubCat.BushidoC);
             MakeNode(spells, "Ninjisu", HKSubCat.NinjisuC);
             MakeNode(spells, "Spellweaving", HKSubCat.SpellWeaveC);
+            MakeNode(spells, "Mysticism", HKSubCat.MystC);
+            MakeNode(spells, "Masteries", HKSubCat.MasteriesC);
 
             MakeNode("Skills", HKCategory.Skills);
 
             TreeNode misc = MakeNode("Misc", HKCategory.Misc);
             MakeNode(misc, "Special Moves", HKSubCat.SpecialMoves);
             MakeNode(misc, "Pet Commands", HKSubCat.PetCommands);
+
+            MakeNode("Friends", HKCategory.Friends);
+            MakeNode("Scripts", HKCategory.Scripts);
         }
 
         public static void RebuildList(TreeView tree)
@@ -456,7 +488,7 @@ namespace Assistant
                 else if (node.Tag is HKCategory)
                     node.Text = Language.GetString((int) LocString.HotKeys + (int) ((HKCategory) node.Tag));
                 else if (node.Tag is HKSubCat)
-                    node.Text = Language.GetString((int) LocString.HKSubOffset + (int) ((HKSubCat) node.Tag));
+                    node.Text = Language.GetString(GetHKSubCatLangKey((HKSubCat) node.Tag));
                 else if (node.Tag is Int32)
                     node.Text = Language.GetString((int) node.Tag);
 
@@ -464,6 +496,19 @@ namespace Assistant
                     UpdateNode(node.NextNode);
                 if (node.GetNodeCount(true) > 0)
                     UpdateNode(node.FirstNode);
+            }
+        }
+
+        private static int GetHKSubCatLangKey(HKSubCat tag)
+        {
+            switch (tag)
+            {
+                case HKSubCat.MystC:
+                    return 2103;
+                case HKSubCat.MasteriesC:
+                    return 2104;
+                default:
+                    return (int)LocString.HKSubOffset + (int) tag;
             }
         }
 
@@ -509,6 +554,19 @@ namespace Assistant
             }
 
             return null;
+        }
+
+        public static KeyData GetByNameOrId(string query)
+        {
+            foreach (KeyData key in m_List)
+            {
+                if (key.DispName.ToLower().Equals(query.ToLower()))
+                    return key;
+            }
+
+            int hkIndex = Utility.ToInt32(query, -1);
+
+            return hkIndex != -1 ? m_List[hkIndex] : null;
         }
 
         public static KeyData Get(int key, ModKeys mod)
@@ -587,12 +645,11 @@ namespace Assistant
             return FindNode(parent, tag, false);
         }
 
-        public static bool OnKeyDown(int key)
+        public static bool OnKeyDown(int key, ModKeys mod)
         {
             if (World.Player == null)
                 return true;
-
-            ModKeys cur = ModKeys.None;
+            ModKeys cur = mod;
             if (KeyDown(Keys.ControlKey))
                 cur |= ModKeys.Control;
             if (KeyDown(Keys.Menu))
@@ -608,14 +665,14 @@ namespace Assistant
             }
 
             if (_hotKeyEnableToggle != null && _hotKeyEnableToggle.Key > 0 && _hotKeyEnableToggle.Mod == cur &&
-                (_hotKeyEnableToggle.Key == key || KeyDown((Keys)_hotKeyEnableToggle.Key)))
+                (_hotKeyEnableToggle.Key == key || KeyDown((Keys) _hotKeyEnableToggle.Key)))
             {
                 _hotKeyEnableToggle.Callback();
                 return _hotKeyEnableToggle.SendToUO;
             }
 
             if (_hotKeyDisableToggle != null && _hotKeyDisableToggle.Key > 0 && _hotKeyDisableToggle.Mod == cur &&
-                (_hotKeyDisableToggle.Key == key || KeyDown((Keys)_hotKeyDisableToggle.Key)))
+                (_hotKeyDisableToggle.Key == key || KeyDown((Keys) _hotKeyDisableToggle.Key)))
             {
                 _hotKeyDisableToggle.Callback();
                 return _hotKeyDisableToggle.SendToUO;
@@ -628,10 +685,32 @@ namespace Assistant
                     KeyData hk = (KeyData) m_List[i];
                     if (hk.Mod == cur && hk.Key > 0)
                     {
-                        if (hk.Key == key || KeyDown((Keys) hk.Key))
+                        if (hk.Key == key)
                         {
                             if (Macros.MacroManager.AcceptActions)
                                 Macros.MacroManager.Action(new Macros.HotKeyAction(hk));
+
+                            ScriptManager.AddToScript($"hotkey '{hk.DispName}'");
+
+                            hk.Callback();
+                            return hk.SendToUO;
+                        }
+                    }
+                }
+
+                // if pressed key didn't match a hotkey, check for any key currently down
+                for (int i = 0; i < m_List.Count; i++)
+                {
+                    KeyData hk = (KeyData) m_List[i];
+                    if (hk.Mod == cur && hk.Key > 0)
+                    {
+                        if (KeyDown((Keys) hk.Key))
+                        {
+                            if (Macros.MacroManager.AcceptActions)
+                                Macros.MacroManager.Action(new Macros.HotKeyAction(hk));
+
+                            ScriptManager.AddToScript($"hotkey '{hk.DispName}'");
+
                             hk.Callback();
                             return hk.SendToUO;
                         }

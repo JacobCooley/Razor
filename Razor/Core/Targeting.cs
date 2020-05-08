@@ -1,7 +1,29 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using Assistant.Agents;
+using Assistant.Core;
 using Assistant.Macros;
+using Assistant.Scripts;
 
 namespace Assistant
 {
@@ -16,7 +38,7 @@ namespace Assistant
         public ushort Gfx;
     }
 
-    public class Targeting
+    public partial class Targeting
     {
         public const uint LocalTargID = 0x7FFFFFFF; // uid for target sent from razor
 
@@ -74,6 +96,11 @@ namespace Assistant
             get { return m_HasTarget; }
         }
 
+        public static TargetInfo LastTargetInfo
+        {
+            get { return m_LastTarget; }
+        }
+
         public static bool FromGrabHotKey
         {
             get { return m_FromGrabHotKey; }
@@ -107,6 +134,7 @@ namespace Assistant
 
         public static void Initialize()
         {
+<<<<<<< HEAD
             PacketHandler.RegisterClientToServerViewer(0x6C, new PacketViewerCallback(TargetResponse));
             PacketHandler.RegisterServerToClientViewer(0x6C, new PacketViewerCallback(NewTarget));
             PacketHandler.RegisterServerToClientViewer(0xAA, new PacketViewerCallback(CombatantChange));
@@ -237,7 +265,29 @@ namespace Assistant
             HotKey.Add(HKCategory.Targets, HKSubCat.SubTargetEnemy, LocString.TargCloseEnemyHuman, new HotKeyCallback(TargetCloseEnemyHumanoid));
             HotKey.Add(HKCategory.Targets, HKSubCat.SubTargetEnemy, LocString.TargCloseEnemyMonster,
                 new HotKeyCallback(TargetCloseEnemyMonster));
+=======
+            PacketHandler.RegisterClientToServerViewer(0x6C, TargetResponse);
+            PacketHandler.RegisterServerToClientViewer(0x6C, NewTarget);
+            PacketHandler.RegisterServerToClientViewer(0xAA, CombatantChange);
+
+            HotKey.Add(HKCategory.Targets, LocString.LastTarget, LastTarget);
+            HotKey.Add(HKCategory.Targets, LocString.TargetSelf, TargetSelf);
+            HotKey.Add(HKCategory.Targets, LocString.ClearTargQueue, OnClearQueue);
+
+            HotKey.Add(HKCategory.Targets, LocString.SetLT, TargetSetLastTarget);
+            HotKey.Add(HKCategory.Targets, LocString.SetLastBeneficial, SetLastTargetBeneficial);
+            HotKey.Add(HKCategory.Targets, LocString.SetLastHarmful, SetLastTargetHarmful);
+
+            HotKey.Add(HKCategory.Targets, LocString.AttackLastComb, AttackLastComb);
+            HotKey.Add(HKCategory.Targets, LocString.AttackLastTarg, AttackLastTarg);
+            HotKey.Add(HKCategory.Targets, LocString.CancelTarget, CancelTarget);
+
+            InitRandomTarget();
+            InitNextPrevTargets();
+            InitClosestTargets();
+>>>>>>> upstream/master
         }
+
 
         private static void CombatantChange(PacketReader p, PacketHandlerEventArgs e)
         {
@@ -249,14 +299,17 @@ namespace Assistant
         private static void AttackLastComb()
         {
             if (m_LastCombatant.IsMobile)
+            {
                 Client.Instance.SendToServer(new AttackReq(m_LastCombatant));
+                ShowAttackOverhead(m_LastCombatant);
+            }
+                
         }
 
-        private static void AttackLastTarg()
+        public static void AttackLastTarg()
         {
-            
             TargetInfo targ;
-            if (Config.GetBool("SmartLastTarget") && Client.Instance.AllowBit(FeatureBit.SmartLT))
+            if (IsSmartTargetingEnabled())
             {
                 // If Smart Targetting is being used we'll assume that the user would like to attack the harmful target.
                 targ = m_LastHarmTarg;
@@ -271,7 +324,23 @@ namespace Assistant
             }
 
             if (targ != null && targ.Serial.IsMobile)
+            {
                 Client.Instance.SendToServer(new AttackReq(targ.Serial));
+                ShowAttackOverhead(targ.Serial);
+            }
+        }
+
+        public static void ShowAttackOverhead(Serial serial)
+        {
+            if (!Config.GetBool("ShowAttackTargetOverhead"))
+                return;
+
+            Mobile m = World.FindMobile(serial);
+            if (m == null)
+                return;
+
+            World.Player.OverheadMessage(FriendsManager.IsFriend(m.Serial) ? 63 : m.GetNotorietyColorInt(),
+                $"Attack: {m.Name}");
         }
 
         private static void OnClearQueue()
@@ -385,8 +454,6 @@ namespace Assistant
 
             World.Player.SendMessage(MsgLevel.Force, LocString.LTSet);
 
-            //OverheadTargetMessage(m_LastTarget);
-
             if (serial.IsMobile)
             {
                 LastTargetChanged();
@@ -395,7 +462,120 @@ namespace Assistant
             }
         }
 
+        private static bool m_LTBeneWasSet;
+
+        /// <summary>
+        /// Sets the beneficial target
+        /// </summary>
+        private static void SetLastTargetBeneficial()
+        {
+            if (!IsSmartTargetingEnabled())
+            {
+                World.Player.SendMessage(MsgLevel.Error, "Smart Targeting is disabled");
+                return;
+            }
+
+            if (World.Player != null)
+            {
+                m_LTBeneWasSet = false;
+                OneTimeTarget(false, OnSetLastTargetBeneficial, OnSLTBeneficialCancel);
+                World.Player.SendMessage(MsgLevel.Force, LocString.NewBeneficialTarget);
+            }
+        }
+
+        private static void OnSLTBeneficialCancel()
+        {
+            if (m_LastBeneTarg != null)
+                m_LTBeneWasSet = true;
+        }
+
+        private static void OnSetLastTargetBeneficial(bool location, Serial serial, Point3D p, ushort gfxid)
+        {
+            if (serial == World.Player.Serial)
+            {
+                OnSLTBeneficialCancel();
+                return;
+            }
+
+            m_LastBeneTarg = new TargetInfo
+            {
+                Flags = 0,
+                Gfx = gfxid,
+                Serial = serial,
+                Type = (byte) (location ? 1 : 0),
+                X = p.X,
+                Y = p.Y,
+                Z = p.Z
+            };
+
+            m_LTBeneWasSet = true;
+
+            World.Player.SendMessage(MsgLevel.Force, LocString.SetLTBene);
+
+            if (serial.IsMobile)
+            {
+                LastBeneficialTargetChanged();
+            }
+        }
+
+        private static bool m_LTHarmWasSet;
+
+        /// <summary>
+        /// Sets the harmful target
+        /// </summary>
+        private static void SetLastTargetHarmful()
+        {
+            if (!IsSmartTargetingEnabled())
+            {
+                World.Player.SendMessage(MsgLevel.Error, "Smart Targeting is disabled");
+                return;
+            }
+
+            if (World.Player != null)
+            {
+                OneTimeTarget(false, OnSetLastTargetHarmful, OnSLTHarmfulCancel);
+                World.Player.SendMessage(MsgLevel.Force, LocString.NewHarmfulTarget);
+            }
+        }
+
+        private static void OnSLTHarmfulCancel()
+        {
+            if (m_LastTarget != null)
+                m_LTHarmWasSet = true;
+        }
+
+        private static void OnSetLastTargetHarmful(bool location, Serial serial, Point3D p, ushort gfxid)
+        {
+            if (serial == World.Player.Serial)
+            {
+                OnSLTHarmfulCancel();
+                return;
+            }
+
+            m_LastHarmTarg = new TargetInfo
+            {
+                Flags = 0,
+                Gfx = gfxid,
+                Serial = serial,
+                Type = (byte) (location ? 1 : 0),
+                X = p.X,
+                Y = p.Y,
+                Z = p.Z
+            };
+
+            m_LTHarmWasSet = true;
+
+            World.Player.SendMessage(MsgLevel.Force, LocString.SetLTHarm);
+
+            if (serial.IsMobile)
+            {
+                LastHarmfulTargetChanged();
+            }
+        }
+
         private static Serial m_OldLT = Serial.Zero;
+        private static Serial m_OldBeneficialLT = Serial.Zero;
+        private static Serial m_OldHarmfulLT = Serial.Zero;
 
         private static void RemoveTextFlags(UOEntity m)
         {
@@ -418,7 +598,7 @@ namespace Assistant
             {
                 bool oplchanged = false;
 
-                if (Config.GetBool("SmartLastTarget"))
+                if (IsSmartTargetingEnabled())
                 {
                     if (m_LastHarmTarg != null && m_LastHarmTarg.Serial == m.Serial)
                     {
@@ -488,218 +668,28 @@ namespace Assistant
             }
         }
 
-        public static bool LTWasSet
+        private static void LastBeneficialTargetChanged()
         {
-            get { return m_LTWasSet; }
-        }
-
-        public static void TargetRandNonFriendly()
-        {
-            RandomTarget((int) TargetType.Attackable, (int) TargetType.Criminal, (int) TargetType.Enemy,
-                (int) TargetType.Murderer);
-        }
-
-        public static void TargetRandNonFriendlyHumanoid()
-        {
-            RandomHumanoidTarget((int) TargetType.Attackable, (int) TargetType.Criminal, (int) TargetType.Enemy,
-                (int) TargetType.Murderer);
-        }
-
-        public static void TargetRandNonFriendlyMonster()
-        {
-            RandomMonsterTarget((int) TargetType.Attackable, (int) TargetType.Criminal, (int) TargetType.Enemy,
-                (int) TargetType.Murderer);
-        }
-
-        public static void TargetRandFriendly()
-        {
-            RandomTarget((int) TargetType.Invalid, (int) TargetType.Innocent, (int) TargetType.GuildAlly);
-        }
-
-        public static void TargetRandFriendlyHumanoid()
-        {
-            RandomHumanoidTarget((int) TargetType.Invalid, (int) TargetType.Innocent, (int) TargetType.GuildAlly);
-        }
-
-        public static void TargetRandFriendlyMonster()
-        {
-            RandomMonsterTarget((int) TargetType.Invalid, (int) TargetType.Innocent, (int) TargetType.GuildAlly);
-        }
-
-        public static void TargetRandEnemy()
-        {
-            RandomTarget((int) TargetType.Enemy);
-        }
-
-        public static void TargetRandEnemyMonster()
-        {
-            RandomMonsterTarget((int) TargetType.Enemy);
-        }
-
-        public static void TargetRandEnemyHumanoid()
-        {
-            RandomHumanoidTarget((int) TargetType.Enemy);
-        }
-
-        public static void TargetRandRed()
-        {
-            RandomTarget((int) TargetType.Murderer);
-        }
-
-        public static void TargetRandRedHumanoid()
-        {
-            RandomHumanoidTarget((int) TargetType.Murderer);
-        }
-
-        public static void TargetRandRedMonster()
-        {
-            RandomMonsterTarget((int) TargetType.Murderer);
-        }
-
-        public static void TargetRandGrey()
-        {
-            RandomTarget((int) TargetType.Attackable, (int) TargetType.Criminal);
-        }
-
-        public static void TargetRandGreyMonster()
-        {
-            RandomMonsterTarget((int) TargetType.Attackable, (int) TargetType.Criminal);
-        }
-
-        public static void TargetRandGreyHumanoid()
-        {
-            RandomHumanoidTarget((int) TargetType.Attackable, (int) TargetType.Criminal);
-        }
-
-        public static void TargetRandCriminal()
-        {
-            RandomTarget((int) TargetType.Criminal);
-        }
-
-        public static void TargetRandCriminalHumanoid()
-        {
-            RandomHumanoidTarget((int) TargetType.Criminal);
-        }
-
-        public static void TargetRandCriminalMonster()
-        {
-            RandomMonsterTarget((int) TargetType.Criminal);
-        }
-
-        public static void TargetRandInnocent()
-        {
-            RandomTarget((int) TargetType.Innocent);
-        }
-
-        public static void TargetRandInnocentHumanoid()
-        {
-            RandomHumanoidTarget((int) TargetType.Innocent);
-        }
-
-        public static void TargetRandInnocentMonster()
-        {
-            RandomMonsterTarget((int) TargetType.Innocent);
-        }
-
-        public static void TargetRandAnyone()
-        {
-            RandomTarget();
-        }
-
-        public static void RandomTarget(params int[] noto)
-        {
-            if (!Client.Instance.AllowBit(FeatureBit.RandomTargets))
-                return;
-
-            List<Mobile> list = new List<Mobile>();
-            foreach (Mobile m in World.MobilesInRange(12))
+            if (m_LastBeneTarg != null)
             {
-                if ((!FriendsAgent.IsFriend(m) || (noto.Length > 0 && noto[0] == 0)) &&
-                    !m.Blessed && !m.IsGhost && m.Serial != World.Player.Serial &&
-                    Utility.InRange(World.Player.Position, m.Position, Config.GetInt("LTRange")))
+                if (m_OldBeneficialLT.IsItem)
                 {
-                    for (int i = 0; i < noto.Length; i++)
-                    {
-                        if (noto[i] == m.Notoriety)
-                        {
-                            list.Add(m);
-                            break;
-                        }
-                    }
-
-                    if (noto.Length == 0)
-                        list.Add(m);
+                    RemoveTextFlags(World.FindItem(m_OldBeneficialLT));
                 }
-            }
-
-            if (list.Count > 0)
-                SetLastTargetTo((Mobile) list[Utility.Random(list.Count)]);
-            else
-                World.Player.SendMessage(MsgLevel.Warning, LocString.TargNoOne);
-        }
-
-        public static void RandomHumanoidTarget(params int[] noto)
-        {
-            if (!Client.Instance.AllowBit(FeatureBit.RandomTargets))
-                return;
-
-            List<Mobile> list = new List<Mobile>();
-            foreach (Mobile m in World.MobilesInRange(12))
-            {
-                if (m.Body != 0x0190 && m.Body != 0x0191 && m.Body != 0x025D && m.Body != 0x025E)
-                    continue;
-
-                if ((!FriendsAgent.IsFriend(m) || (noto.Length > 0 && noto[0] == 0)) &&
-                    !m.Blessed && !m.IsGhost && m.Serial != World.Player.Serial &&
-                    Utility.InRange(World.Player.Position, m.Position, Config.GetInt("LTRange")))
+                else
                 {
-                    for (int i = 0; i < noto.Length; i++)
+                    Mobile m = World.FindMobile(m_OldBeneficialLT);
+                    if (m != null)
                     {
-                        if (noto[i] == m.Notoriety)
-                        {
-                            list.Add(m);
-                            break;
-                        }
+                        RemoveTextFlags(m);
                     }
-
-                    if (noto.Length == 0)
-                        list.Add(m);
                 }
-            }
 
-            if (list.Count > 0)
-                SetLastTargetTo(list[Utility.Random(list.Count)]);
-            else
-                World.Player.SendMessage(MsgLevel.Warning, LocString.TargNoOne);
-        }
-
-        public static void RandomMonsterTarget(params int[] noto)
-        {
-            if (!Client.Instance.AllowBit(FeatureBit.RandomTargets))
-                return;
-
-            List<Mobile> list = new List<Mobile>();
-            foreach (Mobile m in World.MobilesInRange(12))
-            {
-                if (!m.IsMonster)
-                    continue;
-
-                if ((!FriendsAgent.IsFriend(m) || (noto.Length > 0 && noto[0] == 0)) &&
-                    !m.Blessed && !m.IsGhost && m.Serial != World.Player.Serial &&
-                    Utility.InRange(World.Player.Position, m.Position, Config.GetInt("LTRange")))
+                if (m_LastBeneTarg.Serial.IsItem)
                 {
-                    for (int i = 0; i < noto.Length; i++)
-                    {
-                        if (noto[i] == m.Notoriety)
-                        {
-                            list.Add(m);
-                            break;
-                        }
-                    }
-
-                    if (noto.Length == 0)
-                        list.Add(m);
+                    AddTextFlags(World.FindItem(m_LastBeneTarg.Serial));
                 }
+<<<<<<< HEAD
             }
 
             if (list.Count > 0)
@@ -890,81 +880,61 @@ namespace Assistant
                 if ((!FriendsAgent.IsFriend(m) || (noto.Length > 0 && noto[0] == 0)) &&
                     !m.Blessed && !m.IsGhost && m.Serial != World.Player.Serial &&
                     Utility.InRange(World.Player.Position, m.Position, Config.GetInt("LTRange")))
+=======
+                else
+>>>>>>> upstream/master
                 {
-                    for (int i = 0; i < noto.Length; i++)
+                    Mobile m = World.FindMobile(m_LastBeneTarg.Serial);
+                    if (m != null)
                     {
-                        if (noto[i] == m.Notoriety)
-                        {
-                            list.Add(m);
-                            break;
-                        }
+                        CheckLastTargetRange(m);
+
+                        AddTextFlags(m);
                     }
-
-                    if (noto.Length == 0)
-                        list.Add(m);
                 }
+
+                m_OldBeneficialLT = m_LastBeneTarg.Serial;
             }
-
-            Mobile closest = null;
-            double closestDist = double.MaxValue;
-
-            foreach (Mobile m in list)
-            {
-                double dist = Utility.DistanceSqrt(m.Position, World.Player.Position);
-
-                if (dist < closestDist || closest == null)
-                {
-                    closestDist = dist;
-                    closest = m;
-                }
-            }
+<<<<<<< HEAD
 
             if (closest != null)
                 SetClosestLastTarget(closest);
           
+=======
+>>>>>>> upstream/master
         }
 
-        public static void ClosestHumanoidTarget(params int[] noto)
+        private static void LastHarmfulTargetChanged()
         {
-            if (!Client.Instance.AllowBit(FeatureBit.ClosestTargets))
-                return;
-
-            List<Mobile> list = new List<Mobile>();
-            foreach (Mobile m in World.MobilesInRange(12))
+            if (m_LastHarmTarg != null)
             {
+<<<<<<< HEAD
                 if (m.Body != 0x0190 && m.Body != 0x0191 && m.Body != 0x025D && m.Body != 0x025E)
                     continue;
 
                 if (((!FriendsAgent.IsFriend(m) || m.Notoriety == (int)TargetType.Enemy)  || (noto.Length > 0 && noto[0] == 0)) &&
                     !m.Blessed && !m.IsGhost && m.Serial != World.Player.Serial &&
                     Utility.InRange(World.Player.Position, m.Position, Config.GetInt("LTRange")))
+=======
+                if (m_OldHarmfulLT.IsItem)
+>>>>>>> upstream/master
                 {
-                    for (int i = 0; i < noto.Length; i++)
+                    RemoveTextFlags(World.FindItem(m_OldHarmfulLT));
+                }
+                else
+                {
+                    Mobile m = World.FindMobile(m_OldHarmfulLT);
+                    if (m != null)
                     {
-                        if (noto[i] == m.Notoriety)
-                        {
-                            list.Add(m);
-                            break;
-                        }
+                        RemoveTextFlags(m);
                     }
-
-                    if (noto.Length == 0)
-                        list.Add(m);
                 }
-            }
 
-            Mobile closest = null;
-            double closestDist = double.MaxValue;
-
-            foreach (Mobile m in list)
-            {
-                double dist = Utility.DistanceSqrt(m.Position, World.Player.Position);
-
-                if (dist < closestDist || closest == null)
+                if (m_LastHarmTarg.Serial.IsItem)
                 {
-                    closestDist = dist;
-                    closest = m;
+                    AddTextFlags(World.FindItem(m_LastHarmTarg.Serial));
                 }
+<<<<<<< HEAD
             }
 
             if (closest != null)
@@ -986,39 +956,35 @@ namespace Assistant
                 if ((!FriendsAgent.IsFriend(m) || (noto.Length > 0 && noto[0] == 0)) &&
                     !m.Blessed && !m.IsGhost && m.Serial != World.Player.Serial &&
                     Utility.InRange(World.Player.Position, m.Position, Config.GetInt("LTRange")))
+=======
+                else
+>>>>>>> upstream/master
                 {
-                    for (int i = 0; i < noto.Length; i++)
+                    Mobile m = World.FindMobile(m_LastHarmTarg.Serial);
+                    if (m != null)
                     {
-                        if (noto[i] == m.Notoriety)
-                        {
-                            list.Add(m);
-                            break;
-                        }
+                        CheckLastTargetRange(m);
+
+                        AddTextFlags(m);
                     }
-
-                    if (noto.Length == 0)
-                        list.Add(m);
                 }
+
+                m_OldHarmfulLT = m_LastHarmTarg.Serial;
             }
+        }
 
-            Mobile closest = null;
-            double closestDist = double.MaxValue;
-
-            foreach (Mobile m in list)
-            {
-                double dist = Utility.DistanceSqrt(m.Position, World.Player.Position);
-
-                if (dist < closestDist || closest == null)
-                {
-                    closestDist = dist;
-                    closest = m;
-                }
-            }
-
+<<<<<<< HEAD
             if (closest != null)
                 SetClosestLastTarget(closest);
            
+=======
+
+        public static bool LTWasSet
+        {
+            get { return m_LTWasSet; }
+>>>>>>> upstream/master
         }
+
 
         public static void SetLastTargetTo(Mobile m)
         {
@@ -1152,6 +1118,9 @@ namespace Assistant
             //if ( Macros.MacroManager.AcceptActions )
             //	MacroManager.Action( new LastTargetAction() );
 
+            if (FromGrabHotKey)
+                return;
+
             if (m_HasTarget)
             {
                 if (!DoLastTarget())
@@ -1177,8 +1146,11 @@ namespace Assistant
 
         public static bool DoLastTarget()
         {
+            if (FromGrabHotKey)
+                return true;
+
             TargetInfo targ;
-            if (Config.GetBool("SmartLastTarget") && Client.Instance.AllowBit(FeatureBit.SmartLT))
+            if (IsSmartTargetingEnabled())
             {
                 if (m_AllowGround && m_LastGroundTarg != null)
                     targ = m_LastGroundTarg;
@@ -1296,6 +1268,8 @@ namespace Assistant
                 {
                     if (Macros.MacroManager.AcceptActions)
                         MacroManager.Action(new AbsoluteTargetAction(info));
+
+                    ScriptManager.AddToScript($"target {info.Serial}");
 
                     if (m_OnTarget != null)
                         m_OnTarget(info.Type == 1 ? true : false, info.Serial, new Point3D(info.X, info.Y, info.Z),
@@ -1447,19 +1421,20 @@ namespace Assistant
             }
         }
 
+        private static DateTime _lastFlagCheck = DateTime.UtcNow;
+        private static Serial _lastFlagCheckSerial;
+
         public static void CheckTextFlags(Mobile m)
         {
+            if (DateTime.UtcNow - _lastFlagCheck < TimeSpan.FromMilliseconds(250) && m.Serial == _lastFlagCheckSerial)
+                return;
+
             if (IgnoreAgent.IsIgnored(m.Serial))
             {
                 m.OverheadMessage(Config.GetInt("SysColor"), "[Ignored]");
             }
 
-            if (Config.GetBool("ShowFriendOverhead") && FriendsAgent.IsFriend(m))
-            {
-                m.OverheadMessage(0x03F, $"[{Language.GetString(LocString.Friend)}]");
-            }
-
-            if (Config.GetBool("SmartLastTarget") && Client.Instance.AllowBit(FeatureBit.SmartLT))
+            if (IsSmartTargetingEnabled())
             {
                 bool harm = m_LastHarmTarg != null && m_LastHarmTarg.Serial == m.Serial;
                 bool bene = m_LastBeneTarg != null && m_LastBeneTarg.Serial == m.Serial;
@@ -1472,13 +1447,16 @@ namespace Assistant
 
             if (m_LastTarget != null && m_LastTarget.Serial == m.Serial)
                 m.OverheadMessage(0x3B2, $"[{Language.GetString(LocString.LastTarget)}]");
+
+            _lastFlagCheck = DateTime.UtcNow;
+            _lastFlagCheckSerial = m.Serial;
         }
 
         public static bool IsLastTarget(Mobile m)
         {
             if (m != null)
             {
-                if (Config.GetBool("SmartLastTarget") && Client.Instance.AllowBit(FeatureBit.SmartLT))
+                if (IsSmartTargetingEnabled())
                 {
                     if (m_LastHarmTarg != null && m_LastHarmTarg.Serial == m.Serial)
                         return true;
@@ -1493,264 +1471,42 @@ namespace Assistant
             return false;
         }
 
-        /// <summary>
-        /// Index used to keep track of the current Next/Prev target
-        /// </summary>
-        private static int _nextPrevTargetIndex;
-
-        /// <summary>
-        /// Handles the common Next/Prev logic based on a list of targets passed in already filtered by the calling
-        /// functions conditions.
-        /// </summary>
-        /// <param name="targets">The list of targets (already filtered)</param>
-        /// <param name="nextTarget">next target true, previous target false</param>
-        public static void NextPrevTarget(List<Mobile> targets, bool nextTarget)
+        public static bool IsBeneficialTarget(Mobile m)
         {
-            Mobile mobile = null, old = World.FindMobile(m_LastTarget?.Serial ?? Serial.Zero);
-            TargetInfo target = new TargetInfo();
-
-            // Remove all friends or party members (if the options are enabled) from being targeted
-            if (Config.GetBool("NextPrevTargetIgnoresFriends"))
+            if (m != null)
             {
-                targets.RemoveAll(FriendsAgent.IsFriend);
-            }
-
-            if (targets.Count <= 0)
-            {
-                World.Player.SendMessage(MsgLevel.Warning, LocString.TargNoOne);
-                return;
-            }
-
-            // Loop through 3 times and break out if you can't get a target for some reason
-            for (int i = 0; i < 3; i++)
-            {
-                if (nextTarget)
+                if (IsSmartTargetingEnabled())
                 {
-                    _nextPrevTargetIndex++;
-
-                    if (_nextPrevTargetIndex >= targets.Count)
-                        _nextPrevTargetIndex = 0;
+                    if (m_LastBeneTarg != null && m_LastBeneTarg.Serial == m.Serial)
+                        return true;
                 }
                 else
                 {
-                    _nextPrevTargetIndex--;
-
-                    if (_nextPrevTargetIndex < 0)
-                        _nextPrevTargetIndex = targets.Count - 1;
+                    if (m_LastTarget != null && m_LastTarget.Serial == m.Serial)
+                        return true;
                 }
-                
-                try
-                {
-                    mobile = targets[_nextPrevTargetIndex];
-                }
-                catch
-                {
-                    mobile = null;
-                }
-
-                if (mobile != null && mobile != World.Player && mobile != old)
-                {
-                    break;
-                }
-
-                mobile = null;
             }
 
-            if (mobile == null)
-                mobile = old;
+            return false;
+        }
 
-            if (mobile == null)
+        public static bool IsHarmfulTarget(Mobile m)
+        {
+            if (m != null)
             {
-                World.Player.SendMessage(MsgLevel.Warning, LocString.TargNoOne);
-                return;
+                if (IsSmartTargetingEnabled())
+                {
+                    if (m_LastHarmTarg != null && m_LastHarmTarg.Serial == m.Serial)
+                        return true;
+                }
+                else
+                {
+                    if (m_LastTarget != null && m_LastTarget.Serial == m.Serial)
+                        return true;
+                }
             }
 
-            m_LastGroundTarg = m_LastTarget = target;
-
-            m_LastHarmTarg = m_LastBeneTarg = target;
-
-            if (m_HasTarget)
-                target.Flags = m_CurFlags;
-            else
-                target.Type = 0;
-
-            target.Gfx = mobile.Body;
-            target.Serial = mobile.Serial;
-            target.X = mobile.Position.X;
-            target.Y = mobile.Position.Y;
-            target.Z = mobile.Position.Z;
-
-            Client.Instance.SendToClient(new ChangeCombatant(mobile));
-
-            m_LastCombatant = mobile.Serial;
-            World.Player.SendMessage(MsgLevel.Force, LocString.NewTargSet);
-
-            OverheadTargetMessage(target);
-        }
-
-        public static void NextTarget()
-        {
-            List<Mobile> mobiles = World.MobilesInRange();
-
-            NextPrevTarget(mobiles, true);
-        }
-
-        public static void NextTargetHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange().Where(x => x.IsHuman).ToList();
-
-            NextPrevTarget(mobiles, true);
-        }
-
-        public static void NextTargetEnemyHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange().Where(x => x.IsHuman && x.Notoriety == (int) TargetType.Enemy)
-                .ToList();
-
-            NextPrevTarget(mobiles, true);
-        }
-
-        public static void NextTargetMonster()
-        {
-            List<Mobile> mobiles = World.MobilesInRange().Where(x => x.IsMonster).ToList();
-
-            NextPrevTarget(mobiles, true);
-        }
-
-        public static void PrevTarget()
-        {
-            List<Mobile> mobiles = World.MobilesInRange();
-
-            NextPrevTarget(mobiles, false);
-        }
-
-        public static void PrevTargetHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange().Where(x => x.IsHuman).ToList();
-
-            NextPrevTarget(mobiles, false);
-        }
-
-        public static void PrevTargetEnemyHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange().Where(x => x.IsHuman && x.Notoriety == (int) TargetType.Enemy)
-                .ToList();
-
-            NextPrevTarget(mobiles, false);
-        }
-
-        public static void PrevTargetMonster()
-        {
-            List<Mobile> mobiles = World.MobilesInRange().Where(x => x.IsMonster).ToList();
-
-            NextPrevTarget(mobiles, false);
-        }
-
-        public static void NextTargetCriminalHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && x.Notoriety == (int) TargetType.Criminal).ToList();
-
-            NextPrevTarget(mobiles, true);
-        }
-
-        public static void NextTargetMurdererHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && x.Notoriety == (int) TargetType.Murderer).ToList();
-            NextPrevTarget(mobiles, true);
-        }
-
-        public static void NextTargetInnocentHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && x.Notoriety == (int) TargetType.Innocent).ToList();
-
-            NextPrevTarget(mobiles, true);
-        }
-
-        public static void PrevTargetCriminalHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && x.Notoriety == (int) TargetType.Criminal).ToList();
-
-            NextPrevTarget(mobiles, false);
-        }
-
-        public static void PrevTargetMurdererHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && x.Notoriety == (int) TargetType.Murderer).ToList();
-
-            NextPrevTarget(mobiles, false);
-        }
-
-        public static void PrevTargetInnocentHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && x.Notoriety == (int) TargetType.Innocent).ToList();
-
-            NextPrevTarget(mobiles, false);
-        }
-
-        public static void NextTargetFriendlyHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && (x.Notoriety == (int) TargetType.Innocent ||
-                                          x.Notoriety == (int) TargetType.Invalid ||
-                                          x.Notoriety == (int) TargetType.GuildAlly)).ToList();
-
-            NextPrevTarget(mobiles, true);
-        }
-
-        public static void NextTargetGreyHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && (x.Notoriety == (int) TargetType.Attackable ||
-                                          x.Notoriety == (int) TargetType.Criminal)).ToList();
-
-            NextPrevTarget(mobiles, true);
-        }
-
-        public static void NextTargetNonFriendlyHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && (x.Notoriety == (int) TargetType.Attackable ||
-                                          x.Notoriety == (int) TargetType.Criminal ||
-                                          x.Notoriety == (int) TargetType.Enemy ||
-                                          x.Notoriety == (int) TargetType.Murderer)).ToList();
-
-            NextPrevTarget(mobiles, true);
-        }
-
-        public static void PrevTargetFriendlyHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && (x.Notoriety == (int)TargetType.Innocent ||
-                                          x.Notoriety == (int)TargetType.Invalid ||
-                                          x.Notoriety == (int)TargetType.GuildAlly)).ToList();
-
-            NextPrevTarget(mobiles, false);
-        }
-
-        public static void PrevTargetGreyHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && (x.Notoriety == (int)TargetType.Attackable ||
-                                          x.Notoriety == (int)TargetType.Criminal)).ToList();
-
-            NextPrevTarget(mobiles, false);
-        }
-
-        public static void PrevTargetNonFriendlyHumanoid()
-        {
-            List<Mobile> mobiles = World.MobilesInRange()
-                .Where(x => x.IsHuman && (x.Notoriety == (int)TargetType.Attackable ||
-                                          x.Notoriety == (int)TargetType.Criminal ||
-                                          x.Notoriety == (int)TargetType.Enemy ||
-                                          x.Notoriety == (int)TargetType.Murderer)).ToList();
-
-            NextPrevTarget(mobiles, false);
+            return false;
         }
 
         public static void CheckLastTargetRange(Mobile m)
@@ -1795,6 +1551,9 @@ namespace Assistant
 
         private static void TargetResponse(PacketReader p, PacketHandlerEventArgs args)
         {
+            if (World.Player == null)
+                return;
+
             TargetInfo info = new TargetInfo
             {
                 Type = p.ReadByte(),
@@ -1897,12 +1656,29 @@ namespace Assistant
                         m_LastBeneTarg = info;
 
                     LastTargetChanged();
+                    LastBeneficialTargetChanged();
+                    LastHarmfulTargetChanged();
                 }
 
                 m_LastGroundTarg = info; // ground target is the true last target
 
                 if (Macros.MacroManager.AcceptActions)
                     MacroManager.Action(new AbsoluteTargetAction(info));
+
+                ScriptManager.AddToScript(info.Serial == Serial.Zero
+                    ? $"target 0x0 {info.X} {info.Y} {info.Z}"
+                    : $"target {info.Serial}");
+
+
+                if (ScriptManager.Recording)
+                {
+                    if (info.Serial == Serial.Zero)
+                    {
+                    }
+                    else
+                    {
+                    }
+                }
             }
             else
             {
@@ -1910,9 +1686,17 @@ namespace Assistant
                 {
                     KeyData hk = HotKey.Get((int) LocString.TargetSelf);
                     if (hk != null)
+                    {
                         MacroManager.Action(new HotKeyAction(hk));
+
+                        ScriptManager.AddToScript($"hotkey '{hk.DispName}'");
+                    }
                     else
+                    {
                         MacroManager.Action(new AbsoluteTargetAction(info));
+
+                        ScriptManager.AddToScript($"target {info.Serial}");
+                    }
                 }
             }
 
@@ -1964,6 +1748,10 @@ namespace Assistant
             {
                 args.Block = true;
             }
+            else if (m_QueueTarget == null && ScriptManager.AddToScript("waitfortarget"))
+            {
+                //args.Block = true;
+            }
             else if (m_QueueTarget != null && m_QueueTarget())
             {
                 ClearQueue();
@@ -2010,14 +1798,14 @@ namespace Assistant
             }
         }
 
-        private static TargetInfo _lastTarget = new TargetInfo();
+        private static TargetInfo _lastOverheadMessageTarget = new TargetInfo();
 
         public static void OverheadTargetMessage(TargetInfo info)
         {
             if (info == null)
                 return;
 
-            if (Config.GetBool("ShowAttackTargetNewOnly") && info.Serial == _lastTarget.Serial)
+            if (Config.GetBool("ShowAttackTargetNewOnly") && info.Serial == _lastOverheadMessageTarget.Serial)
                 return;
 
             Mobile m = null;
@@ -2029,7 +1817,7 @@ namespace Assistant
                 if (m == null)
                     return;
 
-                World.Player.OverheadMessage(FriendsAgent.IsFriend(m) ? 63 : m.GetNotorietyColorInt(),
+                World.Player.OverheadMessage(FriendsManager.IsFriend(m.Serial) ? 63 : m.GetNotorietyColorInt(),
                     $"Target: {m.Name}");
             }
 
@@ -2042,10 +1830,16 @@ namespace Assistant
                 if (m == null)
                     return;
 
-                m.OverheadMessage(10, Config.GetString("TargetIndicatorFormat"));
+                m.OverheadMessage(Config.GetInt("TargetIndicatorHue"),
+                    Config.GetString("TargetIndicatorFormat").Replace("{name}", m.Name));
             }
 
-            _lastTarget = info;
+            _lastOverheadMessageTarget = info;
+        }
+
+        private static bool IsSmartTargetingEnabled()
+        {
+            return Config.GetBool("SmartLastTarget") && Client.Instance.AllowBit(FeatureBit.SmartLT);
         }
     }
 }

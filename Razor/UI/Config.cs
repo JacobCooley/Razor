@@ -1,3 +1,23 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
 using System.Xml;
 using System.IO;
@@ -7,9 +27,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Windows.Forms;
+using Assistant.Agents;
 using Assistant.Core;
 using Assistant.Filters;
 using Assistant.Macros;
+using Assistant.Scripts;
 using Assistant.UI;
 using ContainerLabels = Assistant.Core.ContainerLabels;
 using OverheadMessages = Assistant.Core.OverheadMessages;
@@ -73,7 +95,6 @@ namespace Assistant
 
             AddProperty("BlockDismount", false);
 
-            AddProperty("AutoCap", false);
             AddProperty("CapFullScreen", false);
             AddProperty("CapPath",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "RazorScreenShots"));
@@ -163,7 +184,7 @@ namespace Assistant
             AddProperty("StealthOverhead", false);
 
             AddProperty("ShowBuffDebuffOverhead", true);
-            AddProperty("BuffDebuffFormat", "[{action}{name}]");
+            AddProperty("BuffDebuffFormat", "[{action}{name} ({duration}s)]");
 
             AddProperty("BlockOpenCorpsesTwice", false);
 
@@ -181,7 +202,6 @@ namespace Assistant
             AddProperty("ContainerLabelColor", 88);
             AddProperty("ContainerLabelStyle", 1);
 
-            AddProperty("RealSeason", false);
             AddProperty("Season", 5);
 
             AddProperty("BlockTradeRequests", false);
@@ -227,9 +247,70 @@ namespace Assistant
             AddProperty("DisplaySkillChangesOverhead", false);
 
             AddProperty("GrabHotBag", "0");
-            
+
             // Enable it for OSI client by default, CUO turn it off
             AddProperty("MacroActionDelay", Client.IsOSI);
+
+            AddProperty("AutoOpenDoorWhenHidden", false);
+
+            AddProperty("DisableMacroPlayFinish", false);
+
+            AddProperty("ShowBandageTimer", false);
+            AddProperty("ShowBandageTimerFormat", "Bandage: {count}s");
+            AddProperty("ShowBandageTimerLocation", 0);
+            AddProperty("OnlyShowBandageTimerEvery", false);
+            AddProperty("OnlyShowBandageTimerSeconds", 1);
+            AddProperty("ShowBandageTimerHue", 88);
+
+            AddProperty("FriendOverheadFormat", "[Friend]");
+            AddProperty("FriendOverheadFormatHue", 0x03F);
+
+            AddProperty("TargetIndicatorHue", 10);
+
+            AddProperty("FilterSystemMessages", false);
+            AddProperty("FilterRazorMessages", false);
+            AddProperty("FilterDelay", 3.5);
+            AddProperty("FilterOverheadMessages", false);
+
+            AddProperty("OnlyNextPrevBeneficial", false);
+            AddProperty("FriendlyBeneficialOnly", false);
+            AddProperty("NonFriendlyHarmfulOnly", false);
+
+            AddProperty("ShowBandageStart", false);
+            AddProperty("BandageStartMessage", "Bandage: Starting");
+            AddProperty("ShowBandageEnd", false);
+            AddProperty("BandageEndMessage", "Bandage: Ending");
+
+            AddProperty("BuffDebuffSeconds", 20);
+            AddProperty("BuffHue", 88);
+            AddProperty("DebuffHue", 338);
+            AddProperty("DisplayBuffDebuffEvery", false);
+            AddProperty("BuffDebuffFilter", string.Empty);
+            AddProperty("BuffDebuffEveryXSeconds", false);
+
+            AddProperty("CaptureOthersDeathDelay", 0.5);
+            AddProperty("CaptureOwnDeathDelay", 0.5);
+            AddProperty("CaptureOthersDeath", false);
+            AddProperty("CaptureOwnDeath", false);
+
+            AddProperty("TargetFilterEnabled", false);
+
+            AddProperty("FilterDaemonGraphics", false);
+            AddProperty("DaemonGraphic", 0);
+
+            AddProperty("SoundFilterEnabled", false);
+            AddProperty("ShowFilteredSound", false);
+            AddProperty("ShowPlayingSoundInfo", false);
+            AddProperty("ShowMusicInfo", false);
+
+            AddProperty("AutoSaveScript", false);
+            AddProperty("AutoSaveScriptPlay", false);
+
+            AddProperty("HighlightFriend", false);
+
+            AddProperty("ScriptTargetTypeRange", false);
+            AddProperty("ScriptDClickTypeRange", false);
+            AddProperty("ScriptFindTypeRange", false);
 
             Counter.Default();
             Filter.DisableAll();
@@ -237,10 +318,13 @@ namespace Assistant
             HotKey.ClearAll();
             Agent.ClearAll();
             PasswordMemory.ClearAll();
+            FriendsManager.ClearAll();
+            DressList.ClearAll();
             OverheadMessages.ClearAll();
             ContainerLabels.ClearAll();
-            AbsoluteTargetVariables.ClearAll();
-            DoubleClickVariables.ClearAll();
+            MacroVariables.ClearAll();
+            ScriptVariables.ClearAll();
+            FriendsManager.ClearAll();
         }
 
         public string Name
@@ -341,12 +425,22 @@ namespace Assistant
             Counter.LoadProfile(root["counters"]);
             Agent.LoadProfile(root["agents"]);
             DressList.Load(root["dresslists"]);
+            TargetFilterManager.Load(root["targetfilters"]);
+            SoundMusicManager.Load(root["soundfilters"]);
+            FriendsManager.Load(root["friends"]);
             HotKey.Load(root["hotkeys"]);
             PasswordMemory.Load(root["passwords"]);
             OverheadMessages.Load(root["overheadmessages"]);
             ContainerLabels.Load(root["containerlabels"]);
-            AbsoluteTargetVariables.Load(root["absolutetargets"]);
-            DoubleClickVariables.Load(root["doubleclickvariables"]);
+            MacroVariables.Load(root["macrovariables"]);
+            //imports previous absolutetargets and doubleclickvariables if present in profile
+            if ((root.SelectSingleNode("absolutetargets") != null) ||
+                (root.SelectSingleNode("doubleclickvariables") != null))
+            {
+                MacroVariables.Import(root);
+            }
+
+            ScriptVariables.Load(root["scriptvariables"]);
 
             GoldPerHourTimer.Stop();
             DamageTracker.Stop();
@@ -521,12 +615,24 @@ namespace Assistant
             ContainerLabels.Save(xml);
             xml.WriteEndElement();
 
-            xml.WriteStartElement("absolutetargets");
-            AbsoluteTargetVariables.Save(xml);
+            xml.WriteStartElement("macrovariables");
+            MacroVariables.Save(xml);
             xml.WriteEndElement();
 
-            xml.WriteStartElement("doubleclickvariables");
-            DoubleClickVariables.Save(xml);
+            xml.WriteStartElement("scriptvariables");
+            ScriptVariables.Save(xml);
+            xml.WriteEndElement();
+
+            xml.WriteStartElement("friends");
+            FriendsManager.Save(xml);
+            xml.WriteEndElement();
+
+            xml.WriteStartElement("targetfilters");
+            TargetFilterManager.Save(xml);
+            xml.WriteEndElement();
+
+            xml.WriteStartElement("soundfilters");
+            SoundMusicManager.Save(xml);
             xml.WriteEndElement();
 
             xml.WriteEndElement(); // end profile section
@@ -830,6 +936,11 @@ namespace Assistant
             return (int) CurrentProfile.GetProperty(name);
         }
 
+        public static double GetDouble(string name)
+        {
+            return (double) CurrentProfile.GetProperty(name);
+        }
+
         public static bool SetAppSetting(string key, string value)
         {
             try
@@ -896,6 +1007,11 @@ namespace Assistant
             if (!Directory.Exists(Path.Combine(appDir, "Profiles")))
             {
                 Directory.CreateDirectory(Path.Combine(appDir, "Profiles"));
+            }
+
+            if (!Directory.Exists(Path.Combine(appDir, "Scripts")))
+            {
+                Directory.CreateDirectory(Path.Combine(appDir, "Scripts"));
             }
 
             name = name.Length > 0 ? Path.Combine(appDir, name) : appDir;

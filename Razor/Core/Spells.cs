@@ -1,8 +1,27 @@
+#region license
+
+// Razor: An Ultima Online Assistant
+// Copyright (C) 2020 Razor Development Community on GitHub <https://github.com/markdwags/Razor>
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#endregion
+
 using System;
 using System.IO;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Assistant
@@ -40,24 +59,43 @@ namespace Assistant
             {
                 if (Circle <= 8) // Mage
                     return 3002011 + ((Circle - 1) * 8) + (Number - 1);
-                else if (Circle == 10) // Necr
+                
+                if (Circle == 10) // Necr
                     return 1060509 + Number - 1;
-                else if (Circle == 20) // Chiv
+                
+                if (Circle == 20) // Chiv
                     return 1060585 + Number - 1;
-                else if (Circle == 40) // Bush
+                
+                if (Circle == 40) // Bush
                     return 1060595 + Number - 1;
-                else if (Circle == 50) // Ninj
+                
+                if (Circle == 50) // Ninj
                     return 1060610 + Number - 1;
-                else if (Circle == 60) // Elfs
+                
+                if (Circle == 60) // Elfs
                     return 1071026 + Number - 1;
-                else
+                
+                if (Circle == 65) // Myst
+                    return 1031678 + this.Number - 28;
+
+                if (Circle != 70)
                     return -1;
+
+                if (Number <= 6)
+                    return 1115683 + Number - 1;
+
+                return 1155896 + Number - 7;
             }
         }
 
         public override string ToString()
         {
             return String.Format("{0} (#{1})", Language.GetString(this.Name), GetID());
+        }
+
+        public string GetName()
+        {
+            return $"{Language.GetString(Name)}";
         }
 
         public int GetID()
@@ -187,6 +225,7 @@ namespace Assistant
 
         private static Dictionary<string, Spell> m_SpellsByPower;
         private static Dictionary<int, Spell> m_SpellsByID;
+        private static Dictionary<string, Spell> m_SpellsByName;
         private static HotKeyCallbackState HotKeyCallback;
 
         static Spell()
@@ -194,6 +233,7 @@ namespace Assistant
             string filename = Path.Combine(Config.GetInstallDirectory(), "spells.def");
             m_SpellsByPower = new Dictionary<string, Spell>(64 + 10 + 16);
             m_SpellsByID = new Dictionary<int, Spell>(64 + 10 + 16);
+            m_SpellsByName = new Dictionary<string, Spell>(64 + 10 + 16);
 
             if (!File.Exists(filename))
             {
@@ -223,6 +263,12 @@ namespace Assistant
                                 Convert.ToInt32(split[2].Trim()), /*split[3].Trim(),*/ split[4].Trim(), reags);
 
                             m_SpellsByID[s.GetID()] = s;
+
+                            line = Language.GetString(s.Name);
+                            if (string.IsNullOrEmpty(line))
+                                line = split[3].Trim();
+                            if (!string.IsNullOrEmpty(line))
+                                m_SpellsByName[line.ToLower()] = s;
 
                             if (s.WordsOfPower != null && s.WordsOfPower.Trim().Length > 0)
                                 m_SpellsByPower[s.WordsOfPower] = s;
@@ -331,7 +377,7 @@ namespace Assistant
             {
                 if (World.Player.Poisoned || World.Player.Hits < World.Player.HitsMax)
                     Targeting.TargetSelf(true);
-                Client.Instance.SendToServer(new CastSpellFromMacro((ushort)s.GetID()));
+                Client.Instance.SendToServer(new CastSpellFromMacro((ushort) s.GetID()));
                 s.Cast();
             }
         }
@@ -347,17 +393,17 @@ namespace Assistant
             }
         }
 
-        internal static Item FindUsedLayer()
+        private static Item FindUsedLayer()
         {
-            Item layeredItem = World.Player.GetItemOnLayer(Layer.Shoes);
+            Item layeredItem = World.Player.GetItemOnLayer(Layer.Shirt);
+            if (layeredItem != null)
+                return layeredItem;
+
+            layeredItem = World.Player.GetItemOnLayer(Layer.Shoes);
             if (layeredItem != null)
                 return layeredItem;
 
             layeredItem = World.Player.GetItemOnLayer(Layer.Pants);
-            if (layeredItem != null)
-                return layeredItem;
-
-            layeredItem = World.Player.GetItemOnLayer(Layer.Shirt);
             if (layeredItem != null)
                 return layeredItem;
 
@@ -465,6 +511,22 @@ namespace Assistant
             Spell s;
             m_SpellsByID.TryGetValue(num, out s);
             return s;
+        }
+
+        public static Spell GetByName(string name)
+        {
+            m_SpellsByName.TryGetValue(name.ToLower(), out Spell s);
+            return s;
+        }
+
+        public static string GetName(int num)
+        {
+            if (m_SpellsByID.TryGetValue(num, out Spell spell))
+            {
+                return spell.GetName();
+            }
+
+            return string.Empty;
         }
 
         public static Spell Get(int circle, int num)
